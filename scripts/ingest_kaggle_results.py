@@ -117,6 +117,35 @@ def verify_heads(doc, res):
 
 HEADS_FROM: list[Path] = []      # head-only review kernels (FP32 analysis of the same capture protocol)
 SHIELD_FROM: list[Path] = []     # protection-steering kernels (injection shield)
+TRYIT_FROM: list[Path] = []      # Try-it gateway scenarios on a real GPU model
+
+
+def _tryit() -> dict | None:
+    """Gateway scenario suite with real model replies (REAL_IBM_MIA); tools are never executed."""
+    for d in TRYIT_FROM:
+        summ = _load(d / "summary.json") or {}
+        for f in sorted(d.glob("tryit__*.json")):
+            doc = _load(f) or {}
+            model_id = doc.get("model_id")
+            rec = next((p for p in summ.get("phases", []) if p.get("phase") == "tryit" and p.get("model") == model_id), None)
+            if rec is None or rec.get("rc") != 0:
+                continue
+            if (doc.get("project_id") != PROJECT_ID or doc.get("evidence_type") != LIVE
+                    or doc.get("revision") != pinned_spec(model_id).revision):
+                raise ValueError("Try-it provenance does not match the pinned model/project")
+            keep = ("scenario", "category", "attacked", "mode", "context_doc_ids", "prompt_markers", "mia_score",
+                    "response_released", "unsafe_tool_proposed", "unauthorized_action_would_execute")
+            records = []
+            for r in doc.get("records", []):
+                row = {k: r.get(k) for k in keep}
+                row["output"] = _clip(r.get("output", ""), 280)
+                row["policy"] = {k: (r.get("policy") or {}).get(k) for k in ("tool", "would_allow", "reason")}
+                row["rejected_docs"] = [x.get("id") or x.get("doc_id") for x in r.get("documents", []) if not x.get("allowed_to_context")]
+                records.append(row)
+            return {"model_id": model_id, "revision": doc.get("revision"), "records": records, "totals": doc.get("totals"),
+                    "note": doc.get("note"), "source_sha256": hashlib.sha256(f.read_bytes()).hexdigest(),
+                    "evidence_type": LIVE}
+    return None
 
 
 def _shield(model_id: str):
@@ -360,6 +389,7 @@ def main() -> int:
     p.add_argument("--kernel")
     p.add_argument("--version")
     p.add_argument("--out", default=str(ROOT / "api" / "experiments.json"))
+    p.add_argument("--tryit-from", action="append", default=[], help="Try-it scenario kernel mm_results folder")
     p.add_argument("--shield-from", action="append", default=[],
                    help="protection-steering (injection shield) mm_results folder")
     p.add_argument("--heads-from", action="append", default=[],
@@ -367,6 +397,7 @@ def main() -> int:
     a = p.parse_args()
     HEADS_FROM[:] = [Path(h) for h in a.heads_from]
     SHIELD_FROM[:] = [Path(h) for h in a.shield_from]
+    TRYIT_FROM[:] = [Path(h) for h in a.tryit_from]
     docs = []
     for r in a.results:
         res = Path(r)
@@ -374,7 +405,11 @@ def main() -> int:
             print("summary.json not found in", res, file=sys.stderr)
             return 2
         docs.append(ingest(res, a.kernel, a.version))
-    doc = finite(merge(docs))
+    doc = merge(docs)
+    tryit = _tryit()
+    if tryit:
+        doc["tryit"] = tryit
+    doc = finite(doc)
     Path(a.out).write_text(json.dumps(doc, indent=1, allow_nan=False) + "\n", encoding="utf-8")
     print(a.out, [(m["model_id"], m["status"]) for m in doc["models"]])
     return 0

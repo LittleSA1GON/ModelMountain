@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { api } from '../lib/api.js';
 import { EXAMPLES, VERDICT_LABEL, stagesFor, traceRows, verdictOf } from '../lib/logic.js';
 
@@ -47,6 +47,58 @@ function Pane({ title, note, result, protectedPane, busy }) {
   );
 }
 
+const DEFENSE_OF = {
+  direct_injection: 'Prompt-injection firewall', role_spoofing: 'Prompt-injection firewall',
+  rag_poisoning: 'RAG integrity', data_authorization: 'RAG integrity',
+  exfiltration_attempt: 'Exfiltration guard', agent_authorization: 'Exfiltration guard (tool authorization)',
+  tool_output_injection: 'Prompt-injection firewall (tool output)',
+  mcp_tool_metadata_injection: 'MCP supply-chain guard', mcp_tool_output_injection: 'MCP supply-chain guard',
+};
+
+function GpuRecorded() {
+  const [x, setX] = useState(null);
+  useEffect(() => { let a = true; api.experiments().then((r) => a && setX(r)); return () => { a = false; }; }, []);
+  const t = x?.ok ? x.data.tryit : null;
+  if (!x) return null;
+  if (!t) {
+    return <div className="card pad"><b>Recorded on GPU: run pending</b><p className="small muted">A Kaggle kernel runs every gateway scenario on Qwen2.5-1.5B with IBM MIA; real replies appear here once it is ingested.</p></div>;
+  }
+  const byName = {};
+  for (const r of t.records || []) (byName[r.scenario] ||= {})[r.mode] = r;
+  const rows = Object.entries(byName).filter(([, v]) => v.unprotected?.attacked);
+  const fs = (v) => (typeof v === 'number' ? v.toFixed(3) : '—');
+  return (
+    <div style={{ display: 'grid', gap: 10 }}>
+      <div className="section-title"><h2>Recorded on GPU</h2><span className="tag mia">REAL_IBM_MIA</span></div>
+      <p className="muted small">{t.model_id.split('/').pop()} on a Kaggle T4. Each attack scenario was sent to the real model twice: as an unguarded assistant would see it, and through Model Mountain. Tools are never executed. "MIA focus" is the Attention Tracker score from IBM vLLM-Hook capture_qk (lower means attention was pulled away from the instruction). Unguarded unsafe tool proposals: <b className="tnum">{t.totals?.unprotected_unsafe_tool_proposals ?? '—'}</b>; unsafe actions allowed with Model Mountain: <b className="tnum">{t.totals?.protected_unsafe_would_execute ?? '—'}</b>.</p>
+      <div className="card table-wrap">
+        <table>
+          <thead><tr><th>Attack (defense)</th><th>Real model, unguarded</th><th>With Model Mountain</th><th>MIA focus</th></tr></thead>
+          <tbody>
+            {rows.map(([name, v]) => {
+              const u = v.unprotected, pr = v.protected || {};
+              return (
+                <tr key={name}>
+                  <td><b>{name.replace(/-/g, ' ')}</b><span className="sub">{DEFENSE_OF[u.category] || u.category}</span></td>
+                  <td className="small">{u.output || '—'}{u.policy?.tool && <span className="sub mono">proposed tool: {u.policy.tool}{u.unauthorized_action_would_execute ? ' (would run unguarded)' : ''}</span>}</td>
+                  <td className="small">
+                    <span className={`chip ${pr.response_released && !pr.unauthorized_action_would_execute ? 'ok' : 'bad'}`}>{pr.response_released ? 'Released' : 'Withheld'}</span>
+                    {pr.rejected_docs?.length > 0 && <span className="sub">documents rejected: {pr.rejected_docs.join(', ')}</span>}
+                    {pr.policy?.tool && <span className="sub mono">tool {pr.policy.tool}: {pr.policy.would_allow ? 'allowed' : 'denied'} ({pr.policy.reason})</span>}
+                    {pr.prompt_markers?.length > 0 && <span className="sub mono">markers: {pr.prompt_markers.join(', ')}</span>}
+                  </td>
+                  <td className="tnum mono small">{fs(u.mia_score)} → {fs(pr.mia_score)}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      <p className="muted small">Model extraction (the fifth defense) acts before any model call: see the cross-account campaign on the Defenses page.</p>
+    </div>
+  );
+}
+
 export default function Playground() {
   const [q, setQ] = useState(EXAMPLES[1].text);
   const [busy, setBusy] = useState(false);
@@ -67,7 +119,7 @@ export default function Playground() {
       <div className="head">
         <p className="eyebrow">Try it</p>
         <h2>Send the same question with and without protection.</h2>
-        <p className="lede">This demo runs the real rule engine on CPU with sample company policies. No language model runs here, and the page says so on every result.</p>
+        <p className="lede">The interactive box runs the real rule engine on CPU with sample company policies. Below it, "Recorded on GPU" shows the same gateway on a real model (Qwen2.5-1.5B on a Kaggle T4 with IBM MIA).</p>
       </div>
 
       <form className="ask" onSubmit={run}>
@@ -87,6 +139,8 @@ export default function Playground() {
         <Pane title="Without protection" note="Baseline fixture. Shows what an unguarded assistant would pass through." result={a} busy={busy} />
         <Pane title="With Model Mountain" note="Every request goes through the five defenses; each stage below is what the gateway actually recorded." result={d} busy={busy} protectedPane />
       </div>
+
+      <GpuRecorded />
     </section>
   );
 }

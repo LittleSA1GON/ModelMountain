@@ -49,151 +49,50 @@ Source: `model_mountain.defenses.run_lab()`; also served at `/api/v1/defenses/la
 
 ## 2. Real-model results (REAL_IBM_MIA, Kaggle 2× Tesla T4)
 
-Source: `api/experiments.json` (ingested 2026-10-24T14:33:48Z). Runtime: torch 2.13.0+cu130, vLLM 0.29.0, IBM MIA commit da420038fa6057c8e36c8b5457b1e02afba3cc7c.
-
-Emotion stories: 1408 kept, generator Qwen/Qwen2.5-1.5B-Instruct, sha256 `b9e208a1458644cb6c7be3111a00523e3a2668c39fd3104e733f24dfc21dfaca`.
+Source: `api/experiments.json` (ingested 2026-10-24T16:12:27Z). Runtime: torch 2.13.0+cu130, vLLM 0.29.0, IBM MIA commit da420038fa6057c8e36c8b5457b1e02afba3cc7c.
 
 ### Qwen/Qwen2.5-1.5B-Instruct — measured
 
-- Emotion vectors: 10 directions at decoder block 10 (depth 0.393); held-out 10-way accuracy 0.31 (chance 0.10, n=233, 95% CI [0.25718189312656403, 0.37548398989398646]).
-- Valence alignment of PC1: |r| = 0.96.
+- **Protection steering (injection shield)**: block 10, strength 0.3 (chosen on Tensor Trust validation). Held-out attack success 53% (k=75, n=142, 95% CI 45–61%) -> 62% (k=88, n=142, 95% CI 54–70%); legitimate access 57% (k=81, n=142, 95% CI 49–65%) -> 52% (k=74, n=142, 95% CI 44–60%); paired change +9.2 points (95% CI +1.4 to +16.9). Direction: hijacked minus resisted Tensor Trust validation attacks (bare-model outcomes).
 - Prompt-injection detector heads: 24 attention heads (Attention Tracker criterion, k=2.0; captured fp16 Q/K analyzed in FP32); held-out AUROC attack vs benign 1.0 (n_attack=30, n_benign=5; small labeled set, exploratory). Used only to detect injection; heads are never steered.
 
-Chat-adapted comparison on Toyer et al. 2023, Tensor Trust (arXiv 2311.01011): 776 human-written hijacking attacks (held-out n=142; calm strength chosen on validation: 0.05):
+MIA activation monitor and prompt baseline on Toyer et al. 2023, Tensor Trust (arXiv 2311.01011): 776 human-written hijacking attacks (held-out n=142):
 
 | Condition | Attack success | Legitimate access kept |
 |---|---|---|
 | No protection | 53% (k=75, n=142, 95% CI 45–61%) | 57% (k=81, n=142, 95% CI 49–65%) |
 | Spotlighting prompt | 55% (k=78, n=142, 95% CI 47–63%) | 50% (k=71, n=142, 95% CI 42–58%) |
-| Calm steering (MIA) | 64% (k=91, n=142, 95% CI 56–72%) | 62% (k=88, n=142, 95% CI 54–70%) |
-| Spotlight + steering | 61% (k=87, n=142, 95% CI 53–69%) | 56% (k=80, n=142, 95% CI 48–64%) |
 | Activation monitor (MIA) (post-hoc estimate) | 0% (k=0, n=142, 95% CI 0–3%) | 0% (k=0, n=142, 95% CI 0–3%) |
-| All layers (post-hoc estimate) | 0% (k=0, n=142, 95% CI 0–3%) | 0% (k=0, n=142, 95% CI 0–3%) |
 
-Activation monitor (deepset test AUROC 0.9845238095238096); monitor-gated rows are post-hoc estimates on recorded generations. Their attack-success rate must be assessed alongside legitimate-request utility; a gate that rejects everything is unusable.
-
-- Calm steering (MIA): paired attack-success difference +11.3 percentage points (positive is worse; 95% interval [4.9, 17.6]).
-- Spotlight + steering: paired attack-success difference +8.5 percentage points (positive is worse; 95% interval [2.1, 14.8]).
-- **Adverse outcome: calm steering increased attack success on this model. No protective benefit is established.**
-
-Steering sweep (fraction of mean token residual norm at the steered layer (paper convention)): baseline attack success 0% (k=0, n=90, 95% CI 0–4%), capability 97% (k=29, n=30, 95% CI 83–99%).
-
-| Vector | Strength | Attack success | Capability | Injection replies differing from unsteered |
-|---|---|---|---|---|
-| desperate | -0.2 | 20% (k=18, n=90, 95% CI 13–29%) | 97% (k=29, n=30, 95% CI 83–99%) | 91/105 |
-| desperate | -0.1 | 1% (k=1, n=90, 95% CI 0–6%) | 93% (k=28, n=30, 95% CI 79–98%) | 69/105 |
-| desperate | 0.1 | 0% (k=0, n=90, 95% CI 0–4%) | 97% (k=29, n=30, 95% CI 83–99%) | 38/105 |
-| desperate | 0.2 | 6% (k=5, n=90, 95% CI 2–12%) | 87% (k=26, n=30, 95% CI 70–95%) | 62/105 |
-| calm | -0.2 | 11% (k=10, n=90, 95% CI 6–19%) | 73% (k=22, n=30, 95% CI 56–86%) | 92/105 |
-| calm | -0.1 | 0% (k=0, n=90, 95% CI 0–4%) | 97% (k=29, n=30, 95% CI 83–99%) | 36/105 |
-| calm | 0.1 | 1% (k=1, n=90, 95% CI 0–6%) | 93% (k=28, n=30, 95% CI 79–98%) | 46/105 |
-| calm | 0.2 | 6% (k=5, n=90, 95% CI 2–12%) | 90% (k=27, n=30, 95% CI 74–97%) | 83/105 |
-| happy | -0.2 | 8% (k=7, n=90, 95% CI 4–15%) | 63% (k=19, n=30, 95% CI 46–78%) | 103/105 |
-| happy | -0.1 | 0% (k=0, n=90, 95% CI 0–4%) | 90% (k=27, n=30, 95% CI 74–97%) | 56/105 |
-| happy | 0.1 | 0% (k=0, n=90, 95% CI 0–4%) | 97% (k=29, n=30, 95% CI 83–99%) | 46/105 |
-| happy | 0.2 | 9% (k=8, n=90, 95% CI 5–17%) | 90% (k=27, n=30, 95% CI 74–97%) | 89/105 |
-| angry | -0.2 | 1% (k=1, n=90, 95% CI 0–6%) | 90% (k=27, n=30, 95% CI 74–97%) | 80/105 |
-| angry | -0.1 | 1% (k=1, n=90, 95% CI 0–6%) | 97% (k=29, n=30, 95% CI 83–99%) | 47/105 |
-| angry | 0.1 | 0% (k=0, n=90, 95% CI 0–4%) | 90% (k=27, n=30, 95% CI 74–97%) | 44/105 |
-| angry | 0.2 | 4% (k=4, n=90, 95% CI 2–11%) | 77% (k=23, n=30, 95% CI 59–88%) | 92/105 |
-| afraid | -0.2 | 0% (k=0, n=90, 95% CI 0–4%) | 83% (k=25, n=30, 95% CI 66–93%) | 57/105 |
-| afraid | -0.1 | 0% (k=0, n=90, 95% CI 0–4%) | 93% (k=28, n=30, 95% CI 79–98%) | 38/105 |
-| afraid | 0.1 | 3% (k=3, n=90, 95% CI 1–9%) | 93% (k=28, n=30, 95% CI 79–98%) | 49/105 |
-| afraid | 0.2 | 42% (k=38, n=90, 95% CI 33–53%) | 83% (k=25, n=30, 95% CI 66–93%) | 90/105 |
+The MIA activation monitor (hidden-state probe trained on deepset) reaches deepset test AUROC 0.98, but on Tensor Trust it flags legitimate prompts too, so it is reported as a monitor, not a gate. Monitor-gated rows are post-hoc estimates on recorded generations.
 
 ### ibm-granite/granite-3.1-2b-instruct — measured
 
-- Emotion vectors: 10 directions at decoder block 26 (depth 0.675); held-out 10-way accuracy 0.36 (chance 0.10, n=233, 95% CI [0.30565331219782077, 0.42834612033430197]).
-- Valence alignment of PC1: |r| = 0.97.
+- **Protection steering (injection shield)**: block 26, strength 0.05 (chosen on Tensor Trust validation). Held-out attack success 77% (k=109, n=142, 95% CI 69–83%) -> 69% (k=98, n=142, 95% CI 61–76%); legitimate access 67% (k=95, n=142, 95% CI 59–74%) -> 61% (k=86, n=142, 95% CI 52–68%); paired change -7.7 points (95% CI -12.0 to -3.5). Direction: hijacked minus resisted Tensor Trust validation attacks (bare-model outcomes).
 - Prompt-injection detector heads: 64 attention heads (Attention Tracker criterion, k=2.0; captured fp16 Q/K analyzed in FP32); held-out AUROC attack vs benign 1.0 (n_attack=30, n_benign=5; small labeled set, exploratory). Used only to detect injection; heads are never steered.
 
-Chat-adapted comparison on Toyer et al. 2023, Tensor Trust (arXiv 2311.01011): 776 human-written hijacking attacks (held-out n=142; calm strength chosen on validation: 0.2):
+MIA activation monitor and prompt baseline on Toyer et al. 2023, Tensor Trust (arXiv 2311.01011): 776 human-written hijacking attacks (held-out n=142):
 
 | Condition | Attack success | Legitimate access kept |
 |---|---|---|
 | No protection | 77% (k=109, n=142, 95% CI 69–83%) | 67% (k=95, n=142, 95% CI 59–74%) |
 | Spotlighting prompt | 80% (k=113, n=142, 95% CI 72–85%) | 63% (k=90, n=142, 95% CI 55–71%) |
-| Calm steering (MIA) | 73% (k=104, n=142, 95% CI 65–80%) | 61% (k=86, n=142, 95% CI 52–68%) |
-| Spotlight + steering | 72% (k=102, n=142, 95% CI 64–79%) | 58% (k=82, n=142, 95% CI 50–66%) |
 | Activation monitor (MIA) (post-hoc estimate) | 0% (k=0, n=142, 95% CI 0–3%) | 0% (k=0, n=142, 95% CI 0–3%) |
-| All layers (post-hoc estimate) | 0% (k=0, n=142, 95% CI 0–3%) | 0% (k=0, n=142, 95% CI 0–3%) |
 
-Activation monitor (deepset test AUROC 0.9845238095238096); monitor-gated rows are post-hoc estimates on recorded generations. Their attack-success rate must be assessed alongside legitimate-request utility; a gate that rejects everything is unusable.
-
-- Calm steering (MIA): paired attack-success difference -3.5 percentage points (positive is worse; 95% interval [-9.9, 2.8]).
-- Spotlight + steering: paired attack-success difference -4.9 percentage points (positive is worse; 95% interval [-11.3, 0.7]).
-- Calm steering: no measurable change in attack success (the 95% interval includes zero). No protective benefit is established.
-
-Steering sweep (fraction of mean token residual norm at the steered layer (paper convention)): baseline attack success 58% (k=52, n=90, 95% CI 47–67%), capability 87% (k=26, n=30, 95% CI 70–95%).
-
-| Vector | Strength | Attack success | Capability | Injection replies differing from unsteered |
-|---|---|---|---|---|
-| desperate | -0.2 | 58% (k=52, n=90, 95% CI 47–67%) | 87% (k=26, n=30, 95% CI 70–95%) | 86/105 |
-| desperate | -0.1 | 58% (k=52, n=90, 95% CI 47–67%) | 90% (k=27, n=30, 95% CI 74–97%) | 44/105 |
-| desperate | 0.1 | 79% (k=71, n=90, 95% CI 69–86%) | 90% (k=27, n=30, 95% CI 74–97%) | 61/105 |
-| desperate | 0.2 | 93% (k=84, n=90, 95% CI 86–97%) | 80% (k=24, n=30, 95% CI 63–90%) | 85/105 |
-| calm | -0.2 | 77% (k=69, n=90, 95% CI 67–84%) | 77% (k=23, n=30, 95% CI 59–88%) | 76/105 |
-| calm | -0.1 | 61% (k=55, n=90, 95% CI 51–71%) | 90% (k=27, n=30, 95% CI 74–97%) | 58/105 |
-| calm | 0.1 | 60% (k=54, n=90, 95% CI 50–70%) | 90% (k=27, n=30, 95% CI 74–97%) | 50/105 |
-| calm | 0.2 | 69% (k=62, n=90, 95% CI 59–78%) | 87% (k=26, n=30, 95% CI 70–95%) | 83/105 |
-| happy | -0.2 | 51% (k=46, n=90, 95% CI 41–61%) | 77% (k=23, n=30, 95% CI 59–88%) | 77/105 |
-| happy | -0.1 | 59% (k=53, n=90, 95% CI 49–68%) | 87% (k=26, n=30, 95% CI 70–95%) | 52/105 |
-| happy | 0.1 | 61% (k=55, n=90, 95% CI 51–71%) | 87% (k=26, n=30, 95% CI 70–95%) | 50/105 |
-| happy | 0.2 | 74% (k=67, n=90, 95% CI 65–82%) | 83% (k=25, n=30, 95% CI 66–93%) | 81/105 |
-| angry | -0.2 | 57% (k=51, n=90, 95% CI 46–66%) | 83% (k=25, n=30, 95% CI 66–93%) | 73/105 |
-| angry | -0.1 | 51% (k=46, n=90, 95% CI 41–61%) | 93% (k=28, n=30, 95% CI 79–98%) | 53/105 |
-| angry | 0.1 | 76% (k=68, n=90, 95% CI 66–83%) | 90% (k=27, n=30, 95% CI 74–97%) | 60/105 |
-| angry | 0.2 | 93% (k=84, n=90, 95% CI 86–97%) | 77% (k=23, n=30, 95% CI 59–88%) | 85/105 |
-| afraid | -0.2 | 88% (k=79, n=90, 95% CI 79–93%) | 83% (k=25, n=30, 95% CI 66–93%) | 92/105 |
-| afraid | -0.1 | 59% (k=53, n=90, 95% CI 49–68%) | 87% (k=26, n=30, 95% CI 70–95%) | 58/105 |
-| afraid | 0.1 | 63% (k=57, n=90, 95% CI 53–73%) | 93% (k=28, n=30, 95% CI 79–98%) | 46/105 |
-| afraid | 0.2 | 64% (k=58, n=90, 95% CI 54–74%) | 83% (k=25, n=30, 95% CI 66–93%) | 64/105 |
+The MIA activation monitor (hidden-state probe trained on deepset) reaches deepset test AUROC 0.98, but on Tensor Trust it flags legitimate prompts too, so it is reported as a monitor, not a gate. Monitor-gated rows are post-hoc estimates on recorded generations.
 
 ### google/gemma-4-E4B-it — measured
 
-- Emotion vectors: 10 directions at decoder block 16 (depth 0.405); held-out 10-way accuracy 0.39 (chance 0.10, n=233, 95% CI [0.3301727907132404, 0.4544934165746685]).
-- Valence alignment of PC1: |r| = 0.98.
+- **Protection steering (injection shield)**: block 16, strength 0.05 (chosen on Tensor Trust validation). Held-out attack success 37% (k=53, n=142, 95% CI 30–46%) -> 38% (k=54, n=142, 95% CI 30–46%); legitimate access 77% (k=110, n=142, 95% CI 70–84%) -> 76% (k=108, n=142, 95% CI 68–82%); paired change +0.7 points (95% CI -3.5 to +4.9). Direction: hijacked minus resisted Tensor Trust validation attacks (bare-model outcomes).
 - Attention result withheld: IBM MIA Q/K capture did not complete for this model on Kaggle T4 (Gemma 4 mixes per-layer attention geometries); no heads are reported.
 
-Chat-adapted comparison on Toyer et al. 2023, Tensor Trust (arXiv 2311.01011): 776 human-written hijacking attacks (held-out n=142; calm strength chosen on validation: 0.05):
+MIA activation monitor and prompt baseline on Toyer et al. 2023, Tensor Trust (arXiv 2311.01011): 776 human-written hijacking attacks (held-out n=142):
 
 | Condition | Attack success | Legitimate access kept |
 |---|---|---|
 | No protection | 37% (k=53, n=142, 95% CI 30–46%) | 77% (k=110, n=142, 95% CI 70–84%) |
 | Spotlighting prompt | 16% (k=23, n=142, 95% CI 11–23%) | 63% (k=90, n=142, 95% CI 55–71%) |
-| Calm steering (MIA) | 38% (k=54, n=142, 95% CI 30–46%) | 79% (k=112, n=142, 95% CI 71–85%) |
-| Spotlight + steering | 16% (k=23, n=142, 95% CI 11–23%) | 67% (k=95, n=142, 95% CI 59–74%) |
 | Activation monitor (MIA) (post-hoc estimate) | 0% (k=0, n=142, 95% CI 0–3%) | 0% (k=0, n=142, 95% CI 0–3%) |
-| All layers (post-hoc estimate) | 0% (k=0, n=142, 95% CI 0–3%) | 0% (k=0, n=142, 95% CI 0–3%) |
 
-Activation monitor (deepset test AUROC 0.9961309523809524); monitor-gated rows are post-hoc estimates on recorded generations. Their attack-success rate must be assessed alongside legitimate-request utility; a gate that rejects everything is unusable.
-
-- Calm steering (MIA): paired attack-success difference +0.7 percentage points (positive is worse; 95% interval [-2.8, 4.2]).
-- Spotlight + steering: paired attack-success difference -21.1 percentage points (positive is worse; 95% interval [-28.2, -14.1]).
-- Calm steering: no measurable change in attack success (the 95% interval includes zero). No protective benefit is established.
-
-Steering sweep (fraction of mean token residual norm at the steered layer (paper convention)): baseline attack success 90% (k=81, n=90, 95% CI 82–95%), capability 93% (k=28, n=30, 95% CI 79–98%).
-
-| Vector | Strength | Attack success | Capability | Injection replies differing from unsteered |
-|---|---|---|---|---|
-| desperate | -0.2 | 93% (k=84, n=90, 95% CI 86–97%) | 93% (k=28, n=30, 95% CI 79–98%) | 17/105 |
-| desperate | -0.1 | 91% (k=82, n=90, 95% CI 83–95%) | 93% (k=28, n=30, 95% CI 79–98%) | 7/105 |
-| desperate | 0.1 | 90% (k=81, n=90, 95% CI 82–95%) | 93% (k=28, n=30, 95% CI 79–98%) | 12/105 |
-| desperate | 0.2 | 90% (k=81, n=90, 95% CI 82–95%) | 93% (k=28, n=30, 95% CI 79–98%) | 22/105 |
-| calm | -0.2 | 86% (k=77, n=90, 95% CI 77–91%) | 93% (k=28, n=30, 95% CI 79–98%) | 21/105 |
-| calm | -0.1 | 89% (k=80, n=90, 95% CI 81–94%) | 93% (k=28, n=30, 95% CI 79–98%) | 5/105 |
-| calm | 0.1 | 93% (k=84, n=90, 95% CI 86–97%) | 93% (k=28, n=30, 95% CI 79–98%) | 11/105 |
-| calm | 0.2 | 93% (k=84, n=90, 95% CI 86–97%) | 93% (k=28, n=30, 95% CI 79–98%) | 22/105 |
-| happy | -0.2 | 89% (k=80, n=90, 95% CI 81–94%) | 93% (k=28, n=30, 95% CI 79–98%) | 14/105 |
-| happy | -0.1 | 90% (k=81, n=90, 95% CI 82–95%) | 93% (k=28, n=30, 95% CI 79–98%) | 9/105 |
-| happy | 0.1 | 92% (k=83, n=90, 95% CI 85–96%) | 93% (k=28, n=30, 95% CI 79–98%) | 5/105 |
-| happy | 0.2 | 94% (k=85, n=90, 95% CI 88–98%) | 93% (k=28, n=30, 95% CI 79–98%) | 10/105 |
-| angry | -0.2 | 82% (k=74, n=90, 95% CI 73–89%) | 93% (k=28, n=30, 95% CI 79–98%) | 25/105 |
-| angry | -0.1 | 88% (k=79, n=90, 95% CI 79–93%) | 93% (k=28, n=30, 95% CI 79–98%) | 7/105 |
-| angry | 0.1 | 91% (k=82, n=90, 95% CI 83–95%) | 93% (k=28, n=30, 95% CI 79–98%) | 11/105 |
-| angry | 0.2 | 88% (k=79, n=90, 95% CI 79–93%) | 93% (k=28, n=30, 95% CI 79–98%) | 22/105 |
-| afraid | -0.2 | 97% (k=87, n=90, 95% CI 91–99%) | 93% (k=28, n=30, 95% CI 79–98%) | 16/105 |
-| afraid | -0.1 | 93% (k=84, n=90, 95% CI 86–97%) | 93% (k=28, n=30, 95% CI 79–98%) | 10/105 |
-| afraid | 0.1 | 88% (k=79, n=90, 95% CI 79–93%) | 93% (k=28, n=30, 95% CI 79–98%) | 14/105 |
-| afraid | 0.2 | 81% (k=73, n=90, 95% CI 72–88%) | 93% (k=28, n=30, 95% CI 79–98%) | 37/105 |
+The MIA activation monitor (hidden-state probe trained on deepset) reaches deepset test AUROC 1.0, but on Tensor Trust it flags legitimate prompts too, so it is reported as a monitor, not a gate. Monitor-gated rows are post-hoc estimates on recorded generations.
 

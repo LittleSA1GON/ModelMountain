@@ -1,0 +1,115 @@
+{
+  "model_info": {
+    "model_id": "Qwen/Qwen2.5-1.5B-Instruct",
+    "revision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306",
+    "derived_by": "Model Mountain head discovery",
+    "method": {
+      "paper": "Attention Tracker (arXiv 2411.00348)",
+      "k_used": 2.0,
+      "selection_split": "behavior_tests train document groups"
+    }
+  },
+  "params": {
+    "important_heads": [
+      [
+        4,
+        2
+      ],
+      [
+        2,
+        6
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        10,
+        0
+      ],
+      [
+        0,
+        7
+      ],
+      [
+        10,
+        9
+      ],
+      [
+        10,
+        8
+      ],
+      [
+        4,
+        10
+      ],
+      [
+        15,
+        6
+      ],
+      [
+        0,
+        2
+      ],
+      [
+        9,
+        3
+      ],
+      [
+        5,
+        2
+      ],
+      [
+        9,
+        9
+      ],
+      [
+        4,
+        6
+      ],
+      [
+        0,
+        11
+      ],
+      [
+        6,
+        5
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        0,
+        9
+      ],
+      [
+        11,
+        5
+      ],
+      [
+        9,
+        10
+      ],
+      [
+        10,
+        3
+      ],
+      [
+        10,
+        6
+      ],
+      [
+        1,
+        11
+      ],
+      [
+        12,
+        7
+      ]
+    ]
+  },
+  "hookq": {
+    "hookq_mode": "last_token"
+  }
+}

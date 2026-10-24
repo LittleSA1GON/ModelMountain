@@ -30,6 +30,7 @@ FILES = [
     "examples/emotion_vectors/stories_spec.json", "examples/emotion_vectors/behavior_tests.json",
     "examples/emotion_vectors/contrast_implicit.json", "examples/emotion_vectors/MANIFEST.json",
     "kaggle/model_allowlist.json", "kaggle/t4_gemma_patches.py",
+    "model_mountain/core.py", "kaggle/tryit_heads_qwen.json",
 ]
 SECRET_RE = re.compile(r"(KGAT_[0-9a-f]{16,}|hf_[A-Za-z0-9]{30,}|sk-[A-Za-z0-9_-]{20,}|BEGIN [A-Z ]*PRIVATE KEY)")
 STORIES_SLUG = "model-mountain-stories"
@@ -158,7 +159,7 @@ def build(owner: str, config: dict, *, slug: str, out_root: Path | None = None, 
     out = (out_root or ROOT / "model_mountain_results" / "kaggle_bundle") / f"{slug}-{stamp}"
     out.mkdir(parents=True, exist_ok=False)
     (out / "run.py").write_text(run, encoding="utf-8", newline="\n")
-    title = {"stories": "Model Mountain stories", "demo": "Model Mountain demo", "shield": "Model Mountain shield"}.get(config["kind"], f"MM {config.get('model', 'preflight')}")[:50]
+    title = {"stories": "Model Mountain stories", "demo": "Model Mountain demo", "shield": "Model Mountain shield", "tryit": "Model Mountain tryit"}.get(config["kind"], f"MM {config.get('model', 'preflight')}")[:50]
     meta = {"id": f"{owner}/{slug}", "title": title, "code_file": "run.py", "language": "python", "kernel_type": "script",
             "is_private": True, "enable_gpu": True, "enable_internet": True, "dataset_sources": [],
             "competition_sources": [], "kernel_sources": kernel_sources or [], "model_sources": []}
@@ -177,12 +178,18 @@ def main() -> int:
     g.add_argument("--model", help="build one target-model kernel")
     g.add_argument("--preflight-only", action="store_true")
     g.add_argument("--demo", action="store_true", help="one kernel: stories + minimum demo model set")
+    g.add_argument("--tryit", action="store_true", help="Try-it gateway scenarios on a real GPU model (Qwen2.5-1.5B)")
     g.add_argument("--shield", nargs="*", metavar="MODEL",
                    help="protection-steering kernel (injection shield) for the given models (default: demo set)")
     p.add_argument("--generator", default=DEFAULT_GENERATOR)
     p.add_argument("--no-attn", action="store_true")
     a = p.parse_args()
-    if a.shield is not None:
+    if a.tryit:
+        cfg = kernel_config(kind="model", model="Qwen/Qwen2.5-1.5B-Instruct", extra={"run_heads": False, "run_attn": False})
+        cfg["kind"] = "tryit"
+        out = build(a.owner, cfg, slug="model-mountain-tryit")
+        write_notebook(out / "run.py", out)
+    elif a.shield is not None:
         models = a.shield or None
         slug = "model-mountain-shield" if not models or len(models) > 1 else "mm-shield-" + model_slug(models[0]).replace("mm-", "", 1)
         out = build(a.owner, shield_config(models), slug=slug[:50])

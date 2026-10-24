@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { api } from '../lib/api.js';
-import { summarizeRuns, conditionRows, bestCondition, evidenceClass, pct } from '../lib/logic.js';
+import { summarizeRuns, conditionRows, evidenceClass, pct } from '../lib/logic.js';
 
 const short = (id = '') => id.split('/').pop();
 
@@ -23,8 +23,6 @@ function Bar({ value, ci, tone }) {
 function Protection({ m }) {
   const p = m.protect;
   const rows = conditionRows(p).filter((r) => !['C_calm_steer', 'E_spotlight_steer', 'F_all_layers'].includes(r.id));
-  const best = bestCondition(rows);
-  const a = rows.find((r) => r.id === 'A_bare');
   return (
     <div className="card">
       <div className="pad prot-head">
@@ -32,21 +30,13 @@ function Protection({ m }) {
           <b>{short(m.model_id)}</b>
           <span className="sub">{p.benchmark} · {p.n_test} held-out attacks</span>
         </div>
-        {best && a && (
-          <div className="callout">
-            <span className="big tnum" style={{ color: best.asr < a.asr ? 'var(--ok)' : 'var(--bad)' }}>{pct(a.asr)} → {pct(best.asr)}</span>
-            <span className="small muted">observed attack success, bare vs {best.label.toLowerCase()}</span>
-            <span className="small muted">Descriptive comparison; compare all conditions and utility below.</span>
-            {best.deltaCi?.[0] <= 0 && best.deltaCi?.[1] >= 0 && <span className="small muted">Paired 95% interval includes no change.</span>}
-          </div>
-        )}
       </div>
       <div className="table-wrap">
         <table className="prot">
           <thead><tr><th>Condition</th><th>Attacks that succeeded</th><th>Legitimate access code works</th></tr></thead>
           <tbody>
             {rows.map((r) => (
-              <tr key={r.id} className={r.id === best?.id ? 'best' : ''}>
+              <tr key={r.id}>
                 <td><b>{r.label}</b>{r.mia && <span className="tag mia">MIA</span>}{r.skipped && <span className="sub">{r.reason}</span>}{r.posthoc && <span className="sub">Post-hoc estimate on recorded replies; no gate ran at serving time</span>}</td>
                 <td>{!r.skipped && <><Bar value={r.asr} ci={r.asrCi} tone="bad" /><span className="tnum">{pct(r.asr)}</span> <Ci ci={r.asrCi} /></>}</td>
                 <td>{!r.skipped && <><Bar value={r.util} ci={r.utilCi} tone="ok" /><span className="tnum">{pct(r.util)}</span></>}</td>
