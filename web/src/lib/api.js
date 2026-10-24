@@ -28,7 +28,6 @@ export const api = {
   models: (o) => request('/models', o),
   vectors: (o) => request('/vectors', o),
   reports: (o) => request('/reports', o),
-  orchestration: (o) => request('/orchestration', o),
   jobs: (o) => request('/jobs', o),
   experiments: (o) => request('/experiments', o),
   defenses: (o) => request('/defenses', o),

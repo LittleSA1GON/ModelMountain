@@ -127,7 +127,7 @@ function Runs({ jobs, reports }) {
 
 function CaptureSmoke({ r }) {
   if (!r) return <div className="card pad"><div className="skeleton" /></div>;
-  if (!r.ok) return <div className="empty"><b>No integration capture published.</b></div>;
+  if (!r.ok || r.data?.kind !== 'capture_integration_smoke' || r.data?.evidence_type !== 'REAL_IBM_MIA') return <div className="empty"><b>No integration capture published.</b></div>;
   const d = r.data;
   const pick = (...keys) => keys.map((k) => d[k]).find((v) => v != null);
   return (
@@ -164,7 +164,7 @@ export default function Lab({ health }) {
           <b>GPU runs happen on Kaggle</b>
           <span className="muted small">A private notebook captures activations, fits each direction, and reports held-out results back here.</span>
         </div>
-        <span className={`chip ${gpu ? 'ok' : 'warn'}`}>{gpu ? 'Worker connected' : 'No GPU results yet'}</span>
+        <span className={`chip ${gpu ? 'ok' : ''}`}>{gpu ? 'Live worker connected' : 'Batch workflow · no live worker'}</span>
       </div>
 
       <div>
@@ -183,7 +183,7 @@ export default function Lab({ health }) {
       </div>
 
       <div>
-        <div className="section-title"><h2>Steering directions</h2><span className="muted small">10 emotions from 1,800 model-written stories · held-out topics</span></div>
+        <div className="section-title"><h2>Steering directions</h2><span className="muted small">10 emotions · {exp?.data?.stories?.kept ? `${exp.data.stories.kept.toLocaleString()} model-written stories` : 'model-written stories'} · held-out topics</span></div>
         <Vectors r={vectors} exp={exp} />
       </div>
     </section>

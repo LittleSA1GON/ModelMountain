@@ -7,7 +7,10 @@ Documented exfiltration channels this layer targets (see ``model_mountain.defens
 * tool calls that send private data to an attacker-reachable sink (Invariant Labs' GitHub MCP report,
   General Analysis' Supabase MCP report, the postmark-mcp BCC backdoor) -> tool-call egress policy;
 * the "lethal trifecta" (Willison, 2025): private data + untrusted content + an external channel in one
-  session -> require human approval before any external send.
+  session -> require human approval before any external send;
+* the agent's own web search / fetch tool (Rall et al., arXiv 2510.09093): hidden text on a retrieved page
+  makes the agent read a secret from its knowledge base and GET an attacker URL with the secret as a query
+  parameter -> open-web URL provenance + data checks, and hidden-text screening of retrieved pages.
 
 Deterministic, model-independent and deny-by-default. It never executes a tool. It does not prove that
 an output is safe; it removes the documented channels and refuses unapproved external destinations.
@@ -48,6 +51,12 @@ EXTERNAL_SINKS = {
     "upload_file": ("destination",),
 }
 
+# Open-web retrieval tools must reach any public domain, so a destination allowlist would break them.
+# Instead (Rall et al., arXiv 2510.09093): no secrets/opaque tokens in the query or URL, and once the session
+# has read private data, the agent may only fetch URLs it did not construct itself (search results or URLs the
+# user typed, recorded by trusted app code in SessionTaint.known_urls).
+OPEN_WEB_TOOLS = {"web_search": "query", "web_fetch": "url", "browse": "url", "open_url": "url"}
+
 
 def _host(url: str) -> str:
     try:
@@ -86,6 +95,48 @@ def extract_urls(text: str) -> list[dict]:
         if m.group(0) not in seen:
             found.append({"url": m.group(0), "kind": "bare", "auto_fetch": False})
     return found
+
+
+def _norm_url(url: str) -> str:
+    try:
+        u = urlsplit(str(url).strip())
+    except ValueError:
+        return ""
+    path = u.path.rstrip("/") or "/"
+    return f"{u.scheme.lower()}://{(u.hostname or '').lower().rstrip('.')}{(':' + str(u.port)) if u.port else ''}{path}" + \
+        (f"?{u.query}" if u.query else "")
+
+
+def _opaque_tokens(text: str) -> bool:
+    return any(len(c) >= 24 and _entropy(c) >= 3.5 for c in re.split(r"[\s/?&=#;,+]", unquote(text or "")))
+
+
+_HIDDEN_STYLE = re.compile(
+    r"display\s*:\s*none|visibility\s*:\s*hidden|font-size\s*:\s*0(?:px|pt|em|rem)?\s*(?:;|$)|opacity\s*:\s*0(?:\.0+)?\s*(?:;|$)"
+    r"|(?<![-\w])color\s*:\s*(?:#fff(?:fff)?|white|rgba?\(\s*255\s*,\s*255\s*,\s*255)", re.I)
+_STYLED_EL = re.compile(r"<(\w+)\b[^>]*\bstyle\s*=\s*([\"'])(.*?)\2[^>]*>(.*?)</\1\s*>", re.I | re.S)
+_TAGS = re.compile(r"<[^>]+>")
+
+
+def hidden_page_text(html: str) -> list[dict]:
+    """Text a person would not see on a rendered page but an agent reads (white-on-white, display:none, ...).
+
+    Rall et al. (arXiv 2510.09093) planted their instructions as white text on a white background. This is a
+    screening heuristic for retrieved pages, not a renderer: it flags, it does not prove a page is clean.
+    """
+    found = []
+    for m in _STYLED_EL.finditer(html or ""):
+        style, inner = m.group(3), _TAGS.sub(" ", m.group(4))
+        if _HIDDEN_STYLE.search(style) and inner.strip():
+            found.append({"tag": m.group(1).lower(), "style": style.strip()[:120], "text": " ".join(inner.split())[:500]})
+    return found
+
+
+def strip_hidden_page_text(html: str) -> str:
+    """Visible text only: hidden-styled elements are dropped, then tags are removed."""
+    def drop(m):
+        return "" if _HIDDEN_STYLE.search(m.group(3)) else m.group(0)
+    return " ".join(_TAGS.sub(" ", _STYLED_EL.sub(drop, html or "")).split())
 
 
 def _entropy(s: str) -> float:
@@ -130,6 +181,7 @@ class SessionTaint:
     untrusted_content_seen: bool = False
     protected_values: tuple[str, ...] = ()
     sources: list = field(default_factory=list)
+    known_urls: tuple[str, ...] = ()          # search-result URLs and URLs the user typed (trusted app code only)
 
     def lethal_trifecta(self) -> bool:
         return self.private_data_read and self.untrusted_content_seen
@@ -180,6 +232,9 @@ def check_tool_call(tool: str, args: dict, policy: EgressPolicy, taint: SessionT
         carrier = url_carries_data(f["url"], taint.protected_values, patterns=policy.patterns)
         if carrier:
             reasons.extend(r + "_in_tool_arguments" for r in carrier)
+    web_field = OPEN_WEB_TOOLS.get(tool)
+    if web_field is not None:
+        return _check_open_web(tool, web_field, args, policy, taint, reasons)
     if sink_fields is None:
         return {"allowed": not reasons, "decision": "deny" if reasons else "allow", "reasons": sorted(set(reasons)),
                 "external_sink": False, "destinations": []}
@@ -213,3 +268,38 @@ def check_tool_call(tool: str, args: dict, policy: EgressPolicy, taint: SessionT
     return {"allowed": decision == "allow", "decision": decision, "reasons": sorted(set(reasons)) +
             (["lethal_trifecta_private_plus_untrusted_plus_external"] if needs_approval and not reasons else []),
             "external_sink": True, "destinations": destinations}
+
+
+def _check_open_web(tool: str, fld: str, args: dict, policy: EgressPolicy, taint: SessionTaint, reasons: list) -> dict:
+    """Web search / fetch: the request itself is the exfiltration channel (Rall et al., arXiv 2510.09093)."""
+    val = str(args.get(fld) or "").strip()
+    destinations = []
+    needs_approval = False
+    if not val:
+        reasons.append("missing_destination" if fld == "url" else "missing_query")
+    elif fld == "query":
+        destinations.append({"field": fld, "target": "search provider"})
+        if _opaque_tokens(val):
+            reasons.append("high_entropy_token_in_search_query")
+        if taint.lethal_trifecta() and _BARE.search(val):
+            reasons.append("url_in_search_query_after_untrusted_content")
+    else:
+        try:
+            u = urlsplit(val)
+        except ValueError:
+            u = None
+        if u is None or u.scheme not in ("http", "https") or u.username or u.password or not u.hostname:
+            reasons.append("unsafe_url_form:url")
+        else:
+            destinations.append({"field": fld, "target": _host(val)})
+            known = _norm_url(val) in {_norm_url(k) for k in taint.known_urls}
+            if not known and taint.private_data_read:
+                if u.query or u.fragment or _opaque_tokens(u.path):
+                    # the paper's channel: a model-built URL whose parameters can carry what the agent just read
+                    reasons.append("model_constructed_url_with_parameters_after_private_data_read")
+                elif taint.untrusted_content_seen and policy.approval_required_for_external_send:
+                    needs_approval = True
+    decision = "deny" if reasons else ("require_human_approval" if needs_approval else "allow")
+    return {"allowed": decision == "allow", "decision": decision,
+            "reasons": sorted(set(reasons)) + (["unvetted_url_in_lethal_trifecta_session"] if needs_approval and not reasons else []),
+            "external_sink": True, "channel": "open_web_retrieval", "destinations": destinations}

@@ -30,10 +30,6 @@ All 20 screenshots captured via headless browser automation into `docs/screensho
 | `results-1440x900-dark.png` | Results | 1440 × 900 (Desktop) | Dark | 64,794 | Captured |
 | `results-390x844-light.png` | Results | 390 × 844 (Mobile) | Light | 36,633 | Captured |
 | `results-390x844-dark.png` | Results | 390 × 844 (Mobile) | Dark | 36,987 | Captured |
-| `team-1440x900-light.png` | Build team | 1440 × 900 (Desktop) | Light | 94,379 | Captured |
-| `team-1440x900-dark.png` | Build team | 1440 × 900 (Desktop) | Dark | 96,170 | Captured |
-| `team-390x844-light.png` | Build team | 390 × 844 (Mobile) | Light | 55,972 | Captured |
-| `team-390x844-dark.png` | Build team | 390 × 844 (Mobile) | Dark | 55,711 | Captured |
 
 ---
 
@@ -119,4 +115,3 @@ Live execution verified against `POST /api/v1/inference` with model `Qwen/Qwen2-
 | **Results** | `390 × 844` (Mobile) | Light & Dark | Horizontal scroll overflow | `scrollWidth=619px > clientWidth=390px`. Caused by `.head` container width and unconstrained diagnostic table width exceeding 390px. |
 | **Overview** | All | Light & Dark | None | No horizontal scroll or text clipping detected (`scrollWidth == clientWidth`). |
 | **Try it** | All | Light & Dark | None | No horizontal scroll or text clipping detected (`scrollWidth == clientWidth`). |
-| **Build team** | All | Light & Dark | None | No horizontal scroll or text clipping detected (`scrollWidth == clientWidth`). |

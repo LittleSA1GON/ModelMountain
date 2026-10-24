@@ -102,6 +102,25 @@ def demo_config(models=None, generator: str = DEFAULT_GENERATOR) -> dict:
     return cfg
 
 
+# Decoder blocks where each model's emotion vectors were captured on Kaggle (reused so steering stays comparable).
+SHIELD_BLOCKS = {"Qwen/Qwen2.5-1.5B-Instruct": 10, "ibm-granite/granite-3.1-2b-instruct": 26, "google/gemma-4-E4B-it": 16}
+
+
+def shield_config(models=None) -> dict:
+    """Protection-steering kernel: fit the 'injection shield' direction and test it on held-out Tensor Trust."""
+    models = models or DEMO_MODELS
+    cfg = kernel_config(kind="model", model=models[0])
+    cfg.update(kind="shield", models=models, per_model={}, shield_strengths=[0.05, 0.1, 0.2, 0.3], run_heads=False, run_attn=False)
+    for m in models:
+        mc = kernel_config(kind="model", model=m)
+        cfg["per_model"][m] = {k: mc[k] for k in ("dtypes", "engine_kwargs", "env") if k in mc}
+        if m in SHIELD_BLOCKS:
+            cfg["per_model"][m]["shield_block"] = SHIELD_BLOCKS[m]
+    for k in ("dtypes", "engine_kwargs", "env", "model", "steer_emotions", "strengths", "tone_classifier"):
+        cfg.pop(k, None)
+    return cfg
+
+
 def write_notebook(run_py: Path, out: Path) -> Path:
     """Kaggle web 'Import notebook' form: cell 1 writes the self-contained script, cell 2 runs it."""
     src = run_py.read_text(encoding="utf-8")
@@ -139,7 +158,7 @@ def build(owner: str, config: dict, *, slug: str, out_root: Path | None = None, 
     out = (out_root or ROOT / "model_mountain_results" / "kaggle_bundle") / f"{slug}-{stamp}"
     out.mkdir(parents=True, exist_ok=False)
     (out / "run.py").write_text(run, encoding="utf-8", newline="\n")
-    title = {"stories": "Model Mountain stories", "demo": "Model Mountain demo"}.get(config["kind"], f"MM {config.get('model', 'preflight')}")[:50]
+    title = {"stories": "Model Mountain stories", "demo": "Model Mountain demo", "shield": "Model Mountain injection shield"}.get(config["kind"], f"MM {config.get('model', 'preflight')}")[:50]
     meta = {"id": f"{owner}/{slug}", "title": title, "code_file": "run.py", "language": "python", "kernel_type": "script",
             "is_private": True, "enable_gpu": True, "enable_internet": True, "dataset_sources": [],
             "competition_sources": [], "kernel_sources": kernel_sources or [], "model_sources": []}
@@ -158,10 +177,17 @@ def main() -> int:
     g.add_argument("--model", help="build one target-model kernel")
     g.add_argument("--preflight-only", action="store_true")
     g.add_argument("--demo", action="store_true", help="one kernel: stories + minimum demo model set")
+    g.add_argument("--shield", nargs="*", metavar="MODEL",
+                   help="protection-steering kernel (injection shield) for the given models (default: demo set)")
     p.add_argument("--generator", default=DEFAULT_GENERATOR)
     p.add_argument("--no-attn", action="store_true")
     a = p.parse_args()
-    if a.demo:
+    if a.shield is not None:
+        models = a.shield or None
+        slug = "model-mountain-shield" if not models or len(models) > 1 else "mm-shield-" + model_slug(models[0]).replace("mm-", "", 1)
+        out = build(a.owner, shield_config(models), slug=slug[:50])
+        write_notebook(out / "run.py", out)
+    elif a.demo:
         out = build(a.owner, demo_config(generator=a.generator), slug="model-mountain-demo")
         write_notebook(out / "run.py", out)
     elif a.stories:

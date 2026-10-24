@@ -340,11 +340,14 @@ class ControlAPI:
                 return self._defense_lab
         if method == "POST" and route == "/defenses/check":
             self.public_limit()
-            allowed = {"kind", "text", "tool", "args", "private_data_read", "untrusted_content_seen"}
+            allowed = {"kind", "text", "tool", "args", "private_data_read", "untrusted_content_seen", "known_urls"}
             if not isinstance(body, dict) or set(body) - allowed:
                 raise APIError(400, "invalid_defense_check", "Use only the documented inert defense-check fields.")
-            if body.get("kind") not in ("prompt_injection", "egress_output", "egress_tool"):
-                raise APIError(400, "invalid_defense_check", "Choose prompt_injection, egress_output or egress_tool.")
+            if body.get("kind") not in ("prompt_injection", "egress_output", "egress_tool", "retrieved_page"):
+                raise APIError(400, "invalid_defense_check", "Choose prompt_injection, egress_output, egress_tool or retrieved_page.")
+            urls = body.get("known_urls", [])
+            if not isinstance(urls, list) or len(urls) > 5 or not all(isinstance(u, str) and len(u) <= 500 for u in urls):
+                raise APIError(400, "invalid_defense_check", "known_urls must be a list of up to 5 URL strings.")
             for name in ("text", "tool"):
                 if name in body and not isinstance(body[name], str):
                     raise APIError(400, "invalid_defense_check", "Text and tool fields must be strings.")
@@ -378,7 +381,25 @@ class ControlAPI:
                     "evidence_type": "CONFIGURATION_ONLY"}
         if method == "GET" and route == "/health":
             configured = bool(self.settings.remote_url and self.settings.remote_token)
+            availability = {"capture_smoke_available": False, "batch_results_available": False,
+                            "steering_results_available": False}
+            for filename in ("capture_smoke.json", "experiments.json"):
+                try:
+                    doc = json.loads((ROOT / "api" / filename).read_text(encoding="utf-8"))
+                    if doc.get("project_id") != PROJECT_ID:
+                        continue
+                    if filename == "capture_smoke.json":
+                        availability["capture_smoke_available"] = (
+                            doc.get("kind") == "capture_integration_smoke" and doc.get("evidence_type") == "REAL_IBM_MIA"
+                            and doc.get("finite") is True and bool(re.fullmatch(r"[a-f0-9]{64}", doc.get("artifact_sha256", ""))))
+                    elif doc.get("schema") == "mm-experiments-v1" and doc.get("evidence_type") == "REAL_IBM_MIA":
+                        rows = [m for m in doc.get("models", []) if m.get("status") in ("measured", "partial")]
+                        availability["batch_results_available"] = any(m.get("emotions") for m in rows)
+                        availability["steering_results_available"] = any((m.get("steer") or {}).get("rows") for m in rows)
+                except (OSError, ValueError, TypeError, AttributeError):
+                    continue
             return {"status": "ok", "api_version": "v1", "remote_configured": configured,
+                    **availability,
                     "local_batch_available": self.batch is not None, "operator_configured": bool(self.settings.operator_token),
                     "project_name": PROJECT_NAME, "project_id": PROJECT_ID,
                     "real_mia_verified": bool(self.attestations()), "verified_model_count": len({a["model_id"] for a in self.attestations()}), "simulation_available": True,
@@ -426,8 +447,6 @@ class ControlAPI:
             if data.get("project_id") != PROJECT_ID or data.get("schema") != "mm-experiments-v1":
                 raise APIError(503, "experiments_invalid", "The experiment results file is invalid.")
             return {**data, "status": "ingested"}
-        if method == "GET" and route == "/orchestration":
-            return self.orchestration()
         if method == "GET" and (route == "/jobs" or re.fullmatch(r"/jobs/[A-Za-z0-9_.-]{1,100}", route)):
             if self.batch:
                 from api.kaggle_jobs import BatchError
@@ -515,23 +534,3 @@ class ControlAPI:
     def not_configured():
         raise APIError(503, "remote_unavailable", "A remote worker is not configured; no GPU operation was performed.")
 
-    @staticmethod
-    def orchestration():
-        path = ROOT / ".ai/TASKS.json"
-        if not path.exists():
-            snapshot = ROOT / "api/orchestration_snapshot.json"
-            if snapshot.is_file():
-                data = json.loads(snapshot.read_text(encoding="utf-8"))
-                data.update(project_name=PROJECT_NAME, project_id=PROJECT_ID, live=False)
-                return data
-            return {"project_name": PROJECT_NAME, "project_id": PROJECT_ID, "items": [], "live": False, "note": "Live Model Mountain local hub is not exposed by this deployment."}
-        try:
-            data = json.loads(path.read_text(encoding="utf-8"))
-            tasks = data.get("tasks", data) if isinstance(data, dict) else data
-            tasks = tasks.values() if isinstance(tasks, dict) else tasks
-            if not isinstance(tasks, (list, type({}.values()))):
-                raise ValueError("Invalid task snapshot")
-            items = [{k: t.get(k) for k in ("id", "title", "status", "assigned_agent", "depends_on")} for t in tasks if isinstance(t, dict)]
-            return {"project_name": PROJECT_NAME, "project_id": PROJECT_ID, "hub_name": "swarm_modelmountain_16f864bf", "items": items, "live": True, "scope": "sanitized_local_task_status", "hub_url": "http://127.0.0.1:8776"}
-        except (OSError, ValueError, TypeError):
-            raise APIError(503, "hub_unavailable", "The local task snapshot could not be read.") from None

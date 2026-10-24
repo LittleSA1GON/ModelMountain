@@ -40,11 +40,15 @@ def refresh(check=False):
     # Test contracts read these canonical files. No local runtime state is bundled.
     paths.update(("agent_workflow/refresh_notebook.py", "vercel.json", "web/package.json"))
     packed, hashes, missing = {}, {}, []
+    raw_byte_parity = True
     for relative in sorted(paths):
         path = (ROOT / relative).resolve()
         if not path.is_relative_to(ROOT) or not path.is_file():
             raise ValueError("Payload source is missing or outside the project: " + relative)
-        data = path.read_bytes()
+        raw = path.read_bytes()
+        # Git archives contain LF text. Normalize the source snapshot so it is reproducible
+        # on both Windows checkouts (which may use CRLF) and Linux/Kaggle.
+        data = raw.replace(b"\r\n", b"\n")
         if SECRETS.search(data):
             raise ValueError("Credential-shaped data in payload source: " + relative)
         hashes[relative] = hashlib.sha256(data).hexdigest()
@@ -52,10 +56,13 @@ def refresh(check=False):
         previous = old.get(relative)
         if previous is None or zlib.decompress(base64.b64decode(previous)) != data:
             missing.append(relative)
+        if previous is None or zlib.decompress(base64.b64decode(previous)) != raw:
+            raw_byte_parity = False
     if check:
         if missing or set(old) != paths:
             raise ValueError("Notebook payload differs from canonical sources: " + ", ".join(missing))
-        print(json.dumps({"source_files": len(paths), "byte_parity": True, "notebook_executed": False}))
+        print(json.dumps({"source_files": len(paths), "canonical_lf_parity": True,
+                          "byte_parity": raw_byte_parity, "notebook_executed": False}))
         return
     lines = source.splitlines(keepends=True)
     updated = "".join(lines[:node.lineno - 1]) + "PACKED_SOURCES = " + repr(packed) + "\n" + "".join(lines[node.end_lineno:])
@@ -71,7 +78,7 @@ def refresh(check=False):
         "CPU fixtures verify control logic only. Actual capture, steering and held-out attack outcomes require independently reviewed GPU artifacts.\n"]
     NOTEBOOK.write_text(json.dumps(document, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     manifest = {"project_id": "16f864bfa1303fc9", "source": NOTEBOOK.name,
-                "method": "AST literal parse + base64/zlib; no cell execution", "files": hashes}
+                "method": "AST literal parse + canonical LF text + base64/zlib; no cell execution", "files": hashes}
     (ROOT / "agent_workflow/NOTEBOOK_SOURCE_MANIFEST.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({"source_files": len(paths), "refreshed": True, "notebook_executed": False}))
 

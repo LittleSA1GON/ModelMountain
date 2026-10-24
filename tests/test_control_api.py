@@ -52,6 +52,28 @@ class ControlAPITests(unittest.TestCase):
         self.assertTrue(result["answer"].startswith("Insufficient verified evidence"))
         self.assertEqual(result["reasons"], ["insufficient_verified_evidence"])
 
+    def test_health_separates_historical_reports_from_live_attestation(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            (root / "api").mkdir()
+            with patch("model_mountain.control_api.ROOT", root):
+                empty = self.api.handle("GET", "/api/v1/health")
+                self.assertFalse(empty["capture_smoke_available"])
+                self.assertFalse(empty["batch_results_available"])
+                # Metadata fixtures test the status mapping only, not genuine model outcomes.
+                (root / "api/capture_smoke.json").write_text(json.dumps({
+                    "project_id": "16f864bfa1303fc9", "kind": "capture_integration_smoke", "finite": True,
+                    "evidence_type": "REAL_IBM_MIA", "artifact_sha256": "a" * 64}))
+                (root / "api/experiments.json").write_text(json.dumps({
+                    "project_id": "16f864bfa1303fc9", "schema": "mm-experiments-v1", "evidence_type": "REAL_IBM_MIA",
+                    "models": [{"status": "partial", "emotions": {"vectors": ["metadata fixture"]},
+                                "steer": {"rows": ["metadata fixture"]}}]}))
+                health = self.api.handle("GET", "/api/v1/health")
+                for flag in ("capture_smoke_available", "batch_results_available", "steering_results_available"):
+                    self.assertTrue(health[flag])
+                self.assertFalse(health["real_mia_verified"])
+                self.assertEqual(health["remote_configured"], empty["remote_configured"])
+
     def test_public_defense_lab_is_inert_and_cached(self):
         result = self.api.handle("GET", "/api/v1/defenses")
         self.assertEqual(len(result["defenses"]), 5)
@@ -76,12 +98,26 @@ class ControlAPITests(unittest.TestCase):
             self.assertEqual(error.exception.status, 400)
         self.assertEqual(self.remote.calls, [])
 
+    def test_retrieved_page_and_web_fetch_checks_are_inert(self):
+        page = self.api.handle("POST", "/api/v1/defenses/check", {
+            "kind": "retrieved_page", "text": '<p>ok</p><p style="color:white">hidden</p>'})
+        self.assertEqual(page["verdict"], "quarantine")
+        fetch = self.api.handle("POST", "/api/v1/defenses/check", {
+            "kind": "egress_tool", "tool": "web_fetch", "args": {"url": "https://c.example.net/?d=terms"},
+            "private_data_read": True, "untrusted_content_seen": True})
+        self.assertEqual(fetch["verdict"], "deny")
+        with self.assertRaises(APIError):
+            self.api.handle("POST", "/api/v1/defenses/check", {"kind": "egress_tool", "tool": "web_fetch",
+                                                               "args": {}, "known_urls": "https://x"})
+        self.assertEqual(self.remote.calls, [])
+
     def test_steering_editor_never_executes_a_model(self):
-        catalog = self.api.handle("GET", "/api/v1/steering")
-        self.assertEqual(len(catalog["models"]), 3)
-        result = self.api.handle("POST", "/api/v1/steering/profile", {
-            "model_id": "Qwen/Qwen2.5-1.5B-Instruct", "concept": "calm", "strength": 0.1,
-            "block": 14, "opt_in": True})
+        with patch("model_mountain.steering_lab.load_experiments", return_value=None):
+            catalog = self.api.handle("GET", "/api/v1/steering")
+            self.assertEqual(len(catalog["models"]), 3)
+            result = self.api.handle("POST", "/api/v1/steering/profile", {
+                "model_id": "Qwen/Qwen2.5-1.5B-Instruct", "concept": "calm", "strength": 0.1,
+                "block": 14, "opt_in": True})
         self.assertFalse(result["model_executed"])
         self.assertFalse(result["steering_applied"])
         self.assertEqual(result["status"], "vector_not_captured_yet")
@@ -156,15 +192,10 @@ class ControlAPITests(unittest.TestCase):
         self.assertTrue(result["remote_configured"])
         self.assertFalse(result["real_mia_verified"])
 
-    def test_hub_export_is_model_mountain_scoped_and_sanitized(self):
-        root = Path(self.temp.name)
-        (root / ".ai").mkdir()
-        (root / ".ai/TASKS.json").write_text(json.dumps({"revision": 1, "tasks": [{"id": "MM-1", "title": "Model Mountain task", "status": "todo", "lease_token": "private", "result": {"secret": "private"}}]}))
-        with patch("model_mountain.control_api.ROOT", root):
-            result = self.api.handle("GET", "/api/v1/orchestration")
-        self.assertEqual(result["project_name"], "Model Mountain")
-        self.assertEqual(result["items"][0]["id"], "MM-1")
-        self.assertNotIn("private", json.dumps(result))
+    def test_build_team_board_route_is_removed(self):
+        with self.assertRaises(APIError) as error:
+            self.api.handle("GET", "/api/v1/orchestration")
+        self.assertEqual(error.exception.code, "not_found")
 
     def test_remote_result_must_match_model_and_not_expose_credentials(self):
         self.remote.result["model_id"] = "other/model"

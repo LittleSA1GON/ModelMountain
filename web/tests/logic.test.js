@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { verdictOf, stagesFor, boardColumns, summarizeRuns, capabilityState, cleanTitle, conditionRows, bestCondition, evidenceClass, pct } from '../src/lib/logic.js';
+import { verdictOf, stagesFor, summarizeRuns, capabilityState, cleanTitle, conditionRows, bestCondition, evidenceClass, pct } from '../src/lib/logic.js';
 
 test('verdict mapping, including allow-with-abstention-text', () => {
   assert.equal(verdictOf({ decision: 'allow', answer: 'The limit is $500. [expense-policy]' }), 'allow');
@@ -24,18 +24,7 @@ test('pipeline stops at the stage named by the reason', () => {
   assert.ok(ok.every((x) => x.state === 'pass'));
 });
 
-test('board hides review jobs and cancelled tasks, strips owner prefixes', () => {
-  const cols = boardColumns([
-    { id: 'MM-A', title: 'Codex: build api', status: 'completed' },
-    { id: 'MM-B', title: 'Claude Code: secure it', status: 'in_progress' },
-    { id: 'REV-1', title: 'review', status: 'todo' },
-    { id: 'MM-C', title: 'x', status: 'cancelled' },
-    { id: 'MM-D', title: 'Antigravity: ui', status: 'blocked' },
-  ]);
-  assert.equal(cols.done[0].title, 'Build api');
-  assert.equal(cols.doing[0].title, 'Secure it');
-  assert.equal(cols.todo.length, 1);
-  assert.equal(cols.todo[0].blocked, true);
+test('owner prefixes are stripped from titles', () => {
   assert.equal(cleanTitle('Claude: Kaggle runtime'), 'Kaggle runtime');
 });
 
@@ -100,4 +89,15 @@ test('verdict tones, strength snapping and rate formatting', async () => {
   assert.equal(snapStrength(-0.07), -0.05);
   assert.equal(fmtRate(null), 'not measured');
   assert.equal(fmtRate({ rate: 0.25, n: 40, ci95: [0.14, 0.4] }), '25% of 40 (95% CI 14%–40%)');
+});
+
+test('best condition never uses a post-hoc gate estimate as the headline', async () => {
+  const { conditionRows, bestCondition } = await import('../src/lib/logic.js');
+  const rows = conditionRows({ conditions: {
+    A_bare: { label: 'No protection', attack_success: { rate: 0.4 }, utility: { rate: 0.8 } },
+    B_spotlight: { label: 'Spotlighting prompt', attack_success: { rate: 0.3 }, utility: { rate: 0.78 } },
+    D_monitor: { label: 'Activation monitor', attack_success: { rate: 0.05 }, utility: { rate: 0.75 }, estimate_type: 'POSTHOC_GATE_ON_RECORDED_GENERATIONS' },
+  } });
+  assert.equal(rows.find((r) => r.id === 'D_monitor').posthoc, true);
+  assert.equal(bestCondition(rows).id, 'B_spotlight');
 });

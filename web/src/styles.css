@@ -338,3 +338,4 @@ tr.base td { color: var(--muted); }
 @media (max-width: 640px) { .accounts { grid-template-columns: repeat(6, 1fr); } }
 .check input { width: auto; flex: none; margin: 0; accent-color: var(--accent); }
 .model-pick > .row { flex-wrap: wrap; gap: 6px; }
+.pre { white-space: pre-wrap; word-break: break-all; }

@@ -1,0 +1,23 @@
+# Model Mountain — 3-minute demo and judging notes
+
+Live site: https://model-mountain.vercel.app (works logged out, on a phone too).
+
+## The 3-minute walkthrough
+
+| Time | Screen | Say |
+|---|---|---|
+| 0:00–0:20 | **Overview** | "Company assistants now read email, docs and tickets and call tools. Text they read can act as instructions. That has already leaked data from Microsoft 365 Copilot (EchoLeak), Slack AI and GitHub Copilot Chat. Model Mountain is a gateway that sits between the user, the model, the knowledge base and the tools." |
+| 0:20–0:50 | **Try it** → pick the *Attack* example → **Run both** | "Same question, with and without protection. On the right is the trace the gateway actually recorded: identity, extraction budget, injection check, trusted documents, model, output egress, tool egress, tool permissions. It stops at the stage that caught it." |
+| 0:50–1:40 | **Defenses** | "Five defenses, each mapped to real incidents with primary sources (click a chip). The scenario suite runs 13 built-in cases: without protection 7 unsafe actions would run, with Model Mountain zero. The exfiltration guard is what stops EchoLeak-style leaks: paste an answer with an external image and it is removed; propose an email with a hidden BCC to an outside domain and it is blocked. When a session has read private data *and* seen untrusted content, any external send needs a human (Simon Willison's lethal trifecta). The same guard covers the agent's own web search tool (Rall et al., arXiv 2510.09093): pick web_fetch, paste a model-built URL with a parameter after private data was read, and it is denied, while a URL from search results is allowed; the page screen finds white-on-white hidden text. The extraction guard catches 12 accounts sharing one prompt template, which per-account limits miss." |
+| 1:40–2:30 | **Steering** (then **Results**) | "This is the IBM part. On Kaggle GPUs we run IBM's vLLM-Hook on three open models: Qwen2.5-1.5B, IBM Granite-3.1-2B and Gemma-4. We fit emotion directions from model-written stories, find the attention heads that lose focus on the instruction during prompt injection (the Attention Tracker method; these heads are only a detector, never steered), and test calm-vector steering on held-out Tensor Trust attacks. Honest result: steering did not protect any of the three models. Pick a model, a vector and a strength: the app builds a profile bound to the exact vector file and shows the measured effect at the nearest setting that actually ran." (Only quote numbers that are on the Results page.) |
+| 2:30–3:00 | **Results** footer / README | "Everything is labeled with its evidence type, so CPU rule checks are never mixed with GPU measurements. Limits: small models, wide intervals, pattern checks can be evaded, and allowlists need an owner. Next: wire the gateway to a live GPU worker and pilot it with a real MCP proxy." |
+
+## Likely questions
+
+- **Does the live site run a model?** No. It runs the real rule engine on CPU with inert fixtures, and says so on every result. GPU work runs on Kaggle; its outputs are ingested into the Results and Steering pages.
+- **Why not just use a guardrail model?** A fooled model can't be trusted to stop itself. The external checks hold no matter what the model outputs. The model-internal signals (attention heads, emotion probes) are an extra layer, not a replacement.
+- **How were the attention heads chosen?** Every head's query and key were captured with IBM MIA `capture_qk`; heads were kept if attention to the instruction stays high on benign documents and drops on injected ones, using the paper's own margin (k = 4, relaxed only if too few heads pass, and the k used is reported). Selection used training document groups; AUROC is on held-out groups.
+- **What do the emotion vectors mean?** They're statistical directions in the model's activations that separate stories by emotion. We don't claim the model feels anything.
+- **Did steering make the model safer?** Only claim what the Results page shows for that model, with its interval. Null or negative results are reported as they are.
+- **What did AI tools do?** Claude (Cowork, Opus 5.5) built the defenses, Kaggle kernels, UI and write-up; OpenAI Codex built the control API, deployed to Vercel, ran Kaggle jobs and reviewed the code. IBM Bob was not used. The v4 gateway baseline predates the event.
+- **Is the attack data real?** The incidents are cited from primary sources. Our demos use inert fixtures and public benchmarks (Tensor Trust, deepset/prompt-injections); we did not build working attacks against real systems.

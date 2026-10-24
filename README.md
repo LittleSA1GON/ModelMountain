@@ -14,7 +14,7 @@ Assistants that read email, documents and tickets and can call tools can be redi
 |---|---|---|---|
 | 1 | Prompt-injection firewall + MIA Attention Tracker | Untrusted text acting as instructions | `core.py`, `gateway.py`, `kaggle/run_mia_kaggle.py:phase_heads` |
 | 2 | RAG integrity and access control | Tampered or poisoned passages, cross-tenant retrieval | `rag.py`, `core.py` |
-| 3 | Exfiltration guard (rendered output + tool calls) | Auto-loaded images, data-carrying links, unapproved recipients, private-to-public flows, the "lethal trifecta" | `egress.py`, `core.py:tool_decision` |
+| 3 | Exfiltration guard (rendered output + tool calls) | Auto-loaded images, data-carrying links, unapproved recipients, private-to-public flows, the "lethal trifecta", secrets sent through the agent's own web search/fetch tool (Rall et al., arXiv 2510.09093) and hidden text on retrieved pages | `egress.py`, `core.py:tool_decision` |
 | 4 | MCP supply-chain guard | Poisoned tool descriptions, rug-pull updates, impersonated servers | `mcp_security.py` |
 | 5 | Model-extraction guard | Output harvesting, including coordinated multi-account campaigns | `extraction.py` |
 
@@ -25,11 +25,21 @@ Every request runs through `ModelMountainGateway.evaluate`, which returns a per-
 Pipeline for Qwen2.5-1.5B-Instruct, IBM Granite-3.1-2B-Instruct and Gemma-4-E4B-it (E2B fallback), pinned revisions. Only outputs that actually completed on Kaggle are reported:
 
 - **Emotion vectors** (method of Anthropic 2026, arXiv 2604.07729, adapted to small open models): story activations, neutral-PC denoising, layer chosen on validation topics, held-out test accuracy.
-- **Attention heads for injection detection**: every head captured with MIA `capture_qk`, important heads selected with the Attention Tracker criterion (Hung et al., NAACL 2025 Findings), held-out AUROC; exported as IBM `attention_tracker` configs.
+- **Attention heads for injection detection (protection only)**: every head captured with MIA `capture_qk` (fp16 on the T4, analyzed in FP32), only the heads whose focus on the system instruction drops under injection are kept (Attention Tracker criterion, Hung et al., NAACL 2025 Findings), held-out AUROC; exported as IBM `attention_tracker` configs. Heads are a detector; they are never steered.
 - **Protective steering**: calm / desperate vectors on held-out Tensor Trust hijacking attacks, TruthfulQA and side-effect checks, strength chosen on validation only.
-- **User-adjustable steering**: the Steering page builds an opt-in profile (model, vector, strength, layer, phase, positions) bound to the vector's SHA-256 and shows the measured effect at the nearest strength that ran. Changed outputs versus the unsteered run are reported as corroboration that the steering request took effect, not as an independent hook attestation.
+- **Protection steering (injection shield)**: per model, the negated difference between IBM MIA residuals on Tensor Trust validation attacks that hijacked the model and attacks it resisted (`kaggle/run_mia_kaggle.py:phase_shield`, `python kaggle/build_kernel.py --owner <user> --shield`). Strength is chosen on validation; the effect is measured on held-out attacks from unseen defenders, with legitimate-access and TruthfulQA side effects. The Steering page opens models 1–3 with this MVP preset and builds an opt-in profile bound to the vector's SHA-256; emotion vectors are research only (Results page). Changed outputs versus the unsteered run are reported as corroboration that the steering request took effect, not as an independent hook attestation.
 
 Results: [docs/RESULTS.md](docs/RESULTS.md). Each number there traces to a downloaded Kaggle output. If a run did not complete, the exact blocker is recorded instead.
+
+### What the GPU runs found (Qwen2.5-1.5B, Granite-3.1-2B, Gemma-4-E4B)
+
+- **Emotion directions are real but small-model-sized.** Held-out 10-way emotion classification: 31% (Qwen), 36% (Granite) and 39% (Gemma) against 10% chance, n = 233 each; the first principal component tracks valence (|r| = 0.96, 0.97 and 0.98).
+- **Steering did not protect against prompt injection.** On 142 held-out Tensor Trust hijacking attacks (chat-adapted), calm steering *raised* Qwen's attack success from 53% to 64% (paired +11.3 points, 95% CI 4.9 to 17.6). On Granite it moved from 77% to 73% (paired −3.5 points, 95% CI −9.9 to 2.8) and on Gemma from 37% to 38% (+0.7 points, 95% CI −2.8 to 4.2); neither is a reliable change. A spotlighting system prompt did not help Qwen or Granite; on Gemma it cut attack success from 37% to 16% (−21.1 points, 95% CI −28.2 to −14.1) but also cut legitimate access from 77% to 63%.
+- **Some emotion directions make a model easier to hijack.** On our labeled injection set (90 attacks), steering Granite toward *desperate* or *angry* at +0.2 raised attack success from 58% to 93%; Qwen toward *afraid* +0.2 went from 0% to 42%. This matches the emotion-concepts paper's warning about desperation, and makes these directions useful as risk monitors rather than as defenses.
+- **An activation monitor that looks excellent in-distribution failed under shift.** Trained on deepset prompt injections it reached test AUROC 0.98, but at its calibrated threshold it flagged every Tensor Trust prompt, including the legitimate ones, so it is unusable as a gate there (post-hoc estimate).
+- **Attention heads (prompt-injection detector only, never steered):** with captured fp16 Q/K analyzed in FP32 on the T4, Qwen has 24 and Granite 64 injection-sensitive heads (Attention Tracker criterion, k = 2), each with held-out AUROC 1.0 on our small labeled set (30 attacks, 5 benign), which is exploratory. The earlier Qwen NaN came from fp16 attention arithmetic. Gemma 4's capture failed because its layers use different attention geometries; the kernel now patches IBM MIA to capture only uniform-geometry layers, and no Gemma heads are reported until that run completes.
+
+Takeaway: measured model-internal steering is not a dependable security control on these models, which is why Model Mountain enforces the five external checks regardless of what the model does, and uses MIA signals for monitoring and research.
 
 ## Quick start (CPU, no model downloads)
 
@@ -51,7 +61,7 @@ GPU runs (Kaggle): `python kaggle/build_kernel.py --owner <user> --stories`, the
 
 ## AI tools and existing components
 
-Built with Claude (Cowork, Opus 5.5) as lead engineer, OpenAI Codex for API/deployment/Kaggle operations and independent review, and Claude Code CLI for Windows test runs. Google Antigravity did early mechanical checks; its UI and evaluation set were withdrawn. The v4 baseline (gateway, RAG, MCP, extraction checks, Streamlit dashboard) predates the event. See `docs/build/hackathon/DISCLOSURE.md`.
+Built with Claude (Cowork, Opus 5.5) as lead engineer and OpenAI Codex for the control API, deployment, Kaggle operations, Windows test/build verification and independent review. Google Antigravity did early mechanical checks; its UI and evaluation set were withdrawn. The v4 baseline (gateway, RAG, MCP, extraction checks, Streamlit dashboard) predates the event. See `docs/build/hackathon/DISCLOSURE.md`.
 
 ---
 

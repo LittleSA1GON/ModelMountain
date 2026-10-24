@@ -59,18 +59,6 @@ export const EXAMPLES = [
   { kind: 'No evidence', text: 'What is the company vacation policy?' },
 ];
 
-/** Group orchestration tasks into board columns; review jobs and cancelled tasks are hidden. */
-export function boardColumns(items = []) {
-  const cols = { todo: [], doing: [], review: [], done: [] };
-  const where = { todo: 'todo', assigned: 'todo', blocked: 'todo', in_progress: 'doing', running: 'doing', review: 'review', changes_requested: 'review', completed: 'done' };
-  for (const t of items) {
-    if (!t || !t.id || t.status === 'cancelled' || /^REV-/.test(t.id)) continue;
-    const c = where[t.status] || 'todo';
-    cols[c].push({ ...t, title: cleanTitle(t.title), blocked: t.status === 'blocked' });
-  }
-  return cols;
-}
-
 export function cleanTitle(title = '') {
   return String(title).replace(/^(Claude( Code)?|Codex|Antigravity|Gemini)\s*:\s*/i, '').replace(/^./, (c) => c.toUpperCase());
 }
@@ -130,6 +118,7 @@ export function conditionRows(protect) {
       util: u?.rate ?? null, utilCi: u?.ci95 ?? null,
       delta: x.paired_vs_A?.mean_diff ?? null, deltaCi: x.paired_vs_A?.ci95 ?? null,
       mia: /steer|monitor|all/i.test(k),
+      posthoc: Boolean(x.estimate_type && /POSTHOC/i.test(x.estimate_type)),
     };
   });
 }
@@ -137,7 +126,8 @@ export function conditionRows(protect) {
 /** Best protected condition by attack success, among those that keep utility within 10 points of A. */
 export function bestCondition(rows) {
   const a = rows.find((r) => r.id === 'A_bare');
-  const ok = rows.filter((r) => r.id !== 'A_bare' && !r.skipped && r.asr != null && (a?.util == null || r.util == null || r.util >= a.util - 0.1));
+  // Post-hoc gate estimates are shown in the table but never used as the headline result.
+  const ok = rows.filter((r) => r.id !== 'A_bare' && !r.skipped && !r.posthoc && r.asr != null && (a?.util == null || r.util == null || r.util >= a.util - 0.1));
   return ok.length ? ok.reduce((m, r) => (r.asr < m.asr ? r : m)) : null;
 }
 
@@ -170,7 +160,7 @@ export function toneOf(verdict) {
 
 export const VERDICT_TEXT = {
   deny: 'Blocked', withhold: 'Withheld', sanitized: 'Cleaned', require_human_approval: 'Needs approval',
-  allow: 'Allowed', pass: 'Passed', monitor: 'Monitored', block: 'Blocked', block_for_review: 'Blocked for review',
+  allow: 'Allowed', pass: 'Passed', monitor: 'Monitored', block: 'Blocked', block_for_review: 'Blocked for review', quarantine: 'Quarantined',
 };
 
 /** Clamp and round a steering strength to the slider grid. */

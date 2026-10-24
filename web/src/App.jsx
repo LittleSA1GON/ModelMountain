@@ -6,7 +6,6 @@ import Defenses from './views/Defenses.jsx';
 import Steering from './views/Steering.jsx';
 import Lab from './views/Lab.jsx';
 import Results from './views/Results.jsx';
-import Team from './views/Team.jsx';
 
 const VIEWS = [
   { id: 'overview', label: 'Overview', C: Overview },
@@ -15,7 +14,6 @@ const VIEWS = [
   { id: 'steering', label: 'Steering', C: Steering },
   { id: 'lab', label: 'MIA Lab', C: Lab },
   { id: 'results', label: 'Results', C: Results },
-  { id: 'team', label: 'Build team', C: Team },
 ];
 
 const fromHash = () => {

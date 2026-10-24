@@ -39,8 +39,9 @@ def verify(base):
     assert health["runtime"] == "CPU_CONTROL_PLANE"
     assert health["simulation_available"] is True
     assert health["local_batch_available"] is False, "Local GPU controller must not run in cloud"
-    for route in ("models", "vectors", "reports", "orchestration", "experiments"):
+    for route in ("models", "vectors", "reports", "experiments"):
         call("/api/v1/" + route)
+    call("/api/v1/orchestration", expected=404)          # Build team board removed
     request = {"model_id": "Qwen/Qwen2.5-1.5B-Instruct", "mode": "simulation", "condition": "D",
                "question": "What is the reimbursement limit per request?"}
     good = call("/api/v1/inference", request)
@@ -62,13 +63,25 @@ def verify(base):
     sink = call("/api/v1/defenses/check", {"kind": "egress_tool", "tool": "send_email",
                                           "args": {"to": "sink@collector.invalid"}})
     assert sink["verdict"] == "deny"
+    fetch = call("/api/v1/defenses/check", {"kind": "egress_tool", "tool": "web_fetch",
+                                           "args": {"url": "https://collector.invalid/v1?d=terms"},
+                                           "private_data_read": True, "untrusted_content_seen": True})
+    assert fetch["verdict"] == "deny"                    # web-search exfiltration channel (arXiv 2510.09093)
+    page = call("/api/v1/defenses/check", {"kind": "retrieved_page",
+                                          "text": '<p>ok</p><p style="color:#ffffff">hidden</p>'})
+    assert page["verdict"] == "quarantine"
     steering = call("/api/v1/steering")
     qwen = next(m for m in steering["models"] if m["model_id"] == request["model_id"])
     assert qwen["num_layers"] == 28 and qwen["hidden_size"] == 1536
-    profile = call("/api/v1/steering/profile", {"model_id": request["model_id"], "concept": "calm",
-                                               "strength": 0.1, "block": 14, "opt_in": True})
+    assert qwen["mvp_preset"]["concept"] == "injection_shield"
+    smoke = call("/api/v1/capture-smoke")
+    assert smoke["steering_applied"] is False
+    assert smoke["security_effectiveness_measured"] is False
+    assert smoke["kind"] == "capture_integration_smoke"
+    profile = call("/api/v1/steering/profile", {"model_id": request["model_id"], "concept": "injection_shield",
+                                               "strength": 0.1, "block": 10, "opt_in": True})
     assert profile["model_executed"] is False and profile["steering_applied"] is False
-    call("/api/v1/steering/profile", {"model_id": request["model_id"], "concept": "calm",
+    call("/api/v1/steering/profile", {"model_id": request["model_id"], "concept": "injection_shield",
                                      "strength": 0.1, "block": 999, "opt_in": True}, expected=400)
     return {"project_name": "Model Mountain", "project_id": "16f864bfa1303fc9", "base_url": base,
             "checked_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),

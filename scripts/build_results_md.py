@@ -69,8 +69,25 @@ def gpu_section(exp: dict | None) -> list[str]:
     for m in exp.get("models", []):
         out += [f"### {m['model_id']} — {m['status']}", ""]
         for ph, info in (m.get("phases") or {}).items():
-            if info.get("rc"):
-                out.append(f"- phase `{ph}` blocked (rc {info['rc']}): `{(info.get('error_tail') or '')[-300:]}`")
+            if info.get("rc") and not (ph == "heads" and m.get("heads_review")):
+                tail = [l.strip() for l in (info.get('error_tail') or '').splitlines()
+                        if l.strip() and 'warn' not in l.lower() and 'resource_tracker' not in l]
+                err = next((l for l in reversed(tail) if 'Error' in l or 'Exception' in l), tail[-1] if tail else '')
+                out.append(f"- phase `{ph}` blocked (rc {info['rc']}): `{err[:300]}`")
+        sh = m.get("shield")
+        if sh:
+            t = sh.get("test") or {}
+            b0, s1 = t.get("bare") or {}, t.get("shield") or {}
+            pr = s1.get("paired_vs_bare") or {}
+            md, ci = pr.get("mean_diff"), pr.get("ci95")
+            change = "n/a" if md is None else f"{100 * md:+.1f} points"
+            if ci:
+                change += f" (95% CI {100 * ci[0]:+.1f} to {100 * ci[1]:+.1f})"
+            out.append(f"- **Protection steering (injection shield)**: block {(sh.get('artifact') or {}).get('block')}, strength "
+                       f"{s1.get('strength')} (chosen on Tensor Trust validation). Held-out attack success {pct(b0.get('attack_success'))} -> "
+                       f"{pct(s1.get('attack_success'))}; legitimate access {pct(b0.get('access_code_utility'))} -> "
+                       f"{pct(s1.get('access_code_utility'))}; paired change {change}. "
+                       f"Direction: {(sh.get('artifact') or {}).get('direction_source')}.")
         em = m.get("emotions")
         if em:
             out += [f"- Emotion vectors: {len(em['vectors'])} directions at decoder block {em['selected_block']} "
@@ -82,20 +99,42 @@ def gpu_section(exp: dict | None) -> list[str]:
         if hd:
             h = hd.get("heldout") or {}
             au = h.get("auroc_attack_vs_benign")
-            out.append(f"- Attention heads: {hd['n_important_heads']} important heads (Attention Tracker criterion, k={hd['k_used']}); "
+            fp32 = "; captured fp16 Q/K analyzed in FP32" if "float32" in str((hd.get("analysis") or {}).get("precision", "")) else ""
+            out.append(f"- Prompt-injection detector heads: {hd['n_important_heads']} attention heads (Attention Tracker criterion, k={hd['k_used']}{fp32}); "
                        f"held-out AUROC attack vs benign {au if au is None else round(au, 3)} "
-                       f"(n_attack={h.get('n_test_attack')}, n_benign={h.get('n_test_benign')}).")
+                       f"(n_attack={h.get('n_test_attack')}, n_benign={h.get('n_test_benign')}; small labeled set, exploratory). "
+                       "Used only to detect injection; heads are never steered.")
+        if m.get("heads_review"):
+            out.append("- Attention result withheld: " + m["heads_review"]["reason"])
         pr = m.get("protect")
         if pr:
-            out += ["", f"Protection on {pr['benchmark']} (held-out n={pr['n_test']}; calm strength chosen on validation: {pr['chosen_calm_strength']}):", "",
+            out += ["", f"Chat-adapted comparison on {pr['benchmark']} (held-out n={pr['n_test']}; calm strength chosen on validation: {pr['chosen_calm_strength']}):", "",
                     "| Condition | Attack success | Legitimate access kept |", "|---|---|---|"]
             for name, c in pr["conditions"].items():
                 if c.get("status") == "skipped":
                     out.append(f"| {c['label']} | skipped | {c.get('reason')} |")
                 else:
-                    out.append(f"| {c['label']} | {pct(c.get('attack_success'))} | {pct(c.get('utility'))} |")
+                    label = c['label'] + (" (post-hoc estimate)" if c.get('estimate_type') else "")
+                    out.append(f"| {label} | {pct(c.get('attack_success'))} | {pct(c.get('utility'))} |")
             mon = pr.get("monitor") or {}
-            out += ["", f"Activation monitor (deepset test AUROC {mon.get('auroc_deepset_test')}); monitor-gated rows are post-hoc estimates on recorded generations.", ""]
+            out += ["", f"Activation monitor (deepset test AUROC {mon.get('auroc_deepset_test')}); monitor-gated rows are post-hoc estimates on recorded generations. "
+                    "Their attack-success rate must be assessed alongside legitimate-request utility; a gate that rejects everything is unusable.", ""]
+            for name in ("C_calm_steer", "E_spotlight_steer"):
+                c = pr["conditions"].get(name, {})
+                pair = c.get("paired_vs_A") or {}
+                if pair.get("mean_diff") is not None:
+                    interval = pair.get("ci95")
+                    out.append(f"- {c.get('label')}: paired attack-success difference {100 * pair['mean_diff']:+.1f} percentage points "
+                               f"(positive is worse; 95% interval {None if interval is None else [round(100*x, 1) for x in interval]}).")
+            calm_pair = pr["conditions"].get("C_calm_steer", {}).get("paired_vs_A") or {}
+            calm_ci = calm_pair.get("ci95") or [None, None]
+            if calm_ci[0] is not None and calm_ci[0] > 0:
+                out.append("- **Adverse outcome: calm steering increased attack success on this model. No protective benefit is established.**")
+            elif calm_ci[1] is not None and calm_ci[1] < 0:
+                out.append("- Calm steering reduced attack success on this model (interval excludes zero); check the utility column before relying on it.")
+            else:
+                out.append("- Calm steering: no measurable change in attack success (the 95% interval includes zero). No protective benefit is established.")
+            out.append("")
         sr = m.get("steer")
         if sr:
             out += [f"Steering sweep ({sr['units']}): baseline attack success {pct(sr['baseline']['attack_success'])}, "

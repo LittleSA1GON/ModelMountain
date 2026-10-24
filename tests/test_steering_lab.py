@@ -87,21 +87,43 @@ class SteeringApplyTests(unittest.TestCase):
         self.assertEqual(set(p["differs_in"]), {"block", "phase"})
         self.assertEqual(preview(EXP, "Qwen/Qwen2.5-1.5B-Instruct", "calm", 0.1, block=18, measured_block=18)["status"], "measured")
 
-    def test_resolver_requires_matching_hash_and_fitted_layer(self):
+    def _run(self, d, sha, block=18):
+        import json as _j
+        man = {"project_id": "16f864bfa1303fc9", "evidence_type": "REAL_IBM_MIA", "model_id": "Qwen/Qwen2.5-1.5B-Instruct",
+               "revision": EXP['models'][0]['revision'], "selected": {"mean_token_norm_train": 50.0},
+               "artifacts": [{"concept": "calm", "model_id": "Qwen/Qwen2.5-1.5B-Instruct", "revision": EXP['models'][0]['revision'], "block": block,
+                              "hidden_size": 1536, "sha256": sha, "path": "/kaggle/working/mm_results/vectors/x/calm__L18.pt"}]}
+        (Path(d) / "emotions__Qwen__Qwen2.5-1.5B-Instruct.json").write_text(_j.dumps(man))
+
+    def test_resolver_binds_to_trusted_manifest_and_refuses_mismatches(self):
         import hashlib
         from model_mountain.steering_lab import resolve_vector
         with tempfile.TemporaryDirectory() as d:
-            f = Path(d) / "calm__L18.pt"
-            f.write_bytes(b"not-a-real-tensor")
+            vdir = Path(d) / "vectors" / "x"; vdir.mkdir(parents=True)
+            f = vdir / "calm__L18.pt"; f.write_bytes(b"not-a-real-tensor")
             sha = hashlib.sha256(f.read_bytes()).hexdigest()
-            prof = {"vector_sha256": "0" * 64, "coefficient": 5.0, "block": 18, "method": "add_vector",
-                    "phase": "both", "positions": "all_tokens"}
+            self._run(d, sha)
+            good = {"model_id": "Qwen/Qwen2.5-1.5B-Instruct", "model_revision": EXP['models'][0]['revision'], "concept": "calm",
+                    "vector_sha256": sha, "block": 18, "coefficient": 5.0, "method": "add_vector", "phase": "both",
+                    "positions": "all_tokens"}
+            cases = [dict(good, vector_sha256="0" * 64), dict(good, model_revision="s" * 40), dict(good, concept="angry"),
+                     dict(good, block=3), dict(good, coefficient=float("nan")), dict(good, coefficient=1e6),
+                     dict(good, model_revision=None), dict(good, model_id="ibm-granite/granite-3.1-2b-instruct")]
+            for bad in cases:
+                with self.assertRaises(ProfileError, msg=str({k: bad[k] for k in bad if bad[k] != good.get(k)})):
+                    resolve_vector(bad, d)
+            # a correct profile passes every provenance check and only stops at reading the (fake) tensor
+            with self.assertRaises(ProfileError) as ctx:
+                resolve_vector(good, d)
+            self.assertIn("unreadable", str(ctx.exception))
             with self.assertRaises(ProfileError):
-                resolve_vector(prof, d)                                  # unknown hash
+                resolve_vector(dict(good, block=999), d, allow_off_layer=True)
+            man_path = Path(d) / "emotions__Qwen__Qwen2.5-1.5B-Instruct.json"
+            man = json.loads(man_path.read_text())
+            man['selected']['mean_token_norm_train'] = float('nan')
+            man_path.write_text(json.dumps(man))
             with self.assertRaises(ProfileError):
-                resolve_vector({**prof, "vector_sha256": sha, "block": 3}, d)   # off-layer refused by default
-            with self.assertRaises(ProfileError):
-                resolve_vector({**prof, "vector_sha256": None}, d)      # unbound template
+                resolve_vector(good, d)
 
     def test_profile_response_labels_payload_as_bound_template(self):
         r = build_profile({"model_id": "Qwen/Qwen2.5-1.5B-Instruct", "concept": "calm", "strength": 0.1, "opt_in": True}, EXP)

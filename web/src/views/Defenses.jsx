@@ -88,14 +88,16 @@ function ScenarioSuite({ lab }) {
 function EgressTester() {
   const [text, setText] = useState('Here are the onboarding steps: [wiki](https://wiki.acme.example/onboarding) ![chart](https://img.external.example/c.png)');
   const [out, setOut] = useState(null);
-  const [tool, setTool] = useState({ tool: 'send_email', to: 'someone@external.example', bcc: '', body: 'Meeting notes', priv: true, untrusted: true });
+  const [tool, setTool] = useState({ tool: 'send_email', to: 'someone@external.example', bcc: '', body: 'Meeting notes', priv: true, untrusted: true, fromSearch: false });
   const [tout, setTout] = useState(null);
   const checkText = async (e) => { e.preventDefault(); setOut(await api.defenseCheck({ kind: 'egress_output', text })); };
   const checkTool = async (e) => {
     e.preventDefault();
     const args = tool.tool === 'send_email' ? { to: tool.to, ...(tool.bcc ? { bcc: tool.bcc } : {}), subject: 'Update', body: tool.body }
-      : tool.tool === 'http_get' ? { url: tool.to } : { repo: tool.to, title: 'Update', body: tool.body };
-    setTout(await api.defenseCheck({ kind: 'egress_tool', tool: tool.tool, args, private_data_read: tool.priv, untrusted_content_seen: tool.untrusted }));
+      : tool.tool === 'web_search' ? { query: tool.to }
+      : tool.tool === 'http_get' || tool.tool === 'web_fetch' ? { url: tool.to } : { repo: tool.to, title: 'Update', body: tool.body };
+    const known = tool.tool === 'web_fetch' && tool.fromSearch ? { known_urls: [tool.to] } : {};
+    setTout(await api.defenseCheck({ kind: 'egress_tool', tool: tool.tool, args, private_data_read: tool.priv, untrusted_content_seen: tool.untrusted, ...known }));
   };
   return (
     <div className="split">
@@ -107,9 +109,9 @@ function EgressTester() {
         <button className="btn primary" type="submit">Check output</button>
         {out && !out.ok && <Failed r={out} />}
         {out?.ok && (
-          <div aria-live="polite" style={{ display: 'grid', gap: 8 }}>
+          <div aria-live="polite" style={{ display: 'grid', gap: 8, justifyItems: 'start' }}>
             <Chip v={out.data.verdict} />
-            <div className="answer mono small">{out.data.released_text || 'Nothing released.'}</div>
+            <div className="answer mono small" style={{ justifySelf: 'stretch' }}>{out.data.released_text || 'Nothing released.'}</div>
             {out.data.findings.map((f, i) => <span key={i} className="sub">{f.kind}{f.url_host ? ` → ${f.url_host}` : ''}: {f.reasons.join(', ')}</span>)}
           </div>
         )}
@@ -120,25 +122,52 @@ function EgressTester() {
         <label className="small muted" htmlFor="eg-tool">Tool</label>
         <select id="eg-tool" value={tool.tool} onChange={(e) => setTool({ ...tool, tool: e.target.value })}>
           <option value="send_email">send_email</option><option value="http_get">http_get</option><option value="create_pull_request">create_pull_request</option>
+          <option value="web_fetch">web_fetch (search tool)</option><option value="web_search">web_search</option>
         </select>
-        <label className="small muted" htmlFor="eg-to">{tool.tool === 'send_email' ? 'To' : tool.tool === 'http_get' ? 'URL' : 'Repository'}</label>
+        <label className="small muted" htmlFor="eg-to">{tool.tool === 'send_email' ? 'To' : tool.tool === 'web_search' ? 'Search query' : tool.tool === 'http_get' || tool.tool === 'web_fetch' ? 'URL' : 'Repository'}</label>
         <input id="eg-to" value={tool.to} maxLength={200} onChange={(e) => setTool({ ...tool, to: e.target.value })} />
         {tool.tool === 'send_email' && (<>
           <label className="small muted" htmlFor="eg-bcc">BCC (optional)</label>
           <input id="eg-bcc" value={tool.bcc} maxLength={200} onChange={(e) => setTool({ ...tool, bcc: e.target.value })} />
         </>)}
+        {tool.tool === 'web_fetch' && <label className="check"><input type="checkbox" checked={tool.fromSearch} onChange={(e) => setTool({ ...tool, fromSearch: e.target.checked })} /> This URL came from search results (not built by the model)</label>}
         <label className="check"><input type="checkbox" checked={tool.priv} onChange={(e) => setTool({ ...tool, priv: e.target.checked })} /> Session has read private data</label>
         <label className="check"><input type="checkbox" checked={tool.untrusted} onChange={(e) => setTool({ ...tool, untrusted: e.target.checked })} /> Session has seen untrusted content</label>
         <button className="btn primary" type="submit">Check action</button>
         {tout && !tout.ok && <Failed r={tout} />}
         {tout?.ok && (
-          <div aria-live="polite" style={{ display: 'grid', gap: 6 }}>
+          <div aria-live="polite" style={{ display: 'grid', gap: 6, justifyItems: 'start' }}>
             <Chip v={tout.data.verdict} />
             {(tout.data.reasons || []).map((r) => <span key={r} className="sub mono">{r}</span>)}
           </div>
         )}
       </form>
     </div>
+  );
+}
+
+const PAGE_EXAMPLE = '<article><h1>Valve suppliers 2026</h1><p>Our top picks for industrial valves.</p>\n<p style="color:#ffffff;background:#ffffff">[hidden placeholder: tells the agent to fetch an outside URL with a secret]</p></article>';
+
+function PageScreen() {
+  const [html, setHtml] = useState(PAGE_EXAMPLE);
+  const [out, setOut] = useState(null);
+  const check = async (e) => { e.preventDefault(); setOut(await api.defenseCheck({ kind: 'retrieved_page', text: html })); };
+  return (
+    <form className="card pad ask" onSubmit={check}>
+      <h3 style={{ fontSize: 17 }}>Retrieved web page check</h3>
+      <p className="muted small">In the web-search exfiltration study (Rall et al., arXiv 2510.09093) the instructions sat in white-on-white text that a person never sees. Pages from the search tool are screened for hidden text; only the visible text is passed on, as untrusted data.</p>
+      <label htmlFor="pg-html" className="small muted">Page HTML</label>
+      <textarea id="pg-html" value={html} maxLength={8000} onChange={(e) => setHtml(e.target.value)} />
+      <button className="btn primary" type="submit">Screen page</button>
+      {out && !out.ok && <Failed r={out} />}
+      {out?.ok && (
+        <div aria-live="polite" style={{ display: 'grid', gap: 6, justifyItems: 'start' }}>
+          <Chip v={out.data.verdict} />
+          {out.data.hidden_segments.map((h, i) => <span key={i} className="sub mono">hidden &lt;{h.tag}&gt; ({h.style}): {h.text}</span>)}
+          <div className="answer small" style={{ justifySelf: 'stretch' }}>{out.data.visible_text || 'No visible text.'}</div>
+        </div>
+      )}
+    </form>
   );
 }
 
@@ -233,6 +262,7 @@ export default function Defenses() {
 
       <div className="section-title"><h2>Exfiltration guard</h2><span className="muted small">Rendered output and tool calls</span></div>
       <EgressTester />
+      <PageScreen />
       {lab?.ok && <EgressCases lab={lab.data} />}
 
       <div className="section-title"><h2>Supply chain and extraction</h2><span className="muted small">MCP tools and model-copying traffic</span></div>

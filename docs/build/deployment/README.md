@@ -1,5 +1,8 @@
 # Model Mountain — Vercel and local deployment
 
+Public demo: https://model-mountain.vercel.app (anonymous access). The Vercel
+preview URL may require login; use the public alias for judging.
+
 The repository root is the Vercel project root. Root vercel.json builds web/ with
 npm ci and npm run build, serves web/dist, and routes /api/v1 to api/index.py.
 Do not deploy web/ alone when demonstrating the backend workflow. GPU packages and
@@ -37,6 +40,19 @@ Deployment sequence: validate CPU suite and build, inspect sanitized upload file
 login to Vercel, link/create the intended project, deploy, then verify /api/v1/health,
 positive/negative requests and every main UI route at the actual returned URL.
 No production-readiness or GPU-effectiveness claim follows from a successful deployment.
+
+Run the anonymous deployment contract checks after each reviewed deployment:
+
+```powershell
+.venv/Scripts/python.exe scripts/verify_deployment.py https://model-mountain.vercel.app
+```
+
+The checks exercise the CPU gateway, abstention, authorization boundaries, five-defense
+catalog and inert lab, steering configuration validation, and capture-smoke metadata.
+`/api/v1/capture-smoke` exposes a curated two-prompt Qwen integration report only;
+it does not establish fitted vectors, intervention effects, or attack prevention.
+`/api/v1/steering/profile` exports opt-in configuration and never runs a model.
+Completed full Kaggle evaluations appear separately under `/api/v1/experiments`.
 
 Local Kaggle bridge (operator opt-in): set MODEL_MOUNTAIN_KAGGLE_ENABLED=1 and
 MODEL_MOUNTAIN_KAGGLE_OWNER to the authorized account, plus a strong

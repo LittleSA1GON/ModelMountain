@@ -687,16 +687,21 @@ def select_important_heads(normal: np.ndarray, attack: np.ndarray, *, k: float =
     N, A = np.asarray(normal, float), np.asarray(attack, float)
     if N.ndim != 3 or A.ndim != 3 or N.shape[1:] != A.shape[1:] or len(N) < 3 or len(A) < 3:
         raise ValueError("need >=3 normal and >=3 attack samples with matching [L, H]")
-    muN, sdN, muA, sdA = N.mean(0), N.std(0), A.mean(0), A.std(0)
+    # A head missing from ANY capture (NaN) is excluded instead of being scored as zero focus.
+    covered = np.isfinite(N).all(0) & np.isfinite(A).all(0)
+    if not covered.any():
+        raise ValueError("no head was captured in every sample")
+    muN, sdN, muA, sdA = (np.where(covered, x, 0.0) for x in (np.nanmean(N, 0), np.nanstd(N, 0), np.nanmean(A, 0), np.nanstd(A, 0)))
     for kk in (k, *fallback_k):
-        cand = (muN - kk * sdN) - (muA + kk * sdA)
+        cand = np.where(covered, (muN - kk * sdN) - (muA + kk * sdA), -np.inf)
         heads = [[int(l), int(h)] for l, h in zip(*np.nonzero(cand > 0))]
         if len(heads) >= min_heads or kk == fallback_k[-1]:
             order = sorted(heads, key=lambda lh: -cand[lh[0], lh[1]])
             capped = order[:max_heads]          # strongest margins first; the cap is recorded, never hidden
             return {"heads": capped, "k_used": float(kk), "k_paper_default": float(k),
                     "n_candidates_at_k": len(heads), "max_heads_cap": int(max_heads),
-                    "capped": len(order) > max_heads, "score_cand_max": float(cand.max()),
+                    "capped": len(order) > max_heads, "score_cand_max": float(cand[covered].max()),
+                    "head_coverage": float(covered.mean()),
                     "mean_gap_top": [float(muN[l, h] - muA[l, h]) for l, h in capped[:10]]}
     raise AssertionError("unreachable")
 

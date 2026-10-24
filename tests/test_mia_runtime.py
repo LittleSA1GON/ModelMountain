@@ -335,3 +335,16 @@ class AttentionHeadDiscoveryTests(unittest.TestCase):
         cfg = R.attention_tracker_config([[2, 1], [3, 4]], model_id="org/m", revision="a" * 40, method={"k_used": 4.0})
         self.assertEqual(cfg["params"]["important_heads"], [[2, 1], [3, 4]])
         self.assertEqual(cfg["hookq"]["hookq_mode"], "last_token")
+
+
+class HeadCoverageTests(unittest.TestCase):
+    def test_uncaptured_heads_are_excluded_not_zero_scored(self):
+        import numpy as np
+        from model_mountain import mia_runtime as R
+        rng = np.random.default_rng(3)
+        N = rng.normal(0.6, 0.01, (10, 2, 3)); A = rng.normal(0.6, 0.01, (10, 2, 3))
+        N[:, 0, 0] = 0.9; A[:, 0, 0] = 0.1                      # real injection head
+        N[:, 1, 2] = np.nan; A[:, 1, 2] = np.nan                # head never captured (e.g. a TP rank missing)
+        sel = R.select_important_heads(N, A, min_heads=1)
+        self.assertEqual(sel["heads"], [[0, 0]])
+        self.assertLess(sel["head_coverage"], 1.0)

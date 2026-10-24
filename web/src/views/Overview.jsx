@@ -44,7 +44,8 @@ export default function Overview({ health, go }) {
               <StatusRow label="Control API" value="Online" tone="ok" />
               <StatusRow label="Demo mode" value={h.simulation_available ? 'CPU simulation' : 'Off'} tone="info" />
               <StatusRow label="Remote GPU worker" value={h.remote_configured ? 'Connected' : 'Not connected'} tone={h.remote_configured ? 'ok' : ''} />
-              <StatusRow label="Real MIA results" value={h.real_mia_verified ? 'Verified' : 'Not yet'} tone={h.real_mia_verified ? 'ok' : 'warn'} />
+              <StatusRow label="MIA capture report" value={h.capture_smoke_available ? 'Recorded' : 'Pending'} tone={h.capture_smoke_available ? 'ok' : 'warn'} />
+              <StatusRow label="Batch model evaluations" value={h.batch_results_available ? 'Available' : 'Pending'} tone={h.batch_results_available ? 'info' : 'warn'} />
             </>
           )}
         </div>
@@ -64,7 +65,11 @@ export default function Overview({ health, go }) {
         </div>
         <div className="card pad" style={{ display: 'grid', gap: 8 }}>
           <h3 style={{ fontSize: 17 }}>What is measured so far</h3>
-          <p className="muted">Only CPU simulations of the rules. Real-model and activation-steering results appear in Results once the Kaggle GPU run finishes.</p>
+          <p className="muted">{h?.batch_results_available
+            ? 'Saved GPU evaluations and CPU rule fixtures are reported separately. Steering can worsen outcomes; see each model’s results and uncertainty.'
+            : h?.capture_smoke_available
+              ? 'A real Qwen activation capture is recorded. Full model evaluations are pending; the interactive gateway uses labeled CPU fixtures.'
+              : 'CPU rule fixtures are available. Real-model and activation-steering results appear after GPU runs finish and their artifacts are reviewed.'}</p>
         </div>
       </div>
       <details className="card pad disclose">

@@ -25,6 +25,7 @@ function Protection({ m }) {
   const rows = conditionRows(p);
   const best = bestCondition(rows);
   const a = rows.find((r) => r.id === 'A_bare');
+  const calm = rows.find((r) => r.id === 'C_calm_steer' && !r.skipped);
   return (
     <div className="card">
       <div className="pad prot-head">
@@ -34,18 +35,21 @@ function Protection({ m }) {
         </div>
         {best && a && (
           <div className="callout">
-            <span className="big tnum">{pct(a.asr)} → {pct(best.asr)}</span>
-            <span className="small muted">attacks that got through, unprotected vs {best.label.toLowerCase()}</span>
+            <span className="big tnum" style={{ color: best.asr < a.asr ? 'var(--ok)' : 'var(--bad)' }}>{pct(a.asr)} → {pct(best.asr)}</span>
+            <span className="small muted">observed attack success, bare vs {best.label.toLowerCase()}</span>
+            <span className="small muted">Descriptive comparison; compare all conditions and utility below.</span>
+            {best.deltaCi?.[0] <= 0 && best.deltaCi?.[1] >= 0 && <span className="small muted">Paired 95% interval includes no change.</span>}
           </div>
         )}
       </div>
+      {calm?.delta > 0 && <p className="pad err">Calm steering increased attack success on this model in this sample. It is not a validated protective setting.</p>}
       <div className="table-wrap">
         <table className="prot">
-          <thead><tr><th>Protection</th><th>Attacks that succeeded</th><th>Real password still works</th></tr></thead>
+          <thead><tr><th>Condition</th><th>Attacks that succeeded</th><th>Legitimate access code works</th></tr></thead>
           <tbody>
             {rows.map((r) => (
               <tr key={r.id} className={r.id === best?.id ? 'best' : ''}>
-                <td><b>{r.label}</b>{r.mia && <span className="tag mia">MIA</span>}{r.skipped && <span className="sub">{r.reason}</span>}</td>
+                <td><b>{r.label}</b>{r.mia && <span className="tag mia">MIA</span>}{r.skipped && <span className="sub">{r.reason}</span>}{r.posthoc && <span className="sub">Post-hoc estimate on recorded replies; no gate ran at serving time</span>}</td>
                 <td>{!r.skipped && <><Bar value={r.asr} ci={r.asrCi} tone="bad" /><span className="tnum">{pct(r.asr)}</span> <Ci ci={r.asrCi} /></>}</td>
                 <td>{!r.skipped && <><Bar value={r.util} ci={r.utilCi} tone="ok" /><span className="tnum">{pct(r.util)}</span></>}</td>
               </tr>
@@ -55,10 +59,11 @@ function Protection({ m }) {
       </div>
       <div className="pad grid3 top-line">
         <div><span className="k">Activation monitor AUROC</span><span className="n tnum">{p.monitor.auroc_deepset_test?.toFixed(2) ?? '—'}</span><span className="sub">deepset test set, injection vs normal</span></div>
-        <div><span className="k">Caught at 5% false alarms</span><span className="n tnum">{pct(p.monitor.tpr?.rate)}</span><span className="sub">wrongly blocked {pct(p.monitor.fpr?.rate)}</span></div>
-        <div><span className="k">TruthfulQA, with steering</span><span className="n tnum">{pct(p.truthfulqa?.calm_steer?.accuracy?.rate ?? p.truthfulqa?.baseline?.accuracy?.rate)}</span>
+        <div><span className="k">Held-out detection</span><span className="n tnum">{pct(p.monitor.tpr?.rate)}</span><span className="sub">training-calibrated threshold · test false positives {pct(p.monitor.fpr?.rate)}</span></div>
+        <div><span className="k">Adapted TruthfulQA MC1, steered</span><span className="n tnum">{pct(p.truthfulqa?.calm_steer?.accuracy?.rate ?? p.truthfulqa?.baseline?.accuracy?.rate)}</span>
           <span className="sub">without {pct(p.truthfulqa?.baseline?.accuracy?.rate)} · chance {pct(p.truthfulqa?.baseline?.chance)}</span></div>
       </div>
+      <p className="pad small muted">Tensor Trust uses a chat adaptation. TruthfulQA MC1 choices are capped at six including the correct answer; these are not standard leaderboard scores. Monitor-gated rows are post-hoc estimates and must be assessed with their legitimate-request utility.</p>
       {p.conditions?.A_bare?.examples?.length > 0 && (
         <details className="pad top-line">
           <summary>Example attacks and unprotected replies</summary>
@@ -93,7 +98,40 @@ function Emotions({ m }) {
           </div>
         ))}
       </div>
-      {top && <p className="small muted">Strongest emotion signal on real attacks: <b>{top[0]}</b> separates Tensor Trust attacks from real passwords at AUROC {top[1].toFixed(2)}.</p>}
+      {top && <p className="small muted">Exploratory comparison across emotion signals: <b>{top[0]}</b> has the largest observed separation between Tensor Trust attacks and legitimate access-code prompts (AUROC {top[1].toFixed(2)}). This uses the combined validation/test prompts and is not an independently selected detector.</p>}
+    </div>
+  );
+}
+
+function Heads({ m }) {
+  const h = m.heads;
+  const held = h.heldout || {};
+  return (
+    <div className="card pad" style={{ display: 'grid', gap: 10 }}>
+      <div><b>{short(m.model_id)}</b><span className="sub">IBM MIA capture_qk · Attention Tracker criterion (Hung et al., NAACL 2025 Findings), k = {h.k_used}{h.k_used !== h.k_paper_default ? ` (paper default ${h.k_paper_default})` : ''}{typeof h.head_capture_coverage === 'number' ? ` · finite head coverage ${pct(h.head_capture_coverage)}` : ' · full head coverage not recorded'}</span></div>
+      <div className="grid3">
+        <div><span className="k">Injection-sensitive heads</span><span className="n tnum">{h.n_important_heads}</span><span className="sub">{h.capped ? 'capped at the strongest 64' : 'all heads passing the criterion'}</span></div>
+        <div><span className="k">Held-out AUROC</span><span className="n tnum">{typeof held.auroc_attack_vs_benign === 'number' ? held.auroc_attack_vs_benign.toFixed(2) : '—'}</span><span className="sub">attack vs benign · {held.n_test_attack} vs {held.n_test_benign} · split by {held.split_unit}</span></div>
+        <div><span className="k">Config fingerprint</span><span className="n mono small">{String(h.config_sha256 || '').slice(0, 12)}</span><span className="sub">IBM attention_tracker JSON</span></div>
+      </div>
+      {Array.isArray(h.top) && h.top.length > 0 && <p className="small muted mono">Top heads [layer, head]: {h.top.slice(0, 10).map((x) => `[${x[0]},${x[1]}]`).join(' ')}</p>}
+      <p className="small muted">Role: prompt-injection detector only; these heads are never steered.{h.analysis?.precision ? ` Analysis precision: ${h.analysis.precision}.` : ''} The held-out set is small (exploratory).</p>
+    </div>
+  );
+}
+
+function Shield({ m }) {
+  const t = m.shield?.test || {}, b = t.bare || {}, s = t.shield || {}, pr = s.paired_vs_bare || {};
+  return (
+    <div className="card pad" style={{ display: 'grid', gap: 8 }}>
+      <div><b>{short(m.model_id)}</b><span className="sub">Injection shield at block {m.shield?.artifact?.block}, strength {s.strength} (chosen on validation) · held-out n = {m.shield?.n_test}</span></div>
+      <div className="grid3">
+        <div><span className="k">Attack success</span><span className="n tnum">{pct(b.attack_success?.rate)} → {pct(s.attack_success?.rate)}</span>
+          <span className="sub">paired {typeof pr.mean_diff === 'number' ? `${(100 * pr.mean_diff).toFixed(1)} pts` : '—'}{Array.isArray(pr.ci95) ? `, 95% CI ${(100 * pr.ci95[0]).toFixed(1)} to ${(100 * pr.ci95[1]).toFixed(1)}` : ''}</span></div>
+        <div><span className="k">Legitimate access kept</span><span className="n tnum">{pct(b.access_code_utility?.rate)} → {pct(s.access_code_utility?.rate)}</span></div>
+        <div><span className="k">TruthfulQA MC1</span><span className="n tnum">{pct(m.shield?.truthfulqa?.bare?.accuracy?.rate)} → {pct(m.shield?.truthfulqa?.shield?.accuracy?.rate)}</span></div>
+      </div>
+      <p className="small muted">Direction: {m.shield?.artifact?.direction_source}. {Array.isArray(pr.ci95) && pr.ci95[1] < 0 ? 'The interval is below zero: fewer hijacks on held-out attacks.' : 'The interval includes zero or is above it: no reliable protection on this model.'}</p>
     </div>
   );
 }
@@ -145,6 +183,7 @@ export default function Results() {
   }, []);
   const models = useMemo(() => (x?.ok ? (x.data.models || []).filter((m) => m.status !== 'blocked' || m.phases) : []), [x]);
   const ingested = x?.ok && x.data.status === 'ingested';
+  const hasProtect = ingested && (x.data.models || []).some((mm) => mm.protect);
   const m = models[sel];
   const items = r?.ok ? r.data.items || [] : [];
   const demo = summarizeRuns(items.filter((i) => evidenceClass(i.evidence_type) === 'synthetic'));
@@ -154,8 +193,8 @@ export default function Results() {
     <section className="view">
       <div className="head">
         <p className="eyebrow">Results</p>
-        <h2>Measured on real attacks, on real GPUs.</h2>
-        <p className="lede">Every number below comes from a Kaggle run of IBM vLLM-Hook on public benchmarks. Attacks are human-written; the model never saw the test split while the defenses were tuned.</p>
+        <h2>{hasProtect ? 'Real-model evaluation on GPU.' : 'Real-model evaluation (GPU runs pending).'}</h2>
+        <p className="lede">Numbers in the GPU sections come only from Kaggle runs of IBM vLLM-Hook. Protection results use the public Tensor Trust benchmark (human-written attacks, held-out split); emotion and attention-head checks use our own labeled sets, marked as such. The CPU demo summary at the bottom is separate and is not a model measurement.</p>
       </div>
 
       {x == null ? <div className="card pad"><div className="skeleton" /></div> : !ingested ? <Pending x={x} /> : (
@@ -192,12 +231,25 @@ export default function Results() {
               <Protection m={m} />
             </div>
           )}
+          {m?.shield && (
+            <div>
+              <div className="section-title"><h2>Protection steering (injection shield)</h2><span className="muted small">Steer against the model's own hijack-compliance direction · held-out Tensor Trust</span></div>
+              <Shield m={m} />
+            </div>
+          )}
           {m?.emotions && (
             <div>
               <div className="section-title"><h2>Emotion directions</h2><span className="muted small">Method of Anthropic (2026), adapted to small open models</span></div>
               <Emotions m={m} />
             </div>
           )}
+          {m?.heads && (
+            <div>
+              <div className="section-title"><h2>Attention heads that notice injection</h2><span className="muted small">Our labeled behavior tests · selected on training groups, scored on held-out groups</span></div>
+              <Heads m={m} />
+            </div>
+          )}
+          {m?.heads_review && <div className="card pad"><b>Attention result withheld</b><p className="small muted">{m.heads_review.reason}</p></div>}
           {m?.steer && (
             <div>
               <div className="section-title"><h2>What steering changes</h2><span className="muted small">Same prompts, greedy decoding, vs unsteered</span></div>

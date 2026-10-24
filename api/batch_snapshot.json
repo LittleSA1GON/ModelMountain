@@ -2,9 +2,9 @@
   "project_name": "Model Mountain",
   "project_id": "16f864bfa1303fc9",
   "live": false,
-  "captured_at": "2026-10-24T06:37:25Z",
+  "captured_at": "2026-10-24T07:29:44Z",
   "mode": "KAGGLE_BATCH",
-  "note": "Dated operator-reviewed snapshot. Kernel COMPLETE does not imply successful inference.",
+  "note": "Dated operator-reviewed snapshot; updated_at is the snapshot record time. Kernel COMPLETE does not imply successful inference. Scope and evidence fields describe what actually ran.",
   "items": [
     {
       "id": "model-mountain-capture-check-20261024",
@@ -18,7 +18,9 @@
       "model_executed": false,
       "mia_hook_executed": false,
       "source_sha256": "58c67fccce0a23e11d20f99634ea08580fc95faa76320d68d5ec492bfdb0f912",
-      "reason": "Diagnostic helper missing registry; preflight passed but no model executed."
+      "reason": "Diagnostic helper missing registry; preflight passed but no model executed.",
+      "model_id": "Qwen/Qwen2.5-1.5B-Instruct",
+      "updated_at": "2026-10-24T07:29:44Z"
     },
     {
       "id": "model-mountain-stories",
@@ -32,7 +34,9 @@
       "model_executed": false,
       "mia_hook_executed": false,
       "source_sha256": "d615b01a6e2c81095081598d3b3c7e18e93341ffcf4b855b9e291f913ef562e9",
-      "reason": "Story generator failed worker initialization; no generated corpus exported."
+      "reason": "Story generator failed worker initialization; no generated corpus exported.",
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "updated_at": "2026-10-24T07:29:44Z"
     },
     {
       "id": "qwen-capture-v3",
@@ -47,7 +51,90 @@
       "mia_hook_executed": true,
       "scope": "two-prompt capture integration only; no steering or security benchmark",
       "artifact_sha256": "503a343f50ed91f53e7c74a1bc1eb1eb4a972afd03fc390e5e9f6bbdbe42fc50",
-      "independently_verified": false
+      "independently_verified": false,
+      "model_id": "Qwen/Qwen2.5-1.5B-Instruct",
+      "updated_at": "2026-10-24T07:29:44Z"
+    },
+    {
+      "id": "stories-v2",
+      "kernel_ref": "littlesa1gon/model-mountain-stories",
+      "version": 2,
+      "status": "complete",
+      "model_ids": [
+        "Qwen/Qwen2.5-1.5B-Instruct"
+      ],
+      "evidence_type": "REAL_MODEL_GENERATION",
+      "model_executed": true,
+      "mia_hook_executed": false,
+      "scope": "story corpus generation only; no fitted vectors or security benchmark",
+      "kept": 1408,
+      "artifact_sha256": "b9e208a1458644cb6c7be3111a00523e3a2668c39fd3104e733f24dfc21dfaca",
+      "model_id": "Qwen/Qwen2.5-1.5B-Instruct",
+      "updated_at": "2026-10-24T07:29:44Z"
+    },
+    {
+      "id": "qwen-full-v4",
+      "kernel_ref": "littlesa1gon/mm-qwen-qwen2-5-1-5b-instruct",
+      "version": 4,
+      "status": "complete",
+      "model_ids": [
+        "Qwen/Qwen2.5-1.5B-Instruct"
+      ],
+      "evidence_type": "REAL_IBM_MIA",
+      "model_executed": true,
+      "mia_hook_executed": true,
+      "model_id": "Qwen/Qwen2.5-1.5B-Instruct",
+      "updated_at": "2026-10-24T07:29:44Z",
+      "scope": "Verified emotion vectors and held-out generation comparisons; see per-component results and adverse outcomes.",
+      "steering_hook_independently_attested": false
+    },
+    {
+      "id": "granite-full-v1",
+      "kernel_ref": "littlesa1gon/mm-ibm-granite-granite-3-1-2b-instruct",
+      "version": 1,
+      "status": "complete",
+      "model_ids": [
+        "ibm-granite/granite-3.1-2b-instruct"
+      ],
+      "evidence_type": "REAL_IBM_MIA",
+      "model_executed": true,
+      "mia_hook_executed": true,
+      "model_id": "ibm-granite/granite-3.1-2b-instruct",
+      "updated_at": "2026-10-24T07:29:44Z",
+      "scope": "Verified emotion vectors and held-out generation comparisons; see per-component results and adverse outcomes.",
+      "steering_hook_independently_attested": false
+    },
+    {
+      "id": "gemma-e4b-full-v1",
+      "kernel_ref": "littlesa1gon/mm-google-gemma-4-e4b-it",
+      "version": 1,
+      "status": "running",
+      "model_id": "google/gemma-4-E4B-it",
+      "model_ids": [
+        "google/gemma-4-E4B-it"
+      ],
+      "evidence_type": "PENDING_EVALUATION",
+      "model_executed": null,
+      "mia_hook_executed": null,
+      "updated_at": "2026-10-24T07:29:44Z",
+      "note": "Phase outputs not reviewed yet; execution status is unknown."
+    },
+    {
+      "id": "attention-fp32-review-v1",
+      "kernel_ref": "littlesa1gon/model-mountain-attention-review",
+      "version": 1,
+      "status": "running",
+      "model_id": "Qwen, Granite, Gemma E4B",
+      "model_ids": [
+        "Qwen/Qwen2.5-1.5B-Instruct",
+        "ibm-granite/granite-3.1-2b-instruct",
+        "google/gemma-4-E4B-it"
+      ],
+      "evidence_type": "PENDING_DIAGNOSTIC",
+      "model_executed": null,
+      "mia_hook_executed": null,
+      "updated_at": "2026-10-24T07:29:44Z",
+      "scope": "Attention precision verification only; original security outcomes are unchanged."
     }
   ]
 }
