@@ -1,0 +1,358 @@
+{
+  "tasks": [
+    {
+      "id": "MM-CONTRACTS",
+      "title": "Codex: freeze application and inference interfaces",
+      "capabilities": [
+        "architecture"
+      ],
+      "depends_on": [],
+      "priority": "high",
+      "acceptance_criteria": [
+        "Read agent_workflow/BUILD_CONTRACT.md and the relevant role brief before implementation.",
+        "Specify schemas and examples for identity, documents, model backend, decisions and evidence reports.",
+        "Preserve current consumers or specify migration tests; define fail-closed behavior and synthetic/live markers.",
+        "Run full CPU suite and integrated demo; independent peer reviews interface and tests."
+      ],
+      "policy": {
+        "required_reviews": 2,
+        "require_tests": true,
+        "output_tokens": 4096,
+        "write_paths": [
+          "docs/build/contracts",
+          "tests/test_build_contracts.py"
+        ],
+        "max_attempts": 2,
+        "retry_safe": false
+      }
+    },
+    {
+      "id": "MM-PROTOCOL",
+      "title": "Opus5.5: freeze held-out evaluation protocol",
+      "capabilities": [
+        "implementation"
+      ],
+      "depends_on": [],
+      "priority": "high",
+      "acceptance_criteria": [
+        "Read agent_workflow/BUILD_CONTRACT.md and the relevant role brief before implementation.",
+        "Define provenance, task-group train/validation/test isolation and independently labeled attack and benign cases.",
+        "Specify A/B/C/D conditions, inert action sinks, denominators including failures, utility and p50/p95 metrics.",
+        "Test leakage/missing labels and malformed cases; pin protocol/case hashes before tuning."
+      ],
+      "policy": {
+        "required_reviews": 2,
+        "require_tests": true,
+        "output_tokens": 4096,
+        "write_paths": [
+          "docs/build/evaluation",
+          "examples/evaluation_v2",
+          "tests/test_evaluation_v2.py"
+        ],
+        "max_attempts": 2,
+        "retry_safe": false
+      }
+    },
+    {
+      "id": "MM-SECURITY",
+      "title": "Claude Code: implement trusted application security boundary",
+      "capabilities": [
+        "security"
+      ],
+      "depends_on": [
+        "MM-CONTRACTS"
+      ],
+      "priority": "high",
+      "acceptance_criteria": [
+        "Read agent_workflow/BUILD_CONTRACT.md and the relevant role brief before implementation.",
+        "Implement authenticated principal/tenant adapter and deny-by-default policy entrypoint per reviewed contract.",
+        "Cover forged identity, tenant crossing, replay/tampering, unauthorized tool arguments, quota and backend failure.",
+        "Keep all action permissions outside inference; run full CPU suite and integrated demo."
+      ],
+      "policy": {
+        "required_reviews": 2,
+        "require_tests": true,
+        "output_tokens": 4096,
+        "write_paths": [
+          "model_mountain/core.py",
+          "model_mountain/gateway.py",
+          "model_mountain/mcp_security.py",
+          "model_mountain/extraction.py",
+          "tests/test_security.py",
+          "tests/test_integrated_gateway.py",
+          "tests/test_extraction.py",
+          "tests/test_mcp_security.py"
+        ],
+        "max_attempts": 2,
+        "retry_safe": false
+      }
+    },
+    {
+      "id": "MM-RAG",
+      "title": "Claude Code: implement protected ingestion and retrieval",
+      "capabilities": [
+        "rag"
+      ],
+      "depends_on": [
+        "MM-CONTRACTS"
+      ],
+      "priority": "high",
+      "acceptance_criteria": [
+        "Read agent_workflow/BUILD_CONTRACT.md and the relevant role brief before implementation.",
+        "Persist approved source provenance, integrity pins and tenant/role ACLs through trusted ingestion.",
+        "Expose retrieval/backend contract with attributable documents and conservative grounding/abstention.",
+        "Test restart persistence, changed content, unapproved and cross-tenant documents; full CPU checks pass."
+      ],
+      "policy": {
+        "required_reviews": 1,
+        "require_tests": true,
+        "output_tokens": 4096,
+        "write_paths": [
+          "model_mountain/rag.py",
+          "model_mountain/ingestion.py",
+          "tests/test_rag_reliability.py",
+          "tests/test_ingestion.py"
+        ],
+        "max_attempts": 2,
+        "retry_safe": false
+      }
+    },
+    {
+      "id": "MM-BACKEND",
+      "title": "Claude Code: integrate real model and opt-in MIA adapters",
+      "capabilities": [
+        "mia"
+      ],
+      "depends_on": [
+        "MM-CONTRACTS"
+      ],
+      "priority": "high",
+      "acceptance_criteria": [
+        "Read agent_workflow/BUILD_CONTRACT.md and the relevant role brief before implementation.",
+        "Implement backend contract and explicit synthetic/real modes with timeouts and fail-closed error reporting.",
+        "Pin compatibility requirements; bind model/revision/layer/dimension and validate artifact integrity.",
+        "Never claim hook execution from request success or silently replace failed real inference; test failures and run CPU suite/demo."
+      ],
+      "policy": {
+        "required_reviews": 2,
+        "require_tests": true,
+        "output_tokens": 4096,
+        "write_paths": [
+          "model_mountain/backends.py",
+          "model_mountain/steering.py",
+          "model_mountain/behaviorlab.py",
+          "mia_gateway_worker.py",
+          "mia_security_worker.py",
+          "mia_reliability_worker.py",
+          "mia_steering_experiment_worker.py",
+          "mia_rerank_worker.py",
+          "mia_behavior_capture_worker.py",
+          "mia_behavior_eval_worker.py",
+          "steerability360_worker.py",
+          "tests/test_behaviorlab.py",
+          "tests/test_model_backends.py"
+        ],
+        "max_attempts": 2,
+        "retry_safe": false
+      }
+    },
+    {
+      "id": "MM-EVALUATOR",
+      "title": "Opus5.5: implement unified independent A/B/C/D evaluator",
+      "capabilities": [
+        "implementation"
+      ],
+      "depends_on": [
+        "MM-PROTOCOL",
+        "MM-RAG",
+        "MM-BACKEND"
+      ],
+      "priority": "high",
+      "acceptance_criteria": [
+        "Read agent_workflow/BUILD_CONTRACT.md and the relevant role brief before implementation.",
+        "Run the same frozen cases across bare, secure RAG, RAG+steering and full-controls modes with inert actions.",
+        "Emit raw records, honest evidence types, metric numerators/denominators, uncertainty and latency; retain failed cases.",
+        "Check invalid model/profile, missing evidence, false refusal and adversarial cases; CPU fixtures never count as real outcomes."
+      ],
+      "policy": {
+        "required_reviews": 2,
+        "require_tests": true,
+        "output_tokens": 4096,
+        "write_paths": [
+          "model_mountain/evaluation.py",
+          "model_mountain/behavior_eval.py",
+          "model_mountain/benchmark.py",
+          "tests/test_benchmark.py"
+        ],
+        "max_attempts": 2,
+        "retry_safe": false
+      }
+    },
+    {
+      "id": "MM-APPLICATION",
+      "title": "Codex: expose integrated local application workflow",
+      "capabilities": [
+        "integration"
+      ],
+      "depends_on": [
+        "MM-SECURITY",
+        "MM-RAG",
+        "MM-BACKEND"
+      ],
+      "priority": "high",
+      "acceptance_criteria": [
+        "Read agent_workflow/BUILD_CONTRACT.md and the relevant role brief before implementation.",
+        "Integrate trusted identity, protected retrieval, backend and decision contract behind one local application API/CLI.",
+        "Keep credentials external; distinguish simulation, real inference and requested/verified steering states.",
+        "Exercise allowed/denied requests, no-evidence abstention and provider failure; full suite/demo pass."
+      ],
+      "policy": {
+        "required_reviews": 1,
+        "require_tests": true,
+        "output_tokens": 4096,
+        "write_paths": [
+          "model_mountain/application.py",
+          "model_mountain/cli.py",
+          "model_mountain/integrated_demo.py",
+          "tests/test_application.py"
+        ],
+        "max_attempts": 2,
+        "retry_safe": false
+      }
+    },
+    {
+      "id": "MM-DASHBOARD",
+      "title": "Opus5.5: complete dashboard and evidence inspection",
+      "capabilities": [
+        "implementation"
+      ],
+      "depends_on": [
+        "MM-APPLICATION",
+        "MM-EVALUATOR"
+      ],
+      "priority": "high",
+      "acceptance_criteria": [
+        "Read agent_workflow/BUILD_CONTRACT.md and the relevant role brief before implementation.",
+        "Wire application/benchmark controls and inspectable reports/artifacts into Streamlit.",
+        "Provide empty/loading/error states and clear CPU/live labels; experimental steering requires explicit opt-in.",
+        "Verify main user workflows and denial/error paths in actual dashboard; record screenshots and commands without secrets."
+      ],
+      "policy": {
+        "required_reviews": 1,
+        "require_tests": true,
+        "output_tokens": 4096,
+        "write_paths": [
+          "app.py",
+          "tests/test_dashboard.py"
+        ],
+        "max_attempts": 2,
+        "retry_safe": false
+      }
+    },
+    {
+      "id": "MM-CPU-INTEGRATION",
+      "title": "Codex: verify clean install, CI and notebook parity",
+      "capabilities": [
+        "integration"
+      ],
+      "depends_on": [
+        "MM-APPLICATION",
+        "MM-EVALUATOR",
+        "MM-DASHBOARD"
+      ],
+      "priority": "high",
+      "acceptance_criteria": [
+        "Read agent_workflow/BUILD_CONTRACT.md and the relevant role brief before implementation.",
+        "Add reproducible CPU install and automated suite/demo checks with optional GPU deps isolated.",
+        "Regenerate notebook from canonical source and validate safe restoration and tests in disposable location.",
+        "Capture full suite, CLI/evaluation/integrated demo and packaging logs with environment and versions."
+      ],
+      "policy": {
+        "required_reviews": 1,
+        "require_tests": true,
+        "output_tokens": 4096,
+        "write_paths": [
+          "pyproject.toml",
+          "README.md",
+          ".github/workflows",
+          "scripts",
+          "Model_Mountain_Kaggle.ipynb",
+          "docs/build/cpu_validation"
+        ],
+        "max_attempts": 2,
+        "retry_safe": false
+      }
+    },
+    {
+      "id": "MM-GPU-VALIDATION",
+      "title": "Opus5.5: independently run pinned real inference trial",
+      "capabilities": [
+        "implementation"
+      ],
+      "depends_on": [
+        "MM-BACKEND",
+        "MM-EVALUATOR",
+        "MM-APPLICATION"
+      ],
+      "priority": "high",
+      "acceptance_criteria": [
+        "Read agent_workflow/BUILD_CONTRACT.md and the relevant role brief before implementation.",
+        "Use available dedicated Linux/CUDA environment only; document blocker if no compatible runtime exists.",
+        "Record actual model/checkpoint and IBM revisions, dtype, layer, tensor dimensions, device, seed and hook logs.",
+        "Run frozen held-out A/B/C/D trials with benign and attack outcomes, latency and measured VRAM; no synthetic substitute.",
+        "A compatibility blocker does not satisfy the real experiment completion gate."
+      ],
+      "policy": {
+        "required_reviews": 2,
+        "require_tests": true,
+        "output_tokens": 4096,
+        "write_paths": [
+          "docs/build/gpu_validation",
+          "scripts/gpu_validation"
+        ],
+        "max_attempts": 2,
+        "retry_safe": false
+      }
+    },
+    {
+      "id": "MM-RELEASE",
+      "title": "Codex: assemble independently reviewed research workbench release",
+      "capabilities": [
+        "integration"
+      ],
+      "depends_on": [
+        "MM-CPU-INTEGRATION",
+        "MM-GPU-VALIDATION"
+      ],
+      "priority": "high",
+      "acceptance_criteria": [
+        "Read agent_workflow/BUILD_CONTRACT.md and the relevant role brief before implementation.",
+        "Review all acceptance evidence, re-run CPU suite/demo and verify dashboard/notebook/package.",
+        "Publish exact observed real-inference outcomes, unresolved limitations and evidence provenance without production claims.",
+        "Provide local run/reproduction instructions; no deployment/push/merge implied."
+      ],
+      "policy": {
+        "required_reviews": 2,
+        "require_tests": true,
+        "output_tokens": 4096,
+        "write_paths": [
+          "README.md",
+          "MODEL_MOUNTAIN_IMPLEMENTATION_STATUS.md",
+          "RELEASE_NOTES_v5.md",
+          "MULTIAGENT_HANDOFF.md",
+          "docs/build/release"
+        ],
+        "max_attempts": 2,
+        "retry_safe": false
+      }
+    }
+  ],
+  "allocation_override": {
+    "effective": "2026-10-23",
+    "source": "Explicit user direction",
+    "lead": "claude / Opus5.5",
+    "codex": "Integration and independent correctness verification",
+    "gemini": "Explicit mechanical chores only",
+    "historical_plan": "Existing hub records retained as audit history; withdrawn Antigravity results are not accepted."
+  }
+}

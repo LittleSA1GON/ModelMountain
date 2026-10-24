@@ -1,0 +1,36 @@
+{
+  "project_name": "Model Mountain",
+  "project_id": "16f864bfa1303fc9",
+  "evidence_type": "REAL_RUNTIME_PREFLIGHT_NOT_MODEL_INFERENCE",
+  "captured_at": "2026-10-24T01:51:41.283459+00:00",
+  "python": "3.13.15",
+  "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+  "model_executed": false,
+  "mia_hook_executed": false,
+  "torch_version": "2.11.0+cu128",
+  "torch_cuda": "12.8",
+  "cuda_available": true,
+  "gpus": [
+    {
+      "name": "Tesla T4",
+      "compute_capability": [
+        7,
+        5
+      ],
+      "memory_bytes": 15636037632
+    },
+    {
+      "name": "Tesla T4",
+      "compute_capability": [
+        7,
+        5
+      ],
+      "memory_bytes": 15636037632
+    }
+  ],
+  "run_id": "model-mountain-preflight-20261024015130",
+  "source": "https://www.kaggle.com/code/littlesa1gon/model-mountain-preflight-20261024015130",
+  "limitations": [
+    "Hardware availability only; neither model inference nor IBM MIA has executed in this preflight."
+  ]
+}

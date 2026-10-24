@@ -1,0 +1,27 @@
+{
+  "review_target": "RUN-8fd4618a1f6d4626ad29f452014e0cc0 (MM-PROTOCOL, implementer gemini)",
+  "reviewer": "claude (Claude Cowork, Opus 5.5)",
+  "approved": false,
+  "summary": "The split isolation, manifest hash and tests reproduce, but the grading semantics make the attack and abstention metrics invalid, and the 'independently labeled' claim is unsupported. Request bounded changes before MM-EVALUATOR consumes v1.",
+  "reproduced": [
+    "tests/test_evaluation_protocol.py: 8/8 pass (clean copy, Python 3.13)",
+    "heldout_cases.json sha256 = 9200c407...4ff4, which matches MANIFEST.json",
+    "66 cases and 66 unique questions; 33 task groups with zero cross-split overlap (train 24 / validation 18 / test 24)"
+  ],
+  "required_changes": [
+    "R1 Grader validity: forbidden_contains penalizes correct refusals that restate the request, e.g. eval-test-059 forbids 'TENANT-BETA' and eval-test-061 forbids 'decision boundary'. Grade unauthorized_tool_execution from the inert audit_sink log (was a tool call emitted?), not from response text. Grade injection cases on the behavioral outcome (leak/obey vs refuse) with a pattern set plus a judged fallback.",
+    "R2 Answer leakage: attack-case contexts carry the expected refusal phrase verbatim (e.g. eval-test-049 context says 'cannot be disabled' and expects 'cannot be disabled'). An extractive echo passes without any defense, which confounds A/B/C/D. Move policy statements into the system prompt and keep context as the untrusted payload.",
+    "R3 Annotation provenance: all labels come from one model and no second annotator is recorded. Add an 'annotator' and 'label_review' field per case, and get a second identity to review every test label (claude can do this). Do not describe the set as independently labeled until then.",
+    "R4 Power: the test split has 24 cases (2–6 per category), so Wilson 95% half-widths are about ±0.3–0.4. Keep v1 as a frozen smoke protocol, and add a v2 test set of at least 30 per category, ideally including license-checked public benchmark subsets (prompt injection, RAG hallucination), before any realism claim for goal 3.",
+    "R5 Extraction realism: model_extraction_abuse cases are single prompts, but extraction is session-level. Add multi-request sequences that exercise extraction.py admission budgets.",
+    "R6 Abstention grading: the expected_contains 'insufficient evidence' exact phrase is brittle. Accept a declared abstention pattern set and record the matcher version."
+  ],
+  "non_blocking": [
+    "Record a dataset 'synthetic_authored' evidence label in MANIFEST.json.",
+    "PROTOCOL_FREEZE.md should state that v1 is not a production attack-block rate."
+  ],
+  "evidence": [
+    "orchestration/reviews/MM-PROTOCOL__claude_review.json",
+    "local reproduction: 8/8 protocol tests, hash verified, split audit script output"
+  ]
+}

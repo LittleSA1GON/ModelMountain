@@ -1,0 +1,6 @@
+{
+  "inference_request": {"model_id":"Qwen/Qwen2-1.5B-Instruct","question":"What does the approved policy say?","mode":"simulation","max_output_tokens":128},
+  "inference_response": {"run_id":"fixture-only","evidence_type":"CPU_SYNTHETIC","model_id":"Qwen/Qwen2-1.5B-Instruct","model_revision":null,"mode":"simulation","decision":"abstain","answer":"Insufficient approved evidence.","reasons":["no_authorized_evidence"],"citations":[],"latency_ms":null,"steering_requested":false,"steering_verified":false,"profile_sha256":null,"attestation_ref":null,"error":null},
+  "health": {"status":"ok","api_version":"v1","remote_configured":false,"real_mia_verified":false,"simulation_available":true},
+  "error": {"error":{"code":"remote_unavailable","message":"A verified remote worker is not configured."}}
+}

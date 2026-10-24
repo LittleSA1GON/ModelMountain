@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "behavior": "grounding",
+  "pairs": [
+    {
+      "id": "grounding-1",
+      "task_group": "grounding-task-1",
+      "split": "train",
+      "positive": "What is the travel reimbursement limit?\nVerified policy: reimbursement is $500. Answer: $500.",
+      "negative": "What is the travel reimbursement limit?\nVerified policy: reimbursement is $500. Answer: $5,000."
+    },
+    {
+      "id": "grounding-2",
+      "task_group": "grounding-task-2",
+      "split": "train",
+      "positive": "When does the refund window end?\nPolicy: refunds within 30 days. Answer: 30 days.",
+      "negative": "When does the refund window end?\nPolicy: refunds within 30 days. Answer: 90 days."
+    },
+    {
+      "id": "grounding-3",
+      "task_group": "grounding-task-3",
+      "split": "train",
+      "positive": "How much PTO is included?\nHandbook: 15 days PTO. Answer: 15 days.",
+      "negative": "How much PTO is included?\nHandbook: 15 days PTO. Answer: 25 days."
+    },
+    {
+      "id": "grounding-4",
+      "task_group": "grounding-task-4",
+      "split": "validation",
+      "positive": "What is the support line opening time?\nDirectory: support starts at 08:00. Answer: 08:00.",
+      "negative": "What is the support line opening time?\nDirectory: support starts at 08:00. Answer: 06:00."
+    },
+    {
+      "id": "grounding-5",
+      "task_group": "grounding-task-5",
+      "split": "test",
+      "positive": "What is the retention period?\nPolicy: logs retained 14 days. Answer: 14 days.",
+      "negative": "What is the retention period?\nPolicy: logs retained 14 days. Answer: 90 days."
+    },
+    {
+      "id": "grounding-6",
+      "task_group": "grounding-task-6",
+      "split": "test",
+      "positive": "What is the maximum invoice size?\nFinance guide: maximum $1,000. Answer: $1,000.",
+      "negative": "What is the maximum invoice size?\nFinance guide: maximum $1,000. Answer: $10,000."
+    }
+  ],
+  "note": "Small illustrative paired prompts; expand to hundreds of independently curated cases and assess confounding."
+}

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "cd web && npm ci && npm run build",
+  "outputDirectory": "web/dist",
+  "functions": {
+    "api/index.py": {
+      "maxDuration": 60,
+      "excludeFiles": "{.ai/**,.git/**,.venv/**,.communication-hub/**,model_mountain_results/**,tests/**,examples/**,kaggle/**,web/node_modules/**,*.zip,*.ipynb,**/*.pt,**/*.pth,**/access_token,**/.env*}"
+    }
+  },
+  "rewrites": [
+    {"source": "/api/v1/:path*", "destination": "/api/index.py"},
+    {"source": "/((?!api/).*)", "destination": "/index.html"}
+  ],
+  "headers": [{"source": "/(.*)", "headers": [
+    {"key": "X-Content-Type-Options", "value": "nosniff"},
+    {"key": "Referrer-Policy", "value": "strict-origin-when-cross-origin"},
+    {"key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()"}
+  ]}]
+}

@@ -1,0 +1,9 @@
+{
+  "model": "Qwen/Qwen2-1.5B-Instruct",
+  "method": "add_vector",
+  "vector_path": "/path/on/vllm/server/to/validated_vector.pt",
+  "optimal_layer": 14,
+  "coefficient": 1.0,
+  "phase": "both",
+  "positions": "all_tokens"
+}

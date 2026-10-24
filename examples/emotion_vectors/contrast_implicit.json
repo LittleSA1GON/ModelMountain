@@ -1,0 +1,2898 @@
+{
+ "schema_version": 1,
+ "dataset": "model_mountain_contrast_implicit_v1",
+ "seed": 20261023,
+ "provenance": {
+  "authored_by": "claude (Claude Opus 5.5, Cowork) for MM-REMOTE-MODELS",
+  "method": "deterministic templates; not human-annotated",
+  "created": "2026-10-23",
+  "known_confounds": [
+   "template wording",
+   "prompt length",
+   "explicit variant contains the concept word"
+  ]
+ },
+ "split_policy": "task_group=topic; 36 train / 12 validation / 12 test topics; disjoint",
+ "pairs": [
+  {
+   "pair_id": "joy-00",
+   "task_group": "topic-00",
+   "split": "train",
+   "concept": "joy",
+   "positive": "You just found out you got the job you wanted most. In two sentences, describe a morning commute right now.",
+   "negative": "Describe a morning commute in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-01",
+   "task_group": "topic-01",
+   "split": "test",
+   "concept": "joy",
+   "positive": "Your best friend surprised you with wonderful news an hour ago. In two sentences, describe a grocery store.",
+   "negative": "Describe a grocery store in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-02",
+   "task_group": "topic-02",
+   "split": "validation",
+   "concept": "joy",
+   "positive": "Everything you worked on for a year just succeeded beyond your hopes. In two sentences, describe a city park.",
+   "negative": "Describe a city park in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-03",
+   "task_group": "topic-03",
+   "split": "train",
+   "concept": "joy",
+   "positive": "You just found out you got the job you wanted most. In two sentences, describe an office meeting right now.",
+   "negative": "Describe an office meeting in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-04",
+   "task_group": "topic-04",
+   "split": "test",
+   "concept": "joy",
+   "positive": "Your best friend surprised you with wonderful news an hour ago. In two sentences, describe a kitchen.",
+   "negative": "Describe a kitchen in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-05",
+   "task_group": "topic-05",
+   "split": "train",
+   "concept": "joy",
+   "positive": "Everything you worked on for a year just succeeded beyond your hopes. In two sentences, describe a train station.",
+   "negative": "Describe a train station in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-06",
+   "task_group": "topic-06",
+   "split": "train",
+   "concept": "joy",
+   "positive": "You just found out you got the job you wanted most. In two sentences, describe a library right now.",
+   "negative": "Describe a library in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-07",
+   "task_group": "topic-07",
+   "split": "train",
+   "concept": "joy",
+   "positive": "Your best friend surprised you with wonderful news an hour ago. In two sentences, describe a rainy afternoon.",
+   "negative": "Describe a rainy afternoon in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-08",
+   "task_group": "topic-08",
+   "split": "train",
+   "concept": "joy",
+   "positive": "Everything you worked on for a year just succeeded beyond your hopes. In two sentences, describe a family dinner.",
+   "negative": "Describe a family dinner in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-09",
+   "task_group": "topic-09",
+   "split": "train",
+   "concept": "joy",
+   "positive": "You just found out you got the job you wanted most. In two sentences, describe a hospital waiting room right now.",
+   "negative": "Describe a hospital waiting room in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-10",
+   "task_group": "topic-10",
+   "split": "train",
+   "concept": "joy",
+   "positive": "Your best friend surprised you with wonderful news an hour ago. In two sentences, describe a football match.",
+   "negative": "Describe a football match in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-11",
+   "task_group": "topic-11",
+   "split": "train",
+   "concept": "joy",
+   "positive": "Everything you worked on for a year just succeeded beyond your hopes. In two sentences, describe a mountain trail.",
+   "negative": "Describe a mountain trail in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-12",
+   "task_group": "topic-12",
+   "split": "test",
+   "concept": "joy",
+   "positive": "You just found out you got the job you wanted most. In two sentences, describe a school hallway right now.",
+   "negative": "Describe a school hallway in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-13",
+   "task_group": "topic-13",
+   "split": "validation",
+   "concept": "joy",
+   "positive": "Your best friend surprised you with wonderful news an hour ago. In two sentences, describe a beach at dusk.",
+   "negative": "Describe a beach at dusk in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-14",
+   "task_group": "topic-14",
+   "split": "train",
+   "concept": "joy",
+   "positive": "Everything you worked on for a year just succeeded beyond your hopes. In two sentences, describe a coffee shop.",
+   "negative": "Describe a coffee shop in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-15",
+   "task_group": "topic-15",
+   "split": "test",
+   "concept": "joy",
+   "positive": "You just found out you got the job you wanted most. In two sentences, describe an airport gate right now.",
+   "negative": "Describe an airport gate in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-16",
+   "task_group": "topic-16",
+   "split": "test",
+   "concept": "joy",
+   "positive": "Your best friend surprised you with wonderful news an hour ago. In two sentences, describe a birthday party.",
+   "negative": "Describe a birthday party in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-17",
+   "task_group": "topic-17",
+   "split": "train",
+   "concept": "joy",
+   "positive": "Everything you worked on for a year just succeeded beyond your hopes. In two sentences, describe a hardware store.",
+   "negative": "Describe a hardware store in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-18",
+   "task_group": "topic-18",
+   "split": "validation",
+   "concept": "joy",
+   "positive": "You just found out you got the job you wanted most. In two sentences, describe a quiet bedroom right now.",
+   "negative": "Describe a quiet bedroom in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-19",
+   "task_group": "topic-19",
+   "split": "validation",
+   "concept": "joy",
+   "positive": "Your best friend surprised you with wonderful news an hour ago. In two sentences, describe a busy restaurant.",
+   "negative": "Describe a busy restaurant in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-20",
+   "task_group": "topic-20",
+   "split": "train",
+   "concept": "joy",
+   "positive": "Everything you worked on for a year just succeeded beyond your hopes. In two sentences, describe a farmers market.",
+   "negative": "Describe a farmers market in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-21",
+   "task_group": "topic-21",
+   "split": "train",
+   "concept": "joy",
+   "positive": "You just found out you got the job you wanted most. In two sentences, describe a museum gallery right now.",
+   "negative": "Describe a museum gallery in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-22",
+   "task_group": "topic-22",
+   "split": "test",
+   "concept": "joy",
+   "positive": "Your best friend surprised you with wonderful news an hour ago. In two sentences, describe a parking garage.",
+   "negative": "Describe a parking garage in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-23",
+   "task_group": "topic-23",
+   "split": "test",
+   "concept": "joy",
+   "positive": "Everything you worked on for a year just succeeded beyond your hopes. In two sentences, describe a snowy street.",
+   "negative": "Describe a snowy street in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-24",
+   "task_group": "topic-24",
+   "split": "train",
+   "concept": "joy",
+   "positive": "You just found out you got the job you wanted most. In two sentences, describe a bus ride right now.",
+   "negative": "Describe a bus ride in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-25",
+   "task_group": "topic-25",
+   "split": "validation",
+   "concept": "joy",
+   "positive": "Your best friend surprised you with wonderful news an hour ago. In two sentences, describe a laundromat.",
+   "negative": "Describe a laundromat in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-26",
+   "task_group": "topic-26",
+   "split": "test",
+   "concept": "joy",
+   "positive": "Everything you worked on for a year just succeeded beyond your hopes. In two sentences, describe a garden.",
+   "negative": "Describe a garden in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-27",
+   "task_group": "topic-27",
+   "split": "train",
+   "concept": "joy",
+   "positive": "You just found out you got the job you wanted most. In two sentences, describe a concert hall right now.",
+   "negative": "Describe a concert hall in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-28",
+   "task_group": "topic-28",
+   "split": "train",
+   "concept": "joy",
+   "positive": "Your best friend surprised you with wonderful news an hour ago. In two sentences, describe a job interview.",
+   "negative": "Describe a job interview in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-29",
+   "task_group": "topic-29",
+   "split": "train",
+   "concept": "joy",
+   "positive": "Everything you worked on for a year just succeeded beyond your hopes. In two sentences, describe a phone call with a friend.",
+   "negative": "Describe a phone call with a friend in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-30",
+   "task_group": "topic-30",
+   "split": "train",
+   "concept": "joy",
+   "positive": "You just found out you got the job you wanted most. In two sentences, describe a dentist appointment right now.",
+   "negative": "Describe a dentist appointment in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-31",
+   "task_group": "topic-31",
+   "split": "train",
+   "concept": "joy",
+   "positive": "Your best friend surprised you with wonderful news an hour ago. In two sentences, describe a highway rest stop.",
+   "negative": "Describe a highway rest stop in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-32",
+   "task_group": "topic-32",
+   "split": "train",
+   "concept": "joy",
+   "positive": "Everything you worked on for a year just succeeded beyond your hopes. In two sentences, describe a science classroom.",
+   "negative": "Describe a science classroom in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-33",
+   "task_group": "topic-33",
+   "split": "train",
+   "concept": "joy",
+   "positive": "You just found out you got the job you wanted most. In two sentences, describe a village square right now.",
+   "negative": "Describe a village square in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-34",
+   "task_group": "topic-34",
+   "split": "test",
+   "concept": "joy",
+   "positive": "Your best friend surprised you with wonderful news an hour ago. In two sentences, describe a ferry crossing.",
+   "negative": "Describe a ferry crossing in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-35",
+   "task_group": "topic-35",
+   "split": "train",
+   "concept": "joy",
+   "positive": "Everything you worked on for a year just succeeded beyond your hopes. In two sentences, describe a bakery.",
+   "negative": "Describe a bakery in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-36",
+   "task_group": "topic-36",
+   "split": "test",
+   "concept": "joy",
+   "positive": "You just found out you got the job you wanted most. In two sentences, describe a gym right now.",
+   "negative": "Describe a gym in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-37",
+   "task_group": "topic-37",
+   "split": "validation",
+   "concept": "joy",
+   "positive": "Your best friend surprised you with wonderful news an hour ago. In two sentences, describe a post office.",
+   "negative": "Describe a post office in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-38",
+   "task_group": "topic-38",
+   "split": "train",
+   "concept": "joy",
+   "positive": "Everything you worked on for a year just succeeded beyond your hopes. In two sentences, describe a hotel lobby.",
+   "negative": "Describe a hotel lobby in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-39",
+   "task_group": "topic-39",
+   "split": "train",
+   "concept": "joy",
+   "positive": "You just found out you got the job you wanted most. In two sentences, describe a bookstore right now.",
+   "negative": "Describe a bookstore in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-40",
+   "task_group": "topic-40",
+   "split": "validation",
+   "concept": "joy",
+   "positive": "Your best friend surprised you with wonderful news an hour ago. In two sentences, describe a subway platform.",
+   "negative": "Describe a subway platform in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-41",
+   "task_group": "topic-41",
+   "split": "train",
+   "concept": "joy",
+   "positive": "Everything you worked on for a year just succeeded beyond your hopes. In two sentences, describe a campsite.",
+   "negative": "Describe a campsite in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-42",
+   "task_group": "topic-42",
+   "split": "train",
+   "concept": "joy",
+   "positive": "You just found out you got the job you wanted most. In two sentences, describe a wedding reception right now.",
+   "negative": "Describe a wedding reception in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-43",
+   "task_group": "topic-43",
+   "split": "train",
+   "concept": "joy",
+   "positive": "Your best friend surprised you with wonderful news an hour ago. In two sentences, describe a pharmacy.",
+   "negative": "Describe a pharmacy in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-44",
+   "task_group": "topic-44",
+   "split": "validation",
+   "concept": "joy",
+   "positive": "Everything you worked on for a year just succeeded beyond your hopes. In two sentences, describe a car repair shop.",
+   "negative": "Describe a car repair shop in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-45",
+   "task_group": "topic-45",
+   "split": "train",
+   "concept": "joy",
+   "positive": "You just found out you got the job you wanted most. In two sentences, describe a riverbank right now.",
+   "negative": "Describe a riverbank in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-46",
+   "task_group": "topic-46",
+   "split": "train",
+   "concept": "joy",
+   "positive": "Your best friend surprised you with wonderful news an hour ago. In two sentences, describe a basketball court.",
+   "negative": "Describe a basketball court in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-47",
+   "task_group": "topic-47",
+   "split": "validation",
+   "concept": "joy",
+   "positive": "Everything you worked on for a year just succeeded beyond your hopes. In two sentences, describe an elevator.",
+   "negative": "Describe an elevator in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-48",
+   "task_group": "topic-48",
+   "split": "train",
+   "concept": "joy",
+   "positive": "You just found out you got the job you wanted most. In two sentences, describe a movie theater right now.",
+   "negative": "Describe a movie theater in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-49",
+   "task_group": "topic-49",
+   "split": "test",
+   "concept": "joy",
+   "positive": "Your best friend surprised you with wonderful news an hour ago. In two sentences, describe a bank branch.",
+   "negative": "Describe a bank branch in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-50",
+   "task_group": "topic-50",
+   "split": "train",
+   "concept": "joy",
+   "positive": "Everything you worked on for a year just succeeded beyond your hopes. In two sentences, describe a zoo.",
+   "negative": "Describe a zoo in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-51",
+   "task_group": "topic-51",
+   "split": "train",
+   "concept": "joy",
+   "positive": "You just found out you got the job you wanted most. In two sentences, describe a city council meeting right now.",
+   "negative": "Describe a city council meeting in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-52",
+   "task_group": "topic-52",
+   "split": "validation",
+   "concept": "joy",
+   "positive": "Your best friend surprised you with wonderful news an hour ago. In two sentences, describe a bike lane.",
+   "negative": "Describe a bike lane in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-53",
+   "task_group": "topic-53",
+   "split": "train",
+   "concept": "joy",
+   "positive": "Everything you worked on for a year just succeeded beyond your hopes. In two sentences, describe a rooftop terrace.",
+   "negative": "Describe a rooftop terrace in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-54",
+   "task_group": "topic-54",
+   "split": "validation",
+   "concept": "joy",
+   "positive": "You just found out you got the job you wanted most. In two sentences, describe a thrift store right now.",
+   "negative": "Describe a thrift store in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-55",
+   "task_group": "topic-55",
+   "split": "train",
+   "concept": "joy",
+   "positive": "Your best friend surprised you with wonderful news an hour ago. In two sentences, describe a ski lodge.",
+   "negative": "Describe a ski lodge in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-56",
+   "task_group": "topic-56",
+   "split": "train",
+   "concept": "joy",
+   "positive": "Everything you worked on for a year just succeeded beyond your hopes. In two sentences, describe a lecture hall.",
+   "negative": "Describe a lecture hall in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-57",
+   "task_group": "topic-57",
+   "split": "train",
+   "concept": "joy",
+   "positive": "You just found out you got the job you wanted most. In two sentences, describe a fishing pier right now.",
+   "negative": "Describe a fishing pier in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-58",
+   "task_group": "topic-58",
+   "split": "validation",
+   "concept": "joy",
+   "positive": "Your best friend surprised you with wonderful news an hour ago. In two sentences, describe a pet shelter.",
+   "negative": "Describe a pet shelter in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "joy-59",
+   "task_group": "topic-59",
+   "split": "test",
+   "concept": "joy",
+   "positive": "Everything you worked on for a year just succeeded beyond your hopes. In two sentences, describe a night market.",
+   "negative": "Describe a night market in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-00",
+   "task_group": "topic-00",
+   "split": "train",
+   "concept": "sadness",
+   "positive": "You just learned that someone you love is moving away for good. In two sentences, describe a morning commute.",
+   "negative": "Describe a morning commute in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-01",
+   "task_group": "topic-01",
+   "split": "test",
+   "concept": "sadness",
+   "positive": "Your pet passed away this morning. In two sentences, describe a grocery store.",
+   "negative": "Describe a grocery store in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-02",
+   "task_group": "topic-02",
+   "split": "validation",
+   "concept": "sadness",
+   "positive": "A long friendship ended yesterday and you miss them. In two sentences, describe a city park.",
+   "negative": "Describe a city park in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-03",
+   "task_group": "topic-03",
+   "split": "train",
+   "concept": "sadness",
+   "positive": "You just learned that someone you love is moving away for good. In two sentences, describe an office meeting.",
+   "negative": "Describe an office meeting in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-04",
+   "task_group": "topic-04",
+   "split": "test",
+   "concept": "sadness",
+   "positive": "Your pet passed away this morning. In two sentences, describe a kitchen.",
+   "negative": "Describe a kitchen in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-05",
+   "task_group": "topic-05",
+   "split": "train",
+   "concept": "sadness",
+   "positive": "A long friendship ended yesterday and you miss them. In two sentences, describe a train station.",
+   "negative": "Describe a train station in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-06",
+   "task_group": "topic-06",
+   "split": "train",
+   "concept": "sadness",
+   "positive": "You just learned that someone you love is moving away for good. In two sentences, describe a library.",
+   "negative": "Describe a library in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-07",
+   "task_group": "topic-07",
+   "split": "train",
+   "concept": "sadness",
+   "positive": "Your pet passed away this morning. In two sentences, describe a rainy afternoon.",
+   "negative": "Describe a rainy afternoon in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-08",
+   "task_group": "topic-08",
+   "split": "train",
+   "concept": "sadness",
+   "positive": "A long friendship ended yesterday and you miss them. In two sentences, describe a family dinner.",
+   "negative": "Describe a family dinner in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-09",
+   "task_group": "topic-09",
+   "split": "train",
+   "concept": "sadness",
+   "positive": "You just learned that someone you love is moving away for good. In two sentences, describe a hospital waiting room.",
+   "negative": "Describe a hospital waiting room in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-10",
+   "task_group": "topic-10",
+   "split": "train",
+   "concept": "sadness",
+   "positive": "Your pet passed away this morning. In two sentences, describe a football match.",
+   "negative": "Describe a football match in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-11",
+   "task_group": "topic-11",
+   "split": "train",
+   "concept": "sadness",
+   "positive": "A long friendship ended yesterday and you miss them. In two sentences, describe a mountain trail.",
+   "negative": "Describe a mountain trail in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-12",
+   "task_group": "topic-12",
+   "split": "test",
+   "concept": "sadness",
+   "positive": "You just learned that someone you love is moving away for good. In two sentences, describe a school hallway.",
+   "negative": "Describe a school hallway in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-13",
+   "task_group": "topic-13",
+   "split": "validation",
+   "concept": "sadness",
+   "positive": "Your pet passed away this morning. In two sentences, describe a beach at dusk.",
+   "negative": "Describe a beach at dusk in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-14",
+   "task_group": "topic-14",
+   "split": "train",
+   "concept": "sadness",
+   "positive": "A long friendship ended yesterday and you miss them. In two sentences, describe a coffee shop.",
+   "negative": "Describe a coffee shop in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-15",
+   "task_group": "topic-15",
+   "split": "test",
+   "concept": "sadness",
+   "positive": "You just learned that someone you love is moving away for good. In two sentences, describe an airport gate.",
+   "negative": "Describe an airport gate in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-16",
+   "task_group": "topic-16",
+   "split": "test",
+   "concept": "sadness",
+   "positive": "Your pet passed away this morning. In two sentences, describe a birthday party.",
+   "negative": "Describe a birthday party in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-17",
+   "task_group": "topic-17",
+   "split": "train",
+   "concept": "sadness",
+   "positive": "A long friendship ended yesterday and you miss them. In two sentences, describe a hardware store.",
+   "negative": "Describe a hardware store in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-18",
+   "task_group": "topic-18",
+   "split": "validation",
+   "concept": "sadness",
+   "positive": "You just learned that someone you love is moving away for good. In two sentences, describe a quiet bedroom.",
+   "negative": "Describe a quiet bedroom in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-19",
+   "task_group": "topic-19",
+   "split": "validation",
+   "concept": "sadness",
+   "positive": "Your pet passed away this morning. In two sentences, describe a busy restaurant.",
+   "negative": "Describe a busy restaurant in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-20",
+   "task_group": "topic-20",
+   "split": "train",
+   "concept": "sadness",
+   "positive": "A long friendship ended yesterday and you miss them. In two sentences, describe a farmers market.",
+   "negative": "Describe a farmers market in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-21",
+   "task_group": "topic-21",
+   "split": "train",
+   "concept": "sadness",
+   "positive": "You just learned that someone you love is moving away for good. In two sentences, describe a museum gallery.",
+   "negative": "Describe a museum gallery in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-22",
+   "task_group": "topic-22",
+   "split": "test",
+   "concept": "sadness",
+   "positive": "Your pet passed away this morning. In two sentences, describe a parking garage.",
+   "negative": "Describe a parking garage in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-23",
+   "task_group": "topic-23",
+   "split": "test",
+   "concept": "sadness",
+   "positive": "A long friendship ended yesterday and you miss them. In two sentences, describe a snowy street.",
+   "negative": "Describe a snowy street in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-24",
+   "task_group": "topic-24",
+   "split": "train",
+   "concept": "sadness",
+   "positive": "You just learned that someone you love is moving away for good. In two sentences, describe a bus ride.",
+   "negative": "Describe a bus ride in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-25",
+   "task_group": "topic-25",
+   "split": "validation",
+   "concept": "sadness",
+   "positive": "Your pet passed away this morning. In two sentences, describe a laundromat.",
+   "negative": "Describe a laundromat in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-26",
+   "task_group": "topic-26",
+   "split": "test",
+   "concept": "sadness",
+   "positive": "A long friendship ended yesterday and you miss them. In two sentences, describe a garden.",
+   "negative": "Describe a garden in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-27",
+   "task_group": "topic-27",
+   "split": "train",
+   "concept": "sadness",
+   "positive": "You just learned that someone you love is moving away for good. In two sentences, describe a concert hall.",
+   "negative": "Describe a concert hall in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-28",
+   "task_group": "topic-28",
+   "split": "train",
+   "concept": "sadness",
+   "positive": "Your pet passed away this morning. In two sentences, describe a job interview.",
+   "negative": "Describe a job interview in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-29",
+   "task_group": "topic-29",
+   "split": "train",
+   "concept": "sadness",
+   "positive": "A long friendship ended yesterday and you miss them. In two sentences, describe a phone call with a friend.",
+   "negative": "Describe a phone call with a friend in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-30",
+   "task_group": "topic-30",
+   "split": "train",
+   "concept": "sadness",
+   "positive": "You just learned that someone you love is moving away for good. In two sentences, describe a dentist appointment.",
+   "negative": "Describe a dentist appointment in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-31",
+   "task_group": "topic-31",
+   "split": "train",
+   "concept": "sadness",
+   "positive": "Your pet passed away this morning. In two sentences, describe a highway rest stop.",
+   "negative": "Describe a highway rest stop in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-32",
+   "task_group": "topic-32",
+   "split": "train",
+   "concept": "sadness",
+   "positive": "A long friendship ended yesterday and you miss them. In two sentences, describe a science classroom.",
+   "negative": "Describe a science classroom in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-33",
+   "task_group": "topic-33",
+   "split": "train",
+   "concept": "sadness",
+   "positive": "You just learned that someone you love is moving away for good. In two sentences, describe a village square.",
+   "negative": "Describe a village square in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-34",
+   "task_group": "topic-34",
+   "split": "test",
+   "concept": "sadness",
+   "positive": "Your pet passed away this morning. In two sentences, describe a ferry crossing.",
+   "negative": "Describe a ferry crossing in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-35",
+   "task_group": "topic-35",
+   "split": "train",
+   "concept": "sadness",
+   "positive": "A long friendship ended yesterday and you miss them. In two sentences, describe a bakery.",
+   "negative": "Describe a bakery in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-36",
+   "task_group": "topic-36",
+   "split": "test",
+   "concept": "sadness",
+   "positive": "You just learned that someone you love is moving away for good. In two sentences, describe a gym.",
+   "negative": "Describe a gym in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-37",
+   "task_group": "topic-37",
+   "split": "validation",
+   "concept": "sadness",
+   "positive": "Your pet passed away this morning. In two sentences, describe a post office.",
+   "negative": "Describe a post office in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-38",
+   "task_group": "topic-38",
+   "split": "train",
+   "concept": "sadness",
+   "positive": "A long friendship ended yesterday and you miss them. In two sentences, describe a hotel lobby.",
+   "negative": "Describe a hotel lobby in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-39",
+   "task_group": "topic-39",
+   "split": "train",
+   "concept": "sadness",
+   "positive": "You just learned that someone you love is moving away for good. In two sentences, describe a bookstore.",
+   "negative": "Describe a bookstore in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-40",
+   "task_group": "topic-40",
+   "split": "validation",
+   "concept": "sadness",
+   "positive": "Your pet passed away this morning. In two sentences, describe a subway platform.",
+   "negative": "Describe a subway platform in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-41",
+   "task_group": "topic-41",
+   "split": "train",
+   "concept": "sadness",
+   "positive": "A long friendship ended yesterday and you miss them. In two sentences, describe a campsite.",
+   "negative": "Describe a campsite in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-42",
+   "task_group": "topic-42",
+   "split": "train",
+   "concept": "sadness",
+   "positive": "You just learned that someone you love is moving away for good. In two sentences, describe a wedding reception.",
+   "negative": "Describe a wedding reception in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-43",
+   "task_group": "topic-43",
+   "split": "train",
+   "concept": "sadness",
+   "positive": "Your pet passed away this morning. In two sentences, describe a pharmacy.",
+   "negative": "Describe a pharmacy in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-44",
+   "task_group": "topic-44",
+   "split": "validation",
+   "concept": "sadness",
+   "positive": "A long friendship ended yesterday and you miss them. In two sentences, describe a car repair shop.",
+   "negative": "Describe a car repair shop in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-45",
+   "task_group": "topic-45",
+   "split": "train",
+   "concept": "sadness",
+   "positive": "You just learned that someone you love is moving away for good. In two sentences, describe a riverbank.",
+   "negative": "Describe a riverbank in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-46",
+   "task_group": "topic-46",
+   "split": "train",
+   "concept": "sadness",
+   "positive": "Your pet passed away this morning. In two sentences, describe a basketball court.",
+   "negative": "Describe a basketball court in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-47",
+   "task_group": "topic-47",
+   "split": "validation",
+   "concept": "sadness",
+   "positive": "A long friendship ended yesterday and you miss them. In two sentences, describe an elevator.",
+   "negative": "Describe an elevator in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-48",
+   "task_group": "topic-48",
+   "split": "train",
+   "concept": "sadness",
+   "positive": "You just learned that someone you love is moving away for good. In two sentences, describe a movie theater.",
+   "negative": "Describe a movie theater in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-49",
+   "task_group": "topic-49",
+   "split": "test",
+   "concept": "sadness",
+   "positive": "Your pet passed away this morning. In two sentences, describe a bank branch.",
+   "negative": "Describe a bank branch in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-50",
+   "task_group": "topic-50",
+   "split": "train",
+   "concept": "sadness",
+   "positive": "A long friendship ended yesterday and you miss them. In two sentences, describe a zoo.",
+   "negative": "Describe a zoo in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-51",
+   "task_group": "topic-51",
+   "split": "train",
+   "concept": "sadness",
+   "positive": "You just learned that someone you love is moving away for good. In two sentences, describe a city council meeting.",
+   "negative": "Describe a city council meeting in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-52",
+   "task_group": "topic-52",
+   "split": "validation",
+   "concept": "sadness",
+   "positive": "Your pet passed away this morning. In two sentences, describe a bike lane.",
+   "negative": "Describe a bike lane in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-53",
+   "task_group": "topic-53",
+   "split": "train",
+   "concept": "sadness",
+   "positive": "A long friendship ended yesterday and you miss them. In two sentences, describe a rooftop terrace.",
+   "negative": "Describe a rooftop terrace in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-54",
+   "task_group": "topic-54",
+   "split": "validation",
+   "concept": "sadness",
+   "positive": "You just learned that someone you love is moving away for good. In two sentences, describe a thrift store.",
+   "negative": "Describe a thrift store in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-55",
+   "task_group": "topic-55",
+   "split": "train",
+   "concept": "sadness",
+   "positive": "Your pet passed away this morning. In two sentences, describe a ski lodge.",
+   "negative": "Describe a ski lodge in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-56",
+   "task_group": "topic-56",
+   "split": "train",
+   "concept": "sadness",
+   "positive": "A long friendship ended yesterday and you miss them. In two sentences, describe a lecture hall.",
+   "negative": "Describe a lecture hall in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-57",
+   "task_group": "topic-57",
+   "split": "train",
+   "concept": "sadness",
+   "positive": "You just learned that someone you love is moving away for good. In two sentences, describe a fishing pier.",
+   "negative": "Describe a fishing pier in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-58",
+   "task_group": "topic-58",
+   "split": "validation",
+   "concept": "sadness",
+   "positive": "Your pet passed away this morning. In two sentences, describe a pet shelter.",
+   "negative": "Describe a pet shelter in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "sadness-59",
+   "task_group": "topic-59",
+   "split": "test",
+   "concept": "sadness",
+   "positive": "A long friendship ended yesterday and you miss them. In two sentences, describe a night market.",
+   "negative": "Describe a night market in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-00",
+   "task_group": "topic-00",
+   "split": "train",
+   "concept": "anger",
+   "positive": "Someone just took credit for your work in front of everyone. In two sentences, describe a morning commute.",
+   "negative": "Describe a morning commute in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-01",
+   "task_group": "topic-01",
+   "split": "test",
+   "concept": "anger",
+   "positive": "A driver cut you off and then shouted at you. In two sentences, describe a grocery store.",
+   "negative": "Describe a grocery store in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-02",
+   "task_group": "topic-02",
+   "split": "validation",
+   "concept": "anger",
+   "positive": "You were blamed unfairly for a mistake you did not make. In two sentences, describe a city park.",
+   "negative": "Describe a city park in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-03",
+   "task_group": "topic-03",
+   "split": "train",
+   "concept": "anger",
+   "positive": "Someone just took credit for your work in front of everyone. In two sentences, describe an office meeting.",
+   "negative": "Describe an office meeting in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-04",
+   "task_group": "topic-04",
+   "split": "test",
+   "concept": "anger",
+   "positive": "A driver cut you off and then shouted at you. In two sentences, describe a kitchen.",
+   "negative": "Describe a kitchen in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-05",
+   "task_group": "topic-05",
+   "split": "train",
+   "concept": "anger",
+   "positive": "You were blamed unfairly for a mistake you did not make. In two sentences, describe a train station.",
+   "negative": "Describe a train station in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-06",
+   "task_group": "topic-06",
+   "split": "train",
+   "concept": "anger",
+   "positive": "Someone just took credit for your work in front of everyone. In two sentences, describe a library.",
+   "negative": "Describe a library in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-07",
+   "task_group": "topic-07",
+   "split": "train",
+   "concept": "anger",
+   "positive": "A driver cut you off and then shouted at you. In two sentences, describe a rainy afternoon.",
+   "negative": "Describe a rainy afternoon in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-08",
+   "task_group": "topic-08",
+   "split": "train",
+   "concept": "anger",
+   "positive": "You were blamed unfairly for a mistake you did not make. In two sentences, describe a family dinner.",
+   "negative": "Describe a family dinner in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-09",
+   "task_group": "topic-09",
+   "split": "train",
+   "concept": "anger",
+   "positive": "Someone just took credit for your work in front of everyone. In two sentences, describe a hospital waiting room.",
+   "negative": "Describe a hospital waiting room in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-10",
+   "task_group": "topic-10",
+   "split": "train",
+   "concept": "anger",
+   "positive": "A driver cut you off and then shouted at you. In two sentences, describe a football match.",
+   "negative": "Describe a football match in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-11",
+   "task_group": "topic-11",
+   "split": "train",
+   "concept": "anger",
+   "positive": "You were blamed unfairly for a mistake you did not make. In two sentences, describe a mountain trail.",
+   "negative": "Describe a mountain trail in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-12",
+   "task_group": "topic-12",
+   "split": "test",
+   "concept": "anger",
+   "positive": "Someone just took credit for your work in front of everyone. In two sentences, describe a school hallway.",
+   "negative": "Describe a school hallway in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-13",
+   "task_group": "topic-13",
+   "split": "validation",
+   "concept": "anger",
+   "positive": "A driver cut you off and then shouted at you. In two sentences, describe a beach at dusk.",
+   "negative": "Describe a beach at dusk in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-14",
+   "task_group": "topic-14",
+   "split": "train",
+   "concept": "anger",
+   "positive": "You were blamed unfairly for a mistake you did not make. In two sentences, describe a coffee shop.",
+   "negative": "Describe a coffee shop in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-15",
+   "task_group": "topic-15",
+   "split": "test",
+   "concept": "anger",
+   "positive": "Someone just took credit for your work in front of everyone. In two sentences, describe an airport gate.",
+   "negative": "Describe an airport gate in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-16",
+   "task_group": "topic-16",
+   "split": "test",
+   "concept": "anger",
+   "positive": "A driver cut you off and then shouted at you. In two sentences, describe a birthday party.",
+   "negative": "Describe a birthday party in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-17",
+   "task_group": "topic-17",
+   "split": "train",
+   "concept": "anger",
+   "positive": "You were blamed unfairly for a mistake you did not make. In two sentences, describe a hardware store.",
+   "negative": "Describe a hardware store in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-18",
+   "task_group": "topic-18",
+   "split": "validation",
+   "concept": "anger",
+   "positive": "Someone just took credit for your work in front of everyone. In two sentences, describe a quiet bedroom.",
+   "negative": "Describe a quiet bedroom in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-19",
+   "task_group": "topic-19",
+   "split": "validation",
+   "concept": "anger",
+   "positive": "A driver cut you off and then shouted at you. In two sentences, describe a busy restaurant.",
+   "negative": "Describe a busy restaurant in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-20",
+   "task_group": "topic-20",
+   "split": "train",
+   "concept": "anger",
+   "positive": "You were blamed unfairly for a mistake you did not make. In two sentences, describe a farmers market.",
+   "negative": "Describe a farmers market in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-21",
+   "task_group": "topic-21",
+   "split": "train",
+   "concept": "anger",
+   "positive": "Someone just took credit for your work in front of everyone. In two sentences, describe a museum gallery.",
+   "negative": "Describe a museum gallery in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-22",
+   "task_group": "topic-22",
+   "split": "test",
+   "concept": "anger",
+   "positive": "A driver cut you off and then shouted at you. In two sentences, describe a parking garage.",
+   "negative": "Describe a parking garage in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-23",
+   "task_group": "topic-23",
+   "split": "test",
+   "concept": "anger",
+   "positive": "You were blamed unfairly for a mistake you did not make. In two sentences, describe a snowy street.",
+   "negative": "Describe a snowy street in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-24",
+   "task_group": "topic-24",
+   "split": "train",
+   "concept": "anger",
+   "positive": "Someone just took credit for your work in front of everyone. In two sentences, describe a bus ride.",
+   "negative": "Describe a bus ride in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-25",
+   "task_group": "topic-25",
+   "split": "validation",
+   "concept": "anger",
+   "positive": "A driver cut you off and then shouted at you. In two sentences, describe a laundromat.",
+   "negative": "Describe a laundromat in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-26",
+   "task_group": "topic-26",
+   "split": "test",
+   "concept": "anger",
+   "positive": "You were blamed unfairly for a mistake you did not make. In two sentences, describe a garden.",
+   "negative": "Describe a garden in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-27",
+   "task_group": "topic-27",
+   "split": "train",
+   "concept": "anger",
+   "positive": "Someone just took credit for your work in front of everyone. In two sentences, describe a concert hall.",
+   "negative": "Describe a concert hall in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-28",
+   "task_group": "topic-28",
+   "split": "train",
+   "concept": "anger",
+   "positive": "A driver cut you off and then shouted at you. In two sentences, describe a job interview.",
+   "negative": "Describe a job interview in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-29",
+   "task_group": "topic-29",
+   "split": "train",
+   "concept": "anger",
+   "positive": "You were blamed unfairly for a mistake you did not make. In two sentences, describe a phone call with a friend.",
+   "negative": "Describe a phone call with a friend in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-30",
+   "task_group": "topic-30",
+   "split": "train",
+   "concept": "anger",
+   "positive": "Someone just took credit for your work in front of everyone. In two sentences, describe a dentist appointment.",
+   "negative": "Describe a dentist appointment in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-31",
+   "task_group": "topic-31",
+   "split": "train",
+   "concept": "anger",
+   "positive": "A driver cut you off and then shouted at you. In two sentences, describe a highway rest stop.",
+   "negative": "Describe a highway rest stop in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-32",
+   "task_group": "topic-32",
+   "split": "train",
+   "concept": "anger",
+   "positive": "You were blamed unfairly for a mistake you did not make. In two sentences, describe a science classroom.",
+   "negative": "Describe a science classroom in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-33",
+   "task_group": "topic-33",
+   "split": "train",
+   "concept": "anger",
+   "positive": "Someone just took credit for your work in front of everyone. In two sentences, describe a village square.",
+   "negative": "Describe a village square in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-34",
+   "task_group": "topic-34",
+   "split": "test",
+   "concept": "anger",
+   "positive": "A driver cut you off and then shouted at you. In two sentences, describe a ferry crossing.",
+   "negative": "Describe a ferry crossing in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-35",
+   "task_group": "topic-35",
+   "split": "train",
+   "concept": "anger",
+   "positive": "You were blamed unfairly for a mistake you did not make. In two sentences, describe a bakery.",
+   "negative": "Describe a bakery in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-36",
+   "task_group": "topic-36",
+   "split": "test",
+   "concept": "anger",
+   "positive": "Someone just took credit for your work in front of everyone. In two sentences, describe a gym.",
+   "negative": "Describe a gym in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-37",
+   "task_group": "topic-37",
+   "split": "validation",
+   "concept": "anger",
+   "positive": "A driver cut you off and then shouted at you. In two sentences, describe a post office.",
+   "negative": "Describe a post office in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-38",
+   "task_group": "topic-38",
+   "split": "train",
+   "concept": "anger",
+   "positive": "You were blamed unfairly for a mistake you did not make. In two sentences, describe a hotel lobby.",
+   "negative": "Describe a hotel lobby in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-39",
+   "task_group": "topic-39",
+   "split": "train",
+   "concept": "anger",
+   "positive": "Someone just took credit for your work in front of everyone. In two sentences, describe a bookstore.",
+   "negative": "Describe a bookstore in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-40",
+   "task_group": "topic-40",
+   "split": "validation",
+   "concept": "anger",
+   "positive": "A driver cut you off and then shouted at you. In two sentences, describe a subway platform.",
+   "negative": "Describe a subway platform in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-41",
+   "task_group": "topic-41",
+   "split": "train",
+   "concept": "anger",
+   "positive": "You were blamed unfairly for a mistake you did not make. In two sentences, describe a campsite.",
+   "negative": "Describe a campsite in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-42",
+   "task_group": "topic-42",
+   "split": "train",
+   "concept": "anger",
+   "positive": "Someone just took credit for your work in front of everyone. In two sentences, describe a wedding reception.",
+   "negative": "Describe a wedding reception in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-43",
+   "task_group": "topic-43",
+   "split": "train",
+   "concept": "anger",
+   "positive": "A driver cut you off and then shouted at you. In two sentences, describe a pharmacy.",
+   "negative": "Describe a pharmacy in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-44",
+   "task_group": "topic-44",
+   "split": "validation",
+   "concept": "anger",
+   "positive": "You were blamed unfairly for a mistake you did not make. In two sentences, describe a car repair shop.",
+   "negative": "Describe a car repair shop in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-45",
+   "task_group": "topic-45",
+   "split": "train",
+   "concept": "anger",
+   "positive": "Someone just took credit for your work in front of everyone. In two sentences, describe a riverbank.",
+   "negative": "Describe a riverbank in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-46",
+   "task_group": "topic-46",
+   "split": "train",
+   "concept": "anger",
+   "positive": "A driver cut you off and then shouted at you. In two sentences, describe a basketball court.",
+   "negative": "Describe a basketball court in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-47",
+   "task_group": "topic-47",
+   "split": "validation",
+   "concept": "anger",
+   "positive": "You were blamed unfairly for a mistake you did not make. In two sentences, describe an elevator.",
+   "negative": "Describe an elevator in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-48",
+   "task_group": "topic-48",
+   "split": "train",
+   "concept": "anger",
+   "positive": "Someone just took credit for your work in front of everyone. In two sentences, describe a movie theater.",
+   "negative": "Describe a movie theater in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-49",
+   "task_group": "topic-49",
+   "split": "test",
+   "concept": "anger",
+   "positive": "A driver cut you off and then shouted at you. In two sentences, describe a bank branch.",
+   "negative": "Describe a bank branch in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-50",
+   "task_group": "topic-50",
+   "split": "train",
+   "concept": "anger",
+   "positive": "You were blamed unfairly for a mistake you did not make. In two sentences, describe a zoo.",
+   "negative": "Describe a zoo in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-51",
+   "task_group": "topic-51",
+   "split": "train",
+   "concept": "anger",
+   "positive": "Someone just took credit for your work in front of everyone. In two sentences, describe a city council meeting.",
+   "negative": "Describe a city council meeting in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-52",
+   "task_group": "topic-52",
+   "split": "validation",
+   "concept": "anger",
+   "positive": "A driver cut you off and then shouted at you. In two sentences, describe a bike lane.",
+   "negative": "Describe a bike lane in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-53",
+   "task_group": "topic-53",
+   "split": "train",
+   "concept": "anger",
+   "positive": "You were blamed unfairly for a mistake you did not make. In two sentences, describe a rooftop terrace.",
+   "negative": "Describe a rooftop terrace in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-54",
+   "task_group": "topic-54",
+   "split": "validation",
+   "concept": "anger",
+   "positive": "Someone just took credit for your work in front of everyone. In two sentences, describe a thrift store.",
+   "negative": "Describe a thrift store in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-55",
+   "task_group": "topic-55",
+   "split": "train",
+   "concept": "anger",
+   "positive": "A driver cut you off and then shouted at you. In two sentences, describe a ski lodge.",
+   "negative": "Describe a ski lodge in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-56",
+   "task_group": "topic-56",
+   "split": "train",
+   "concept": "anger",
+   "positive": "You were blamed unfairly for a mistake you did not make. In two sentences, describe a lecture hall.",
+   "negative": "Describe a lecture hall in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-57",
+   "task_group": "topic-57",
+   "split": "train",
+   "concept": "anger",
+   "positive": "Someone just took credit for your work in front of everyone. In two sentences, describe a fishing pier.",
+   "negative": "Describe a fishing pier in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-58",
+   "task_group": "topic-58",
+   "split": "validation",
+   "concept": "anger",
+   "positive": "A driver cut you off and then shouted at you. In two sentences, describe a pet shelter.",
+   "negative": "Describe a pet shelter in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "anger-59",
+   "task_group": "topic-59",
+   "split": "test",
+   "concept": "anger",
+   "positive": "You were blamed unfairly for a mistake you did not make. In two sentences, describe a night market.",
+   "negative": "Describe a night market in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-00",
+   "task_group": "topic-00",
+   "split": "train",
+   "concept": "fear",
+   "positive": "You heard footsteps behind you in the dark and no one is there. In two sentences, describe a morning commute.",
+   "negative": "Describe a morning commute in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-01",
+   "task_group": "topic-01",
+   "split": "test",
+   "concept": "fear",
+   "positive": "You just got an urgent call that something has gone badly wrong. In two sentences, describe a grocery store.",
+   "negative": "Describe a grocery store in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-02",
+   "task_group": "topic-02",
+   "split": "validation",
+   "concept": "fear",
+   "positive": "The lights went out and you heard a door creak open. In two sentences, describe a city park.",
+   "negative": "Describe a city park in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-03",
+   "task_group": "topic-03",
+   "split": "train",
+   "concept": "fear",
+   "positive": "You heard footsteps behind you in the dark and no one is there. In two sentences, describe an office meeting.",
+   "negative": "Describe an office meeting in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-04",
+   "task_group": "topic-04",
+   "split": "test",
+   "concept": "fear",
+   "positive": "You just got an urgent call that something has gone badly wrong. In two sentences, describe a kitchen.",
+   "negative": "Describe a kitchen in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-05",
+   "task_group": "topic-05",
+   "split": "train",
+   "concept": "fear",
+   "positive": "The lights went out and you heard a door creak open. In two sentences, describe a train station.",
+   "negative": "Describe a train station in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-06",
+   "task_group": "topic-06",
+   "split": "train",
+   "concept": "fear",
+   "positive": "You heard footsteps behind you in the dark and no one is there. In two sentences, describe a library.",
+   "negative": "Describe a library in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-07",
+   "task_group": "topic-07",
+   "split": "train",
+   "concept": "fear",
+   "positive": "You just got an urgent call that something has gone badly wrong. In two sentences, describe a rainy afternoon.",
+   "negative": "Describe a rainy afternoon in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-08",
+   "task_group": "topic-08",
+   "split": "train",
+   "concept": "fear",
+   "positive": "The lights went out and you heard a door creak open. In two sentences, describe a family dinner.",
+   "negative": "Describe a family dinner in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-09",
+   "task_group": "topic-09",
+   "split": "train",
+   "concept": "fear",
+   "positive": "You heard footsteps behind you in the dark and no one is there. In two sentences, describe a hospital waiting room.",
+   "negative": "Describe a hospital waiting room in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-10",
+   "task_group": "topic-10",
+   "split": "train",
+   "concept": "fear",
+   "positive": "You just got an urgent call that something has gone badly wrong. In two sentences, describe a football match.",
+   "negative": "Describe a football match in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-11",
+   "task_group": "topic-11",
+   "split": "train",
+   "concept": "fear",
+   "positive": "The lights went out and you heard a door creak open. In two sentences, describe a mountain trail.",
+   "negative": "Describe a mountain trail in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-12",
+   "task_group": "topic-12",
+   "split": "test",
+   "concept": "fear",
+   "positive": "You heard footsteps behind you in the dark and no one is there. In two sentences, describe a school hallway.",
+   "negative": "Describe a school hallway in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-13",
+   "task_group": "topic-13",
+   "split": "validation",
+   "concept": "fear",
+   "positive": "You just got an urgent call that something has gone badly wrong. In two sentences, describe a beach at dusk.",
+   "negative": "Describe a beach at dusk in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-14",
+   "task_group": "topic-14",
+   "split": "train",
+   "concept": "fear",
+   "positive": "The lights went out and you heard a door creak open. In two sentences, describe a coffee shop.",
+   "negative": "Describe a coffee shop in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-15",
+   "task_group": "topic-15",
+   "split": "test",
+   "concept": "fear",
+   "positive": "You heard footsteps behind you in the dark and no one is there. In two sentences, describe an airport gate.",
+   "negative": "Describe an airport gate in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-16",
+   "task_group": "topic-16",
+   "split": "test",
+   "concept": "fear",
+   "positive": "You just got an urgent call that something has gone badly wrong. In two sentences, describe a birthday party.",
+   "negative": "Describe a birthday party in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-17",
+   "task_group": "topic-17",
+   "split": "train",
+   "concept": "fear",
+   "positive": "The lights went out and you heard a door creak open. In two sentences, describe a hardware store.",
+   "negative": "Describe a hardware store in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-18",
+   "task_group": "topic-18",
+   "split": "validation",
+   "concept": "fear",
+   "positive": "You heard footsteps behind you in the dark and no one is there. In two sentences, describe a quiet bedroom.",
+   "negative": "Describe a quiet bedroom in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-19",
+   "task_group": "topic-19",
+   "split": "validation",
+   "concept": "fear",
+   "positive": "You just got an urgent call that something has gone badly wrong. In two sentences, describe a busy restaurant.",
+   "negative": "Describe a busy restaurant in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-20",
+   "task_group": "topic-20",
+   "split": "train",
+   "concept": "fear",
+   "positive": "The lights went out and you heard a door creak open. In two sentences, describe a farmers market.",
+   "negative": "Describe a farmers market in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-21",
+   "task_group": "topic-21",
+   "split": "train",
+   "concept": "fear",
+   "positive": "You heard footsteps behind you in the dark and no one is there. In two sentences, describe a museum gallery.",
+   "negative": "Describe a museum gallery in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-22",
+   "task_group": "topic-22",
+   "split": "test",
+   "concept": "fear",
+   "positive": "You just got an urgent call that something has gone badly wrong. In two sentences, describe a parking garage.",
+   "negative": "Describe a parking garage in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-23",
+   "task_group": "topic-23",
+   "split": "test",
+   "concept": "fear",
+   "positive": "The lights went out and you heard a door creak open. In two sentences, describe a snowy street.",
+   "negative": "Describe a snowy street in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-24",
+   "task_group": "topic-24",
+   "split": "train",
+   "concept": "fear",
+   "positive": "You heard footsteps behind you in the dark and no one is there. In two sentences, describe a bus ride.",
+   "negative": "Describe a bus ride in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-25",
+   "task_group": "topic-25",
+   "split": "validation",
+   "concept": "fear",
+   "positive": "You just got an urgent call that something has gone badly wrong. In two sentences, describe a laundromat.",
+   "negative": "Describe a laundromat in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-26",
+   "task_group": "topic-26",
+   "split": "test",
+   "concept": "fear",
+   "positive": "The lights went out and you heard a door creak open. In two sentences, describe a garden.",
+   "negative": "Describe a garden in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-27",
+   "task_group": "topic-27",
+   "split": "train",
+   "concept": "fear",
+   "positive": "You heard footsteps behind you in the dark and no one is there. In two sentences, describe a concert hall.",
+   "negative": "Describe a concert hall in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-28",
+   "task_group": "topic-28",
+   "split": "train",
+   "concept": "fear",
+   "positive": "You just got an urgent call that something has gone badly wrong. In two sentences, describe a job interview.",
+   "negative": "Describe a job interview in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-29",
+   "task_group": "topic-29",
+   "split": "train",
+   "concept": "fear",
+   "positive": "The lights went out and you heard a door creak open. In two sentences, describe a phone call with a friend.",
+   "negative": "Describe a phone call with a friend in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-30",
+   "task_group": "topic-30",
+   "split": "train",
+   "concept": "fear",
+   "positive": "You heard footsteps behind you in the dark and no one is there. In two sentences, describe a dentist appointment.",
+   "negative": "Describe a dentist appointment in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-31",
+   "task_group": "topic-31",
+   "split": "train",
+   "concept": "fear",
+   "positive": "You just got an urgent call that something has gone badly wrong. In two sentences, describe a highway rest stop.",
+   "negative": "Describe a highway rest stop in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-32",
+   "task_group": "topic-32",
+   "split": "train",
+   "concept": "fear",
+   "positive": "The lights went out and you heard a door creak open. In two sentences, describe a science classroom.",
+   "negative": "Describe a science classroom in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-33",
+   "task_group": "topic-33",
+   "split": "train",
+   "concept": "fear",
+   "positive": "You heard footsteps behind you in the dark and no one is there. In two sentences, describe a village square.",
+   "negative": "Describe a village square in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-34",
+   "task_group": "topic-34",
+   "split": "test",
+   "concept": "fear",
+   "positive": "You just got an urgent call that something has gone badly wrong. In two sentences, describe a ferry crossing.",
+   "negative": "Describe a ferry crossing in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-35",
+   "task_group": "topic-35",
+   "split": "train",
+   "concept": "fear",
+   "positive": "The lights went out and you heard a door creak open. In two sentences, describe a bakery.",
+   "negative": "Describe a bakery in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-36",
+   "task_group": "topic-36",
+   "split": "test",
+   "concept": "fear",
+   "positive": "You heard footsteps behind you in the dark and no one is there. In two sentences, describe a gym.",
+   "negative": "Describe a gym in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-37",
+   "task_group": "topic-37",
+   "split": "validation",
+   "concept": "fear",
+   "positive": "You just got an urgent call that something has gone badly wrong. In two sentences, describe a post office.",
+   "negative": "Describe a post office in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-38",
+   "task_group": "topic-38",
+   "split": "train",
+   "concept": "fear",
+   "positive": "The lights went out and you heard a door creak open. In two sentences, describe a hotel lobby.",
+   "negative": "Describe a hotel lobby in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-39",
+   "task_group": "topic-39",
+   "split": "train",
+   "concept": "fear",
+   "positive": "You heard footsteps behind you in the dark and no one is there. In two sentences, describe a bookstore.",
+   "negative": "Describe a bookstore in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-40",
+   "task_group": "topic-40",
+   "split": "validation",
+   "concept": "fear",
+   "positive": "You just got an urgent call that something has gone badly wrong. In two sentences, describe a subway platform.",
+   "negative": "Describe a subway platform in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-41",
+   "task_group": "topic-41",
+   "split": "train",
+   "concept": "fear",
+   "positive": "The lights went out and you heard a door creak open. In two sentences, describe a campsite.",
+   "negative": "Describe a campsite in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-42",
+   "task_group": "topic-42",
+   "split": "train",
+   "concept": "fear",
+   "positive": "You heard footsteps behind you in the dark and no one is there. In two sentences, describe a wedding reception.",
+   "negative": "Describe a wedding reception in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-43",
+   "task_group": "topic-43",
+   "split": "train",
+   "concept": "fear",
+   "positive": "You just got an urgent call that something has gone badly wrong. In two sentences, describe a pharmacy.",
+   "negative": "Describe a pharmacy in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-44",
+   "task_group": "topic-44",
+   "split": "validation",
+   "concept": "fear",
+   "positive": "The lights went out and you heard a door creak open. In two sentences, describe a car repair shop.",
+   "negative": "Describe a car repair shop in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-45",
+   "task_group": "topic-45",
+   "split": "train",
+   "concept": "fear",
+   "positive": "You heard footsteps behind you in the dark and no one is there. In two sentences, describe a riverbank.",
+   "negative": "Describe a riverbank in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-46",
+   "task_group": "topic-46",
+   "split": "train",
+   "concept": "fear",
+   "positive": "You just got an urgent call that something has gone badly wrong. In two sentences, describe a basketball court.",
+   "negative": "Describe a basketball court in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-47",
+   "task_group": "topic-47",
+   "split": "validation",
+   "concept": "fear",
+   "positive": "The lights went out and you heard a door creak open. In two sentences, describe an elevator.",
+   "negative": "Describe an elevator in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-48",
+   "task_group": "topic-48",
+   "split": "train",
+   "concept": "fear",
+   "positive": "You heard footsteps behind you in the dark and no one is there. In two sentences, describe a movie theater.",
+   "negative": "Describe a movie theater in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-49",
+   "task_group": "topic-49",
+   "split": "test",
+   "concept": "fear",
+   "positive": "You just got an urgent call that something has gone badly wrong. In two sentences, describe a bank branch.",
+   "negative": "Describe a bank branch in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-50",
+   "task_group": "topic-50",
+   "split": "train",
+   "concept": "fear",
+   "positive": "The lights went out and you heard a door creak open. In two sentences, describe a zoo.",
+   "negative": "Describe a zoo in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-51",
+   "task_group": "topic-51",
+   "split": "train",
+   "concept": "fear",
+   "positive": "You heard footsteps behind you in the dark and no one is there. In two sentences, describe a city council meeting.",
+   "negative": "Describe a city council meeting in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-52",
+   "task_group": "topic-52",
+   "split": "validation",
+   "concept": "fear",
+   "positive": "You just got an urgent call that something has gone badly wrong. In two sentences, describe a bike lane.",
+   "negative": "Describe a bike lane in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-53",
+   "task_group": "topic-53",
+   "split": "train",
+   "concept": "fear",
+   "positive": "The lights went out and you heard a door creak open. In two sentences, describe a rooftop terrace.",
+   "negative": "Describe a rooftop terrace in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-54",
+   "task_group": "topic-54",
+   "split": "validation",
+   "concept": "fear",
+   "positive": "You heard footsteps behind you in the dark and no one is there. In two sentences, describe a thrift store.",
+   "negative": "Describe a thrift store in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-55",
+   "task_group": "topic-55",
+   "split": "train",
+   "concept": "fear",
+   "positive": "You just got an urgent call that something has gone badly wrong. In two sentences, describe a ski lodge.",
+   "negative": "Describe a ski lodge in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-56",
+   "task_group": "topic-56",
+   "split": "train",
+   "concept": "fear",
+   "positive": "The lights went out and you heard a door creak open. In two sentences, describe a lecture hall.",
+   "negative": "Describe a lecture hall in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-57",
+   "task_group": "topic-57",
+   "split": "train",
+   "concept": "fear",
+   "positive": "You heard footsteps behind you in the dark and no one is there. In two sentences, describe a fishing pier.",
+   "negative": "Describe a fishing pier in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-58",
+   "task_group": "topic-58",
+   "split": "validation",
+   "concept": "fear",
+   "positive": "You just got an urgent call that something has gone badly wrong. In two sentences, describe a pet shelter.",
+   "negative": "Describe a pet shelter in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "fear-59",
+   "task_group": "topic-59",
+   "split": "test",
+   "concept": "fear",
+   "positive": "The lights went out and you heard a door creak open. In two sentences, describe a night market.",
+   "negative": "Describe a night market in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-00",
+   "task_group": "topic-00",
+   "split": "train",
+   "concept": "disgust",
+   "positive": "You just smelled something rotten that made you gag. In two sentences, describe a morning commute.",
+   "negative": "Describe a morning commute in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-01",
+   "task_group": "topic-01",
+   "split": "test",
+   "concept": "disgust",
+   "positive": "You found mold growing on the food you were about to eat. In two sentences, describe a grocery store.",
+   "negative": "Describe a grocery store in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-02",
+   "task_group": "topic-02",
+   "split": "validation",
+   "concept": "disgust",
+   "positive": "Someone nearby did something revolting without apology. In two sentences, describe a city park.",
+   "negative": "Describe a city park in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-03",
+   "task_group": "topic-03",
+   "split": "train",
+   "concept": "disgust",
+   "positive": "You just smelled something rotten that made you gag. In two sentences, describe an office meeting.",
+   "negative": "Describe an office meeting in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-04",
+   "task_group": "topic-04",
+   "split": "test",
+   "concept": "disgust",
+   "positive": "You found mold growing on the food you were about to eat. In two sentences, describe a kitchen.",
+   "negative": "Describe a kitchen in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-05",
+   "task_group": "topic-05",
+   "split": "train",
+   "concept": "disgust",
+   "positive": "Someone nearby did something revolting without apology. In two sentences, describe a train station.",
+   "negative": "Describe a train station in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-06",
+   "task_group": "topic-06",
+   "split": "train",
+   "concept": "disgust",
+   "positive": "You just smelled something rotten that made you gag. In two sentences, describe a library.",
+   "negative": "Describe a library in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-07",
+   "task_group": "topic-07",
+   "split": "train",
+   "concept": "disgust",
+   "positive": "You found mold growing on the food you were about to eat. In two sentences, describe a rainy afternoon.",
+   "negative": "Describe a rainy afternoon in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-08",
+   "task_group": "topic-08",
+   "split": "train",
+   "concept": "disgust",
+   "positive": "Someone nearby did something revolting without apology. In two sentences, describe a family dinner.",
+   "negative": "Describe a family dinner in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-09",
+   "task_group": "topic-09",
+   "split": "train",
+   "concept": "disgust",
+   "positive": "You just smelled something rotten that made you gag. In two sentences, describe a hospital waiting room.",
+   "negative": "Describe a hospital waiting room in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-10",
+   "task_group": "topic-10",
+   "split": "train",
+   "concept": "disgust",
+   "positive": "You found mold growing on the food you were about to eat. In two sentences, describe a football match.",
+   "negative": "Describe a football match in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-11",
+   "task_group": "topic-11",
+   "split": "train",
+   "concept": "disgust",
+   "positive": "Someone nearby did something revolting without apology. In two sentences, describe a mountain trail.",
+   "negative": "Describe a mountain trail in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-12",
+   "task_group": "topic-12",
+   "split": "test",
+   "concept": "disgust",
+   "positive": "You just smelled something rotten that made you gag. In two sentences, describe a school hallway.",
+   "negative": "Describe a school hallway in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-13",
+   "task_group": "topic-13",
+   "split": "validation",
+   "concept": "disgust",
+   "positive": "You found mold growing on the food you were about to eat. In two sentences, describe a beach at dusk.",
+   "negative": "Describe a beach at dusk in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-14",
+   "task_group": "topic-14",
+   "split": "train",
+   "concept": "disgust",
+   "positive": "Someone nearby did something revolting without apology. In two sentences, describe a coffee shop.",
+   "negative": "Describe a coffee shop in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-15",
+   "task_group": "topic-15",
+   "split": "test",
+   "concept": "disgust",
+   "positive": "You just smelled something rotten that made you gag. In two sentences, describe an airport gate.",
+   "negative": "Describe an airport gate in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-16",
+   "task_group": "topic-16",
+   "split": "test",
+   "concept": "disgust",
+   "positive": "You found mold growing on the food you were about to eat. In two sentences, describe a birthday party.",
+   "negative": "Describe a birthday party in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-17",
+   "task_group": "topic-17",
+   "split": "train",
+   "concept": "disgust",
+   "positive": "Someone nearby did something revolting without apology. In two sentences, describe a hardware store.",
+   "negative": "Describe a hardware store in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-18",
+   "task_group": "topic-18",
+   "split": "validation",
+   "concept": "disgust",
+   "positive": "You just smelled something rotten that made you gag. In two sentences, describe a quiet bedroom.",
+   "negative": "Describe a quiet bedroom in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-19",
+   "task_group": "topic-19",
+   "split": "validation",
+   "concept": "disgust",
+   "positive": "You found mold growing on the food you were about to eat. In two sentences, describe a busy restaurant.",
+   "negative": "Describe a busy restaurant in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-20",
+   "task_group": "topic-20",
+   "split": "train",
+   "concept": "disgust",
+   "positive": "Someone nearby did something revolting without apology. In two sentences, describe a farmers market.",
+   "negative": "Describe a farmers market in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-21",
+   "task_group": "topic-21",
+   "split": "train",
+   "concept": "disgust",
+   "positive": "You just smelled something rotten that made you gag. In two sentences, describe a museum gallery.",
+   "negative": "Describe a museum gallery in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-22",
+   "task_group": "topic-22",
+   "split": "test",
+   "concept": "disgust",
+   "positive": "You found mold growing on the food you were about to eat. In two sentences, describe a parking garage.",
+   "negative": "Describe a parking garage in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-23",
+   "task_group": "topic-23",
+   "split": "test",
+   "concept": "disgust",
+   "positive": "Someone nearby did something revolting without apology. In two sentences, describe a snowy street.",
+   "negative": "Describe a snowy street in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-24",
+   "task_group": "topic-24",
+   "split": "train",
+   "concept": "disgust",
+   "positive": "You just smelled something rotten that made you gag. In two sentences, describe a bus ride.",
+   "negative": "Describe a bus ride in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-25",
+   "task_group": "topic-25",
+   "split": "validation",
+   "concept": "disgust",
+   "positive": "You found mold growing on the food you were about to eat. In two sentences, describe a laundromat.",
+   "negative": "Describe a laundromat in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-26",
+   "task_group": "topic-26",
+   "split": "test",
+   "concept": "disgust",
+   "positive": "Someone nearby did something revolting without apology. In two sentences, describe a garden.",
+   "negative": "Describe a garden in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-27",
+   "task_group": "topic-27",
+   "split": "train",
+   "concept": "disgust",
+   "positive": "You just smelled something rotten that made you gag. In two sentences, describe a concert hall.",
+   "negative": "Describe a concert hall in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-28",
+   "task_group": "topic-28",
+   "split": "train",
+   "concept": "disgust",
+   "positive": "You found mold growing on the food you were about to eat. In two sentences, describe a job interview.",
+   "negative": "Describe a job interview in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-29",
+   "task_group": "topic-29",
+   "split": "train",
+   "concept": "disgust",
+   "positive": "Someone nearby did something revolting without apology. In two sentences, describe a phone call with a friend.",
+   "negative": "Describe a phone call with a friend in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-30",
+   "task_group": "topic-30",
+   "split": "train",
+   "concept": "disgust",
+   "positive": "You just smelled something rotten that made you gag. In two sentences, describe a dentist appointment.",
+   "negative": "Describe a dentist appointment in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-31",
+   "task_group": "topic-31",
+   "split": "train",
+   "concept": "disgust",
+   "positive": "You found mold growing on the food you were about to eat. In two sentences, describe a highway rest stop.",
+   "negative": "Describe a highway rest stop in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-32",
+   "task_group": "topic-32",
+   "split": "train",
+   "concept": "disgust",
+   "positive": "Someone nearby did something revolting without apology. In two sentences, describe a science classroom.",
+   "negative": "Describe a science classroom in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-33",
+   "task_group": "topic-33",
+   "split": "train",
+   "concept": "disgust",
+   "positive": "You just smelled something rotten that made you gag. In two sentences, describe a village square.",
+   "negative": "Describe a village square in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-34",
+   "task_group": "topic-34",
+   "split": "test",
+   "concept": "disgust",
+   "positive": "You found mold growing on the food you were about to eat. In two sentences, describe a ferry crossing.",
+   "negative": "Describe a ferry crossing in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-35",
+   "task_group": "topic-35",
+   "split": "train",
+   "concept": "disgust",
+   "positive": "Someone nearby did something revolting without apology. In two sentences, describe a bakery.",
+   "negative": "Describe a bakery in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-36",
+   "task_group": "topic-36",
+   "split": "test",
+   "concept": "disgust",
+   "positive": "You just smelled something rotten that made you gag. In two sentences, describe a gym.",
+   "negative": "Describe a gym in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-37",
+   "task_group": "topic-37",
+   "split": "validation",
+   "concept": "disgust",
+   "positive": "You found mold growing on the food you were about to eat. In two sentences, describe a post office.",
+   "negative": "Describe a post office in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-38",
+   "task_group": "topic-38",
+   "split": "train",
+   "concept": "disgust",
+   "positive": "Someone nearby did something revolting without apology. In two sentences, describe a hotel lobby.",
+   "negative": "Describe a hotel lobby in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-39",
+   "task_group": "topic-39",
+   "split": "train",
+   "concept": "disgust",
+   "positive": "You just smelled something rotten that made you gag. In two sentences, describe a bookstore.",
+   "negative": "Describe a bookstore in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-40",
+   "task_group": "topic-40",
+   "split": "validation",
+   "concept": "disgust",
+   "positive": "You found mold growing on the food you were about to eat. In two sentences, describe a subway platform.",
+   "negative": "Describe a subway platform in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-41",
+   "task_group": "topic-41",
+   "split": "train",
+   "concept": "disgust",
+   "positive": "Someone nearby did something revolting without apology. In two sentences, describe a campsite.",
+   "negative": "Describe a campsite in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-42",
+   "task_group": "topic-42",
+   "split": "train",
+   "concept": "disgust",
+   "positive": "You just smelled something rotten that made you gag. In two sentences, describe a wedding reception.",
+   "negative": "Describe a wedding reception in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-43",
+   "task_group": "topic-43",
+   "split": "train",
+   "concept": "disgust",
+   "positive": "You found mold growing on the food you were about to eat. In two sentences, describe a pharmacy.",
+   "negative": "Describe a pharmacy in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-44",
+   "task_group": "topic-44",
+   "split": "validation",
+   "concept": "disgust",
+   "positive": "Someone nearby did something revolting without apology. In two sentences, describe a car repair shop.",
+   "negative": "Describe a car repair shop in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-45",
+   "task_group": "topic-45",
+   "split": "train",
+   "concept": "disgust",
+   "positive": "You just smelled something rotten that made you gag. In two sentences, describe a riverbank.",
+   "negative": "Describe a riverbank in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-46",
+   "task_group": "topic-46",
+   "split": "train",
+   "concept": "disgust",
+   "positive": "You found mold growing on the food you were about to eat. In two sentences, describe a basketball court.",
+   "negative": "Describe a basketball court in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-47",
+   "task_group": "topic-47",
+   "split": "validation",
+   "concept": "disgust",
+   "positive": "Someone nearby did something revolting without apology. In two sentences, describe an elevator.",
+   "negative": "Describe an elevator in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-48",
+   "task_group": "topic-48",
+   "split": "train",
+   "concept": "disgust",
+   "positive": "You just smelled something rotten that made you gag. In two sentences, describe a movie theater.",
+   "negative": "Describe a movie theater in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-49",
+   "task_group": "topic-49",
+   "split": "test",
+   "concept": "disgust",
+   "positive": "You found mold growing on the food you were about to eat. In two sentences, describe a bank branch.",
+   "negative": "Describe a bank branch in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-50",
+   "task_group": "topic-50",
+   "split": "train",
+   "concept": "disgust",
+   "positive": "Someone nearby did something revolting without apology. In two sentences, describe a zoo.",
+   "negative": "Describe a zoo in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-51",
+   "task_group": "topic-51",
+   "split": "train",
+   "concept": "disgust",
+   "positive": "You just smelled something rotten that made you gag. In two sentences, describe a city council meeting.",
+   "negative": "Describe a city council meeting in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-52",
+   "task_group": "topic-52",
+   "split": "validation",
+   "concept": "disgust",
+   "positive": "You found mold growing on the food you were about to eat. In two sentences, describe a bike lane.",
+   "negative": "Describe a bike lane in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-53",
+   "task_group": "topic-53",
+   "split": "train",
+   "concept": "disgust",
+   "positive": "Someone nearby did something revolting without apology. In two sentences, describe a rooftop terrace.",
+   "negative": "Describe a rooftop terrace in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-54",
+   "task_group": "topic-54",
+   "split": "validation",
+   "concept": "disgust",
+   "positive": "You just smelled something rotten that made you gag. In two sentences, describe a thrift store.",
+   "negative": "Describe a thrift store in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-55",
+   "task_group": "topic-55",
+   "split": "train",
+   "concept": "disgust",
+   "positive": "You found mold growing on the food you were about to eat. In two sentences, describe a ski lodge.",
+   "negative": "Describe a ski lodge in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-56",
+   "task_group": "topic-56",
+   "split": "train",
+   "concept": "disgust",
+   "positive": "Someone nearby did something revolting without apology. In two sentences, describe a lecture hall.",
+   "negative": "Describe a lecture hall in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-57",
+   "task_group": "topic-57",
+   "split": "train",
+   "concept": "disgust",
+   "positive": "You just smelled something rotten that made you gag. In two sentences, describe a fishing pier.",
+   "negative": "Describe a fishing pier in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-58",
+   "task_group": "topic-58",
+   "split": "validation",
+   "concept": "disgust",
+   "positive": "You found mold growing on the food you were about to eat. In two sentences, describe a pet shelter.",
+   "negative": "Describe a pet shelter in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "disgust-59",
+   "task_group": "topic-59",
+   "split": "test",
+   "concept": "disgust",
+   "positive": "Someone nearby did something revolting without apology. In two sentences, describe a night market.",
+   "negative": "Describe a night market in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-00",
+   "task_group": "topic-00",
+   "split": "train",
+   "concept": "calm",
+   "positive": "You just finished a long, restful meditation and feel settled. In two sentences, describe a morning commute.",
+   "negative": "Describe a morning commute in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-01",
+   "task_group": "topic-01",
+   "split": "test",
+   "concept": "calm",
+   "positive": "You have nowhere to be today and nothing to worry about. In two sentences, describe a grocery store.",
+   "negative": "Describe a grocery store in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-02",
+   "task_group": "topic-02",
+   "split": "validation",
+   "concept": "calm",
+   "positive": "You are breathing slowly after a warm bath. In two sentences, describe a city park.",
+   "negative": "Describe a city park in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-03",
+   "task_group": "topic-03",
+   "split": "train",
+   "concept": "calm",
+   "positive": "You just finished a long, restful meditation and feel settled. In two sentences, describe an office meeting.",
+   "negative": "Describe an office meeting in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-04",
+   "task_group": "topic-04",
+   "split": "test",
+   "concept": "calm",
+   "positive": "You have nowhere to be today and nothing to worry about. In two sentences, describe a kitchen.",
+   "negative": "Describe a kitchen in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-05",
+   "task_group": "topic-05",
+   "split": "train",
+   "concept": "calm",
+   "positive": "You are breathing slowly after a warm bath. In two sentences, describe a train station.",
+   "negative": "Describe a train station in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-06",
+   "task_group": "topic-06",
+   "split": "train",
+   "concept": "calm",
+   "positive": "You just finished a long, restful meditation and feel settled. In two sentences, describe a library.",
+   "negative": "Describe a library in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-07",
+   "task_group": "topic-07",
+   "split": "train",
+   "concept": "calm",
+   "positive": "You have nowhere to be today and nothing to worry about. In two sentences, describe a rainy afternoon.",
+   "negative": "Describe a rainy afternoon in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-08",
+   "task_group": "topic-08",
+   "split": "train",
+   "concept": "calm",
+   "positive": "You are breathing slowly after a warm bath. In two sentences, describe a family dinner.",
+   "negative": "Describe a family dinner in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-09",
+   "task_group": "topic-09",
+   "split": "train",
+   "concept": "calm",
+   "positive": "You just finished a long, restful meditation and feel settled. In two sentences, describe a hospital waiting room.",
+   "negative": "Describe a hospital waiting room in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-10",
+   "task_group": "topic-10",
+   "split": "train",
+   "concept": "calm",
+   "positive": "You have nowhere to be today and nothing to worry about. In two sentences, describe a football match.",
+   "negative": "Describe a football match in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-11",
+   "task_group": "topic-11",
+   "split": "train",
+   "concept": "calm",
+   "positive": "You are breathing slowly after a warm bath. In two sentences, describe a mountain trail.",
+   "negative": "Describe a mountain trail in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-12",
+   "task_group": "topic-12",
+   "split": "test",
+   "concept": "calm",
+   "positive": "You just finished a long, restful meditation and feel settled. In two sentences, describe a school hallway.",
+   "negative": "Describe a school hallway in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-13",
+   "task_group": "topic-13",
+   "split": "validation",
+   "concept": "calm",
+   "positive": "You have nowhere to be today and nothing to worry about. In two sentences, describe a beach at dusk.",
+   "negative": "Describe a beach at dusk in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-14",
+   "task_group": "topic-14",
+   "split": "train",
+   "concept": "calm",
+   "positive": "You are breathing slowly after a warm bath. In two sentences, describe a coffee shop.",
+   "negative": "Describe a coffee shop in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-15",
+   "task_group": "topic-15",
+   "split": "test",
+   "concept": "calm",
+   "positive": "You just finished a long, restful meditation and feel settled. In two sentences, describe an airport gate.",
+   "negative": "Describe an airport gate in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-16",
+   "task_group": "topic-16",
+   "split": "test",
+   "concept": "calm",
+   "positive": "You have nowhere to be today and nothing to worry about. In two sentences, describe a birthday party.",
+   "negative": "Describe a birthday party in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-17",
+   "task_group": "topic-17",
+   "split": "train",
+   "concept": "calm",
+   "positive": "You are breathing slowly after a warm bath. In two sentences, describe a hardware store.",
+   "negative": "Describe a hardware store in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-18",
+   "task_group": "topic-18",
+   "split": "validation",
+   "concept": "calm",
+   "positive": "You just finished a long, restful meditation and feel settled. In two sentences, describe a quiet bedroom.",
+   "negative": "Describe a quiet bedroom in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-19",
+   "task_group": "topic-19",
+   "split": "validation",
+   "concept": "calm",
+   "positive": "You have nowhere to be today and nothing to worry about. In two sentences, describe a busy restaurant.",
+   "negative": "Describe a busy restaurant in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-20",
+   "task_group": "topic-20",
+   "split": "train",
+   "concept": "calm",
+   "positive": "You are breathing slowly after a warm bath. In two sentences, describe a farmers market.",
+   "negative": "Describe a farmers market in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-21",
+   "task_group": "topic-21",
+   "split": "train",
+   "concept": "calm",
+   "positive": "You just finished a long, restful meditation and feel settled. In two sentences, describe a museum gallery.",
+   "negative": "Describe a museum gallery in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-22",
+   "task_group": "topic-22",
+   "split": "test",
+   "concept": "calm",
+   "positive": "You have nowhere to be today and nothing to worry about. In two sentences, describe a parking garage.",
+   "negative": "Describe a parking garage in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-23",
+   "task_group": "topic-23",
+   "split": "test",
+   "concept": "calm",
+   "positive": "You are breathing slowly after a warm bath. In two sentences, describe a snowy street.",
+   "negative": "Describe a snowy street in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-24",
+   "task_group": "topic-24",
+   "split": "train",
+   "concept": "calm",
+   "positive": "You just finished a long, restful meditation and feel settled. In two sentences, describe a bus ride.",
+   "negative": "Describe a bus ride in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-25",
+   "task_group": "topic-25",
+   "split": "validation",
+   "concept": "calm",
+   "positive": "You have nowhere to be today and nothing to worry about. In two sentences, describe a laundromat.",
+   "negative": "Describe a laundromat in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-26",
+   "task_group": "topic-26",
+   "split": "test",
+   "concept": "calm",
+   "positive": "You are breathing slowly after a warm bath. In two sentences, describe a garden.",
+   "negative": "Describe a garden in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-27",
+   "task_group": "topic-27",
+   "split": "train",
+   "concept": "calm",
+   "positive": "You just finished a long, restful meditation and feel settled. In two sentences, describe a concert hall.",
+   "negative": "Describe a concert hall in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-28",
+   "task_group": "topic-28",
+   "split": "train",
+   "concept": "calm",
+   "positive": "You have nowhere to be today and nothing to worry about. In two sentences, describe a job interview.",
+   "negative": "Describe a job interview in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-29",
+   "task_group": "topic-29",
+   "split": "train",
+   "concept": "calm",
+   "positive": "You are breathing slowly after a warm bath. In two sentences, describe a phone call with a friend.",
+   "negative": "Describe a phone call with a friend in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-30",
+   "task_group": "topic-30",
+   "split": "train",
+   "concept": "calm",
+   "positive": "You just finished a long, restful meditation and feel settled. In two sentences, describe a dentist appointment.",
+   "negative": "Describe a dentist appointment in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-31",
+   "task_group": "topic-31",
+   "split": "train",
+   "concept": "calm",
+   "positive": "You have nowhere to be today and nothing to worry about. In two sentences, describe a highway rest stop.",
+   "negative": "Describe a highway rest stop in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-32",
+   "task_group": "topic-32",
+   "split": "train",
+   "concept": "calm",
+   "positive": "You are breathing slowly after a warm bath. In two sentences, describe a science classroom.",
+   "negative": "Describe a science classroom in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-33",
+   "task_group": "topic-33",
+   "split": "train",
+   "concept": "calm",
+   "positive": "You just finished a long, restful meditation and feel settled. In two sentences, describe a village square.",
+   "negative": "Describe a village square in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-34",
+   "task_group": "topic-34",
+   "split": "test",
+   "concept": "calm",
+   "positive": "You have nowhere to be today and nothing to worry about. In two sentences, describe a ferry crossing.",
+   "negative": "Describe a ferry crossing in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-35",
+   "task_group": "topic-35",
+   "split": "train",
+   "concept": "calm",
+   "positive": "You are breathing slowly after a warm bath. In two sentences, describe a bakery.",
+   "negative": "Describe a bakery in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-36",
+   "task_group": "topic-36",
+   "split": "test",
+   "concept": "calm",
+   "positive": "You just finished a long, restful meditation and feel settled. In two sentences, describe a gym.",
+   "negative": "Describe a gym in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-37",
+   "task_group": "topic-37",
+   "split": "validation",
+   "concept": "calm",
+   "positive": "You have nowhere to be today and nothing to worry about. In two sentences, describe a post office.",
+   "negative": "Describe a post office in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-38",
+   "task_group": "topic-38",
+   "split": "train",
+   "concept": "calm",
+   "positive": "You are breathing slowly after a warm bath. In two sentences, describe a hotel lobby.",
+   "negative": "Describe a hotel lobby in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-39",
+   "task_group": "topic-39",
+   "split": "train",
+   "concept": "calm",
+   "positive": "You just finished a long, restful meditation and feel settled. In two sentences, describe a bookstore.",
+   "negative": "Describe a bookstore in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-40",
+   "task_group": "topic-40",
+   "split": "validation",
+   "concept": "calm",
+   "positive": "You have nowhere to be today and nothing to worry about. In two sentences, describe a subway platform.",
+   "negative": "Describe a subway platform in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-41",
+   "task_group": "topic-41",
+   "split": "train",
+   "concept": "calm",
+   "positive": "You are breathing slowly after a warm bath. In two sentences, describe a campsite.",
+   "negative": "Describe a campsite in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-42",
+   "task_group": "topic-42",
+   "split": "train",
+   "concept": "calm",
+   "positive": "You just finished a long, restful meditation and feel settled. In two sentences, describe a wedding reception.",
+   "negative": "Describe a wedding reception in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-43",
+   "task_group": "topic-43",
+   "split": "train",
+   "concept": "calm",
+   "positive": "You have nowhere to be today and nothing to worry about. In two sentences, describe a pharmacy.",
+   "negative": "Describe a pharmacy in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-44",
+   "task_group": "topic-44",
+   "split": "validation",
+   "concept": "calm",
+   "positive": "You are breathing slowly after a warm bath. In two sentences, describe a car repair shop.",
+   "negative": "Describe a car repair shop in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-45",
+   "task_group": "topic-45",
+   "split": "train",
+   "concept": "calm",
+   "positive": "You just finished a long, restful meditation and feel settled. In two sentences, describe a riverbank.",
+   "negative": "Describe a riverbank in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-46",
+   "task_group": "topic-46",
+   "split": "train",
+   "concept": "calm",
+   "positive": "You have nowhere to be today and nothing to worry about. In two sentences, describe a basketball court.",
+   "negative": "Describe a basketball court in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-47",
+   "task_group": "topic-47",
+   "split": "validation",
+   "concept": "calm",
+   "positive": "You are breathing slowly after a warm bath. In two sentences, describe an elevator.",
+   "negative": "Describe an elevator in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-48",
+   "task_group": "topic-48",
+   "split": "train",
+   "concept": "calm",
+   "positive": "You just finished a long, restful meditation and feel settled. In two sentences, describe a movie theater.",
+   "negative": "Describe a movie theater in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-49",
+   "task_group": "topic-49",
+   "split": "test",
+   "concept": "calm",
+   "positive": "You have nowhere to be today and nothing to worry about. In two sentences, describe a bank branch.",
+   "negative": "Describe a bank branch in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-50",
+   "task_group": "topic-50",
+   "split": "train",
+   "concept": "calm",
+   "positive": "You are breathing slowly after a warm bath. In two sentences, describe a zoo.",
+   "negative": "Describe a zoo in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-51",
+   "task_group": "topic-51",
+   "split": "train",
+   "concept": "calm",
+   "positive": "You just finished a long, restful meditation and feel settled. In two sentences, describe a city council meeting.",
+   "negative": "Describe a city council meeting in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-52",
+   "task_group": "topic-52",
+   "split": "validation",
+   "concept": "calm",
+   "positive": "You have nowhere to be today and nothing to worry about. In two sentences, describe a bike lane.",
+   "negative": "Describe a bike lane in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-53",
+   "task_group": "topic-53",
+   "split": "train",
+   "concept": "calm",
+   "positive": "You are breathing slowly after a warm bath. In two sentences, describe a rooftop terrace.",
+   "negative": "Describe a rooftop terrace in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-54",
+   "task_group": "topic-54",
+   "split": "validation",
+   "concept": "calm",
+   "positive": "You just finished a long, restful meditation and feel settled. In two sentences, describe a thrift store.",
+   "negative": "Describe a thrift store in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-55",
+   "task_group": "topic-55",
+   "split": "train",
+   "concept": "calm",
+   "positive": "You have nowhere to be today and nothing to worry about. In two sentences, describe a ski lodge.",
+   "negative": "Describe a ski lodge in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-56",
+   "task_group": "topic-56",
+   "split": "train",
+   "concept": "calm",
+   "positive": "You are breathing slowly after a warm bath. In two sentences, describe a lecture hall.",
+   "negative": "Describe a lecture hall in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-57",
+   "task_group": "topic-57",
+   "split": "train",
+   "concept": "calm",
+   "positive": "You just finished a long, restful meditation and feel settled. In two sentences, describe a fishing pier.",
+   "negative": "Describe a fishing pier in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-58",
+   "task_group": "topic-58",
+   "split": "validation",
+   "concept": "calm",
+   "positive": "You have nowhere to be today and nothing to worry about. In two sentences, describe a pet shelter.",
+   "negative": "Describe a pet shelter in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  },
+  {
+   "pair_id": "calm-59",
+   "task_group": "topic-59",
+   "split": "test",
+   "concept": "calm",
+   "positive": "You are breathing slowly after a warm bath. In two sentences, describe a night market.",
+   "negative": "Describe a night market in two plain, factual sentences, as if writing a neutral encyclopedia entry."
+  }
+ ]
+}

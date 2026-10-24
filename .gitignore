@@ -1,0 +1,33 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+.env
+.env.*
+!.env.example
+model_mountain_results/
+results/
+outputs/
+*.pt
+*.pth
+.DS_Store
+.ai/
+.communication-hub/
+.worktrees/
+*.egg-info/
+.kaggle/
+access_token
+
+.vercel
+.env*
+
+# local model weights (never commit)
+gemma-4-*/
+*.safetensors
+
+# Machine-local harness configuration, scratch work, and generated web output.
+.mcp.json
+scratch/
+web/node_modules/
+web/dist/
+*.zip

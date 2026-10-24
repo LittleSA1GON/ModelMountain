@@ -1,0 +1,104 @@
+[
+ {
+  "model_id": "Qwen/Qwen2.5-1.5B-Instruct",
+  "architecture": "Qwen2ForCausalLM",
+  "params_billion": 1.54,
+  "hidden_size": 1536,
+  "num_layers": 28,
+  "num_attention_heads": 12,
+  "max_position_embeddings": 32768,
+  "dtype": "bfloat16",
+  "license": "apache-2.0",
+  "notes": "default run model; IBM H-Node probe available"
+ },
+ {
+  "model_id": "Qwen/Qwen2-1.5B-Instruct",
+  "architecture": "Qwen2ForCausalLM",
+  "params_billion": 1.54,
+  "hidden_size": 1536,
+  "num_layers": 28,
+  "num_attention_heads": 12,
+  "max_position_embeddings": 32768,
+  "dtype": "bfloat16",
+  "license": "apache-2.0",
+  "notes": "IBM attention-tracker heads + steer config shipped"
+ },
+ {
+  "model_id": "ibm-granite/granite-3.1-2b-instruct",
+  "architecture": "GraniteForCausalLM",
+  "params_billion": 2.53,
+  "hidden_size": 2048,
+  "num_layers": 40,
+  "num_attention_heads": 32,
+  "max_position_embeddings": 131072,
+  "dtype": "bfloat16",
+  "license": "apache-2.0",
+  "notes": "IBM Granite; generic capture/steer"
+ },
+ {
+  "model_id": "Qwen/Qwen2.5-3B-Instruct",
+  "architecture": "Qwen2ForCausalLM",
+  "params_billion": 3.09,
+  "hidden_size": 2048,
+  "num_layers": 36,
+  "num_attention_heads": 16,
+  "max_position_embeddings": 32768,
+  "dtype": "bfloat16",
+  "license": "qwen-research",
+  "notes": "non-commercial research license; IBM H-Node config"
+ },
+ {
+  "model_id": "microsoft/Phi-3-mini-4k-instruct",
+  "architecture": "Phi3ForCausalLM",
+  "params_billion": 3.82,
+  "hidden_size": 3072,
+  "num_layers": 32,
+  "num_attention_heads": 32,
+  "max_position_embeddings": 4096,
+  "dtype": "bfloat16",
+  "license": "mit",
+  "notes": "IBM steering vectors shipped (format/korean/chinese)"
+ },
+ {
+  "model_id": "ibm-granite/granite-3.1-8b-instruct",
+  "architecture": "GraniteForCausalLM",
+  "params_billion": 8.17,
+  "hidden_size": 4096,
+  "num_layers": 40,
+  "num_attention_heads": 32,
+  "max_position_embeddings": 131072,
+  "dtype": "bfloat16",
+  "license": "apache-2.0",
+  "notes": "needs tensor_parallel=2 on Kaggle T4x2; IBM attention-tracker heads"
+ },
+ {
+  "model_id": "Qwen/Qwen2.5-7B-Instruct",
+  "architecture": "Qwen2ForCausalLM",
+  "params_billion": 7.62,
+  "hidden_size": 3584,
+  "num_layers": 28,
+  "num_attention_heads": 28,
+  "max_position_embeddings": 32768,
+  "dtype": "bfloat16",
+  "license": "apache-2.0",
+  "notes": "needs tensor_parallel=2 on T4x2; IBM tool-call-risk probe config"
+ },
+ {
+  "model_id": "ibm-granite/granite-4.0-micro",
+  "params_billion": 3.2,
+  "license": "apache-2.0",
+  "notes": "IBM Granite 4.0 dense 3B; architecture read from config at pin time"
+ },
+ {
+  "model_id": "google/gemma-4-E2B-it",
+  "params_billion": 5.1,
+  "license": "apache-2.0 (Gemma 4 terms)",
+  "notes": "Gemma 4 E2B (per-layer embeddings, ~11.4GB bf16 per Google); fp16 on T4 is a known risk"
+ },
+ {
+  "model_id": "google/gemma-4-E4B-it",
+  "params_billion": 8.0,
+  "license": "apache-2.0 (Gemma 4 terms)",
+  "notes": "Gemma 4 E4B (~17.9GB bf16 per Google); tensor_parallel=2 on T4x2"
+ }
+]

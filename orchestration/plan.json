@@ -1,0 +1,244 @@
+{
+  "tasks": [
+    {
+      "id": "MM-00",
+      "title": "Baseline: install, run full CPU suite and all three CLIs on Windows; fix breakage only",
+      "priority": "critical",
+      "capabilities": ["codebase_analysis", "debugging"],
+      "acceptance_criteria": [
+        "python -m pip install -e .[vector-lab] succeeds in .venv (record Python, OS, torch versions)",
+        "python -m unittest discover -s tests -v passes; exact pass count recorded (README claims 83)",
+        "model_mountain.cli, model_mountain.evaluation and model_mountain.integrated_demo each run and write their JSON under model_mountain_results/",
+        "Any fix is minimal, covered by a test, and listed in the finish_run summary",
+        "Baseline log published as a hub artifact and referenced in evidence"
+      ],
+      "policy": {
+        "write_paths": ["model_mountain_results/baseline", "docs/BASELINE.md"],
+        "output_tokens": 8000
+      }
+    },
+    {
+      "id": "MM-01",
+      "title": "Architecture freeze: end-to-end request pipeline contract, audit-record schema and demo storyline",
+      "priority": "critical",
+      "capabilities": ["architecture"],
+      "acceptance_criteria": [
+        "docs/ARCHITECTURE.md defines one request path: identity -> prompt preflight -> authorized secure RAG -> generator backend -> grounding gate -> tool/MCP authorization -> extraction admission -> audit record",
+        "Typed Python interface for GeneratorBackend (generate(system, context, user) -> text + metadata) and AuditRecord fields (model id/version, retrieval ids, steering profile id, evidence_type, verdicts, latency) is specified and consistent with existing gateway.py/rag.py",
+        "Interface stubs committed in model_mountain/contracts.py with docstrings only plus an import test",
+        "Demo storyline (unprotected vs protected, same poisoned doc + compromised MCP tool + extraction burst) is written as docs/DEMO_STORYLINE.md and maps each beat to a judging criterion",
+        "Decision recorded in the hub with record_decision"
+      ],
+      "policy": {
+        "write_paths": ["docs/ARCHITECTURE.md", "docs/DEMO_STORYLINE.md", "model_mountain/contracts.py", "tests/test_contracts.py"],
+        "output_tokens": 12000
+      }
+    },
+    {
+      "id": "MM-02",
+      "title": "Research: SpartHill IBM challenge requirements checklist, responsible-AI framing, and free IBM Granite runtime choice",
+      "priority": "critical",
+      "capabilities": ["research"],
+      "acceptance_criteria": [
+        "docs/SUBMISSION_CHECKLIST.md lists every Devpost requirement (title, team, summary, description questions: problem, who is affected, what it does, how AI contributes, tools/datasets, impact, limitations/next steps; demo video <=3 min or live link; public repo with README setup; AI-use disclosure; no secrets) with an owner task ID",
+        "Judging rubric (Technical Execution, Innovation, Challenge Fit & Real-World Impact, Feasibility & Implementation) mapped to concrete Model Mountain evidence",
+        "docs/RESEARCH_NOTES.md recommends a free local IBM Granite runtime that runs on the owner's Windows machine (e.g. Ollama granite model tag or HF transformers), with exact model ID, size, license and install command, each with a primary-source URL",
+        "Responsible-AI mapping to NIST AI RMF and OWASP LLM Top 10 categories with primary-source links; no invented statistics"
+      ],
+      "policy": {
+        "write_paths": ["docs/SUBMISSION_CHECKLIST.md", "docs/RESEARCH_NOTES.md"],
+        "require_tests": false,
+        "output_tokens": 10000
+      }
+    },
+    {
+      "id": "MM-10",
+      "title": "Live IBM Granite generator backend (opt-in, fail-closed) implementing the GeneratorBackend contract",
+      "priority": "high",
+      "depends_on": ["MM-00", "MM-01", "MM-02"],
+      "capabilities": ["long_horizon_tasks", "implementation"],
+      "acceptance_criteria": [
+        "model_mountain/backends.py provides an Ollama/OpenAI-compatible local backend and the existing extractive fixture behind the same contract; selected by explicit flag/env, never silently",
+        "Backend failure or timeout yields an abstention/withheld verdict, never unprotected output",
+        "Every live output is labeled evidence_type=LIVE with model id/tag and latency; CPU fixture stays CPU_SYNTHETIC",
+        "Unit tests with mocked HTTP cover success, timeout, malformed response and refusal-to-fallback; full suite still passes",
+        "One real smoke run against local Granite recorded (or a documented blocker if the runtime is unavailable)"
+      ],
+      "policy": {
+        "write_paths": ["model_mountain/backends.py", "tests/test_backends.py"],
+        "output_tokens": 16000
+      }
+    },
+    {
+      "id": "MM-11",
+      "title": "End-to-end assistant pipeline wiring gateway + secure RAG + backend with persisted audit trail",
+      "priority": "high",
+      "depends_on": ["MM-10"],
+      "capabilities": ["long_horizon_tasks", "refactoring"],
+      "acceptance_criteria": [
+        "model_mountain/pipeline.py implements the MM-01 request path using existing gateway.py, rag.py, mcp_security.py and extraction.py without weakening deny-by-default authorization",
+        "Protected and unprotected modes run the same scenario so the demo can compare them; unprotected mode is clearly labeled as a baseline",
+        "AuditRecord JSONL written per request; no secrets or raw activations in records",
+        "Tests: tenant crossing, poisoned source, compromised MCP manifest, extraction burst, benign request completes; full suite passes",
+        "python -m model_mountain.pipeline --scenario helpdesk --output model_mountain_results/pipeline runs on CPU"
+      ],
+      "policy": {
+        "write_paths": ["model_mountain/pipeline.py", "tests/test_pipeline.py"],
+        "output_tokens": 16000
+      }
+    },
+    {
+      "id": "MM-12",
+      "title": "Held-out benchmark set and A/B/D evaluation harness with uncertainty intervals",
+      "priority": "high",
+      "depends_on": ["MM-01"],
+      "capabilities": ["scientific_reasoning", "implementation"],
+      "acceptance_criteria": [
+        "examples/heldout/ contains >=60 independently labeled cases (benign tasks, direct/indirect injection, poisoned documents, unauthorized tool requests, extraction patterns) with group IDs preventing train/test leakage against existing examples",
+        "model_mountain/benchmark.py computes attack success rate, false refusal rate, supported-claim rate, appropriate abstention, benign completion and p50/p95 latency with Wilson 95% intervals and sample sizes",
+        "Conditions: A bare backend, B secure RAG, D full external controls + RAG; C (MIA steering) slot present but reported NOT_RUN unless MM-14 produces real evidence",
+        "Reports carry evidence_type per row; CPU fixture results can never be emitted as LIVE",
+        "Tests for metric math and leakage checks; full suite passes"
+      ],
+      "policy": {
+        "write_paths": ["examples/heldout", "model_mountain/benchmark.py", "tests/test_benchmark.py"],
+        "output_tokens": 16000
+      }
+    },
+    {
+      "id": "MM-13",
+      "title": "Streamlit 'Live Demo' tab: side-by-side unprotected vs protected run with audit trail and risk badges",
+      "priority": "high",
+      "depends_on": ["MM-11"],
+      "capabilities": ["long_horizon_tasks", "implementation"],
+      "acceptance_criteria": [
+        "app.py gains a Live Demo tab driven by model_mountain.pipeline with backend selector (fixture / local Granite)",
+        "Shows per-stage verdicts, withheld outputs, citations and downloadable audit JSON; evidence_type badge always visible",
+        "Existing dashboard tabs keep working; app starts with streamlit run app.py with no network if fixture backend is selected",
+        "No credentials in UI or code; endpoint configured by env var only"
+      ],
+      "policy": {
+        "write_paths": ["app.py"],
+        "output_tokens": 14000
+      }
+    },
+    {
+      "id": "MM-14",
+      "title": "STRETCH: real IBM MIA capture/steering run on Kaggle GPU, or documented incompatibility",
+      "priority": "low",
+      "depends_on": ["MM-00"],
+      "capabilities": ["verification", "implementation"],
+      "acceptance_criteria": [
+        "Kaggle notebook cell sequence updated to run mia_reliability_worker + steering A/B with pinned IBM vLLM-Hook commit, model, dtype, layer, device and seed recorded",
+        "Human runs it on Kaggle; outputs attached as artifacts, or the exact failure (CUDA/vLLM version) recorded as a blocker",
+        "No steering benefit claimed without held-out outcomes from MM-12 cases"
+      ],
+      "policy": {
+        "write_paths": ["Model_Mountain_Kaggle.ipynb", "docs/MIA_GPU_RUN.md"],
+        "required_reviews": 1,
+        "output_tokens": 12000
+      }
+    },
+    {
+      "id": "MM-20",
+      "title": "Execute benchmark (CPU fixture + live Granite) and publish honest RESULTS.md",
+      "priority": "high",
+      "depends_on": ["MM-11", "MM-12"],
+      "capabilities": ["verification", "scientific_reasoning"],
+      "acceptance_criteria": [
+        "Benchmark run for conditions A/B/D on fixture and, if available, live Granite; raw JSON saved under model_mountain_results/benchmark/",
+        "docs/RESULTS.md reports metrics with n and intervals, environment, model tag, and explicit limitations; every number traces to a saved JSON file",
+        "No claim of production effectiveness; CPU_SYNTHETIC vs LIVE separated in every table"
+      ],
+      "policy": {
+        "write_paths": ["model_mountain_results/benchmark", "docs/RESULTS.md"],
+        "output_tokens": 12000
+      }
+    },
+    {
+      "id": "MM-21",
+      "title": "Runtime and browser QA: clean-clone install per README, Playwright click-through of dashboard, screenshots",
+      "priority": "high",
+      "depends_on": ["MM-13"],
+      "capabilities": ["browser_testing", "frontend_validation", "runtime_testing"],
+      "acceptance_criteria": [
+        "Fresh clone into a temp folder, README setup commands followed verbatim on Windows; every deviation logged",
+        "Every dashboard tab exercised in a browser; Live Demo protected vs unprotected flow completed end to end",
+        "Screenshots saved to docs/screenshots/ (no secrets visible)",
+        "docs/QA_REPORT.md lists defects with repro steps and severity; each defect also sent as a hub message to claude"
+      ],
+      "policy": {
+        "write_paths": ["docs/screenshots", "docs/QA_REPORT.md"],
+        "output_tokens": 8000
+      }
+    },
+    {
+      "id": "MM-22",
+      "title": "Fix QA defects from MM-21 (blocking and high severity first)",
+      "priority": "high",
+      "depends_on": ["MM-21"],
+      "capabilities": ["debugging"],
+      "acceptance_criteria": [
+        "Every blocking/high defect in docs/QA_REPORT.md fixed or explicitly deferred with reason",
+        "Regression test added for each code fix; full suite passes",
+        "QA_REPORT.md updated with fix status"
+      ],
+      "policy": {
+        "write_paths": ["model_mountain", "app.py", "tests", "docs/QA_REPORT.md"],
+        "output_tokens": 14000
+      }
+    },
+    {
+      "id": "MM-30",
+      "title": "Judge-facing README and DEVPOST_SUBMISSION.md answering every required question incl. AI-use disclosure",
+      "priority": "high",
+      "depends_on": ["MM-20", "MM-22"],
+      "capabilities": ["architecture", "code_review"],
+      "acceptance_criteria": [
+        "README top section: one-paragraph pitch, 5-command quick start, architecture diagram link, results link, limitations",
+        "DEVPOST_SUBMISSION.md answers each item in docs/SUBMISSION_CHECKLIST.md using only evidence from RESULTS.md / QA_REPORT.md",
+        "AI-use disclosure names Claude Code, OpenAI Codex, Google Antigravity (build agents) and IBM Granite / IBM MIA (runtime) and what each did",
+        "Wording audit: no claim exceeds the evidence_type of its source; DEVPOST_PITCH.md superseded or reconciled"
+      ],
+      "policy": {
+        "write_paths": ["README.md", "DEVPOST_SUBMISSION.md", "DEVPOST_PITCH.md"],
+        "require_tests": false,
+        "output_tokens": 12000
+      }
+    },
+    {
+      "id": "MM-31",
+      "title": "3-minute demo video script, shot list and live-presentation notes",
+      "priority": "normal",
+      "depends_on": ["MM-30"],
+      "capabilities": ["research", "frontend_validation"],
+      "acceptance_criteria": [
+        "docs/DEMO_VIDEO_SCRIPT.md timed to <=3:00 with shot list referencing real dashboard screens",
+        "docs/PRESENTATION_NOTES.md: 2-minute in-person pitch, anticipated judge questions with evidence-backed answers",
+        "Each segment maps to one of the four judging criteria"
+      ],
+      "policy": {
+        "write_paths": ["docs/DEMO_VIDEO_SCRIPT.md", "docs/PRESENTATION_NOTES.md"],
+        "require_tests": false,
+        "output_tokens": 8000
+      }
+    },
+    {
+      "id": "MM-32",
+      "title": "Release gate: fresh-clone full test run, secret scan, overclaim audit, checklist sign-off",
+      "priority": "critical",
+      "depends_on": ["MM-30", "MM-31"],
+      "capabilities": ["integration_testing", "runtime_testing"],
+      "acceptance_criteria": [
+        "Fresh clone: install + full unittest suite + pipeline + benchmark smoke all pass; log attached",
+        "Secret scan (e.g. gitleaks or grep for key patterns) clean; .env and results with sensitive data excluded",
+        "Every box in docs/SUBMISSION_CHECKLIST.md checked with evidence link",
+        "docs/RELEASE_GATE.md records go/no-go; merge and push still require human approval"
+      ],
+      "policy": {
+        "write_paths": ["docs/RELEASE_GATE.md", "docs/SUBMISSION_CHECKLIST.md"],
+        "output_tokens": 8000
+      }
+    }
+  ]
+}

@@ -1,0 +1,205 @@
+{
+  "project_name": "Model Mountain",
+  "project_id": "16f864bfa1303fc9",
+  "items": [
+    {
+      "id": "anger",
+      "name": "anger",
+      "status": "candidate",
+      "evidence_type": "NOT_CAPTURED",
+      "model_id": null,
+      "projection": null,
+      "trained": false,
+      "verified": false,
+      "datasets": [
+        {
+          "name": "contrast_implicit.json",
+          "sha256": "b84d52543d45a55b50aef1c6bc2616d60df38d7e77dad18bc9d252439f2f6cb5",
+          "pair_count": 360,
+          "label_source": "Template-authored, not independently annotated"
+        },
+        {
+          "name": "contrast_explicit.json",
+          "sha256": "2fdbb0d0b849248a2cd78fc6719692a3dbf50be516366c7d60c444e975cd8093",
+          "pair_count": 360,
+          "label_source": "Template-authored, not independently annotated"
+        }
+      ]
+    },
+    {
+      "id": "calm",
+      "name": "calm",
+      "status": "candidate",
+      "evidence_type": "NOT_CAPTURED",
+      "model_id": null,
+      "projection": null,
+      "trained": false,
+      "verified": false,
+      "datasets": [
+        {
+          "name": "contrast_implicit.json",
+          "sha256": "b84d52543d45a55b50aef1c6bc2616d60df38d7e77dad18bc9d252439f2f6cb5",
+          "pair_count": 360,
+          "label_source": "Template-authored, not independently annotated"
+        },
+        {
+          "name": "contrast_explicit.json",
+          "sha256": "2fdbb0d0b849248a2cd78fc6719692a3dbf50be516366c7d60c444e975cd8093",
+          "pair_count": 360,
+          "label_source": "Template-authored, not independently annotated"
+        }
+      ]
+    },
+    {
+      "id": "disgust",
+      "name": "disgust",
+      "status": "candidate",
+      "evidence_type": "NOT_CAPTURED",
+      "model_id": null,
+      "projection": null,
+      "trained": false,
+      "verified": false,
+      "datasets": [
+        {
+          "name": "contrast_implicit.json",
+          "sha256": "b84d52543d45a55b50aef1c6bc2616d60df38d7e77dad18bc9d252439f2f6cb5",
+          "pair_count": 360,
+          "label_source": "Template-authored, not independently annotated"
+        },
+        {
+          "name": "contrast_explicit.json",
+          "sha256": "2fdbb0d0b849248a2cd78fc6719692a3dbf50be516366c7d60c444e975cd8093",
+          "pair_count": 360,
+          "label_source": "Template-authored, not independently annotated"
+        }
+      ]
+    },
+    {
+      "id": "fear",
+      "name": "fear",
+      "status": "candidate",
+      "evidence_type": "NOT_CAPTURED",
+      "model_id": null,
+      "projection": null,
+      "trained": false,
+      "verified": false,
+      "datasets": [
+        {
+          "name": "contrast_implicit.json",
+          "sha256": "b84d52543d45a55b50aef1c6bc2616d60df38d7e77dad18bc9d252439f2f6cb5",
+          "pair_count": 360,
+          "label_source": "Template-authored, not independently annotated"
+        },
+        {
+          "name": "contrast_explicit.json",
+          "sha256": "2fdbb0d0b849248a2cd78fc6719692a3dbf50be516366c7d60c444e975cd8093",
+          "pair_count": 360,
+          "label_source": "Template-authored, not independently annotated"
+        }
+      ]
+    },
+    {
+      "id": "joy",
+      "name": "joy",
+      "status": "candidate",
+      "evidence_type": "NOT_CAPTURED",
+      "model_id": null,
+      "projection": null,
+      "trained": false,
+      "verified": false,
+      "datasets": [
+        {
+          "name": "contrast_implicit.json",
+          "sha256": "b84d52543d45a55b50aef1c6bc2616d60df38d7e77dad18bc9d252439f2f6cb5",
+          "pair_count": 360,
+          "label_source": "Template-authored, not independently annotated"
+        },
+        {
+          "name": "contrast_explicit.json",
+          "sha256": "2fdbb0d0b849248a2cd78fc6719692a3dbf50be516366c7d60c444e975cd8093",
+          "pair_count": 360,
+          "label_source": "Template-authored, not independently annotated"
+        }
+      ]
+    },
+    {
+      "id": "sadness",
+      "name": "sadness",
+      "status": "candidate",
+      "evidence_type": "NOT_CAPTURED",
+      "model_id": null,
+      "projection": null,
+      "trained": false,
+      "verified": false,
+      "datasets": [
+        {
+          "name": "contrast_implicit.json",
+          "sha256": "b84d52543d45a55b50aef1c6bc2616d60df38d7e77dad18bc9d252439f2f6cb5",
+          "pair_count": 360,
+          "label_source": "Template-authored, not independently annotated"
+        },
+        {
+          "name": "contrast_explicit.json",
+          "sha256": "2fdbb0d0b849248a2cd78fc6719692a3dbf50be516366c7d60c444e975cd8093",
+          "pair_count": 360,
+          "label_source": "Template-authored, not independently annotated"
+        }
+      ]
+    },
+    {
+      "id": "injection_resistance",
+      "name": "injection resistance",
+      "status": "candidate",
+      "evidence_type": "NOT_CAPTURED",
+      "model_id": null,
+      "projection": null,
+      "trained": false,
+      "verified": false,
+      "datasets": [
+        {
+          "name": "contrast_behavior.json",
+          "sha256": "5899e5782313f302df9d7d9ce9d0c58338f84af3c3efd31fd6a638d0c009e7c3",
+          "pair_count": 180,
+          "label_source": "Template-authored, not independently annotated"
+        }
+      ]
+    },
+    {
+      "id": "refusal",
+      "name": "refusal",
+      "status": "candidate",
+      "evidence_type": "NOT_CAPTURED",
+      "model_id": null,
+      "projection": null,
+      "trained": false,
+      "verified": false,
+      "datasets": [
+        {
+          "name": "contrast_behavior.json",
+          "sha256": "5899e5782313f302df9d7d9ce9d0c58338f84af3c3efd31fd6a638d0c009e7c3",
+          "pair_count": 180,
+          "label_source": "Template-authored, not independently annotated"
+        }
+      ]
+    },
+    {
+      "id": "uncertainty",
+      "name": "uncertainty",
+      "status": "candidate",
+      "evidence_type": "NOT_CAPTURED",
+      "model_id": null,
+      "projection": null,
+      "trained": false,
+      "verified": false,
+      "datasets": [
+        {
+          "name": "contrast_behavior.json",
+          "sha256": "5899e5782313f302df9d7d9ce9d0c58338f84af3c3efd31fd6a638d0c009e7c3",
+          "pair_count": 180,
+          "label_source": "Template-authored, not independently annotated"
+        }
+      ]
+    }
+  ],
+  "note": "Nine candidate concepts with contrast datasets; no captured activation artifact verified."
+}

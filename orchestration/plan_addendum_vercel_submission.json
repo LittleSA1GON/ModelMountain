@@ -1,0 +1,76 @@
+{
+  "tasks": [
+    {
+      "id": "MM-VERCEL-API",
+      "title": "Claude Code: Vercel Python serverless API exposing the CPU application workflow",
+      "priority": "high",
+      "depends_on": ["MM-APPLICATION"],
+      "capabilities": ["implementation", "security"],
+      "acceptance_criteria": [
+        "api/index.py runs on the Vercel Python runtime (ASGI app or BaseHTTPRequestHandler) and calls the MM-APPLICATION entrypoint; no Streamlit, torch or GPU imports on this path",
+        "Endpoints: GET /api/health, POST /api/assess (single request through the full decision pipeline), POST /api/rag, GET /api/scenarios, GET /api/benchmark/latest (reads a committed CPU report)",
+        "Minimal requirements.txt (cryptography + the ASGI framework if used) and vercel.json with functions.includeFiles for model_mountain/** and examples/**; bundle stays under Vercel function size limits",
+        "Every response carries evidence_type (CPU_SYNTHETIC unless a configured live endpoint actually answered); live backend only via MODEL_MOUNTAIN_BACKEND_URL env var, fail-closed on error",
+        "Input size limits, JSON schema validation and no stack traces or secrets in error bodies; tests via the ASGI/handler test client; full CPU suite passes",
+        "`vercel dev` local run log attached as evidence"
+      ],
+      "policy": {
+        "write_paths": ["api", "vercel.json", "requirements.txt", ".vercelignore", "tests/test_vercel_api.py"],
+        "output_tokens": 16000
+      }
+    },
+    {
+      "id": "MM-VERCEL-UI",
+      "title": "Antigravity: static web UI for Vercel mirroring the dashboard's key flows",
+      "priority": "high",
+      "depends_on": ["MM-VERCEL-API"],
+      "capabilities": ["frontend"],
+      "acceptance_criteria": [
+        "public/ (static HTML/CSS/JS, no build step required) served by Vercel; calls only same-origin /api/*",
+        "Views: overview + risk table, Live Demo (pick scenario, run unprotected vs protected, per-stage verdicts, withheld output, citations, audit JSON download), latest benchmark with n and intervals",
+        "Persistent evidence_type badge; loading, empty and error states; works at 375px mobile width and desktop; keyboard accessible with labels and sufficient contrast",
+        "Verified in a real browser against `vercel dev`; screenshots saved to docs/screenshots/vercel/"
+      ],
+      "policy": {
+        "write_paths": ["public", "docs/screenshots/vercel"],
+        "output_tokens": 16000
+      }
+    },
+    {
+      "id": "MM-VERCEL-DEPLOY",
+      "title": "Codex: Vercel preview deployment and smoke test of UI + runtime",
+      "priority": "high",
+      "depends_on": ["MM-VERCEL-UI", "MM-CPU-INTEGRATION"],
+      "capabilities": ["integration"],
+      "acceptance_criteria": [
+        "Human has run `vercel login` and linked the project; agent runs `vercel deploy` (PREVIEW only, never --prod) from hackathon/build",
+        "Scripted smoke test (scripts/vercel_smoke.py) hits every /api endpoint and the UI on the preview URL: status codes, schema, evidence_type present, denied requests stay denied, cold-start and p95 latency recorded",
+        "Build log, function size and smoke output saved to docs/VERCEL_DEPLOY.md with the preview URL; no env secrets printed",
+        "Any failure reported to the owning agent via send_message with repro"
+      ],
+      "policy": {
+        "write_paths": ["scripts/vercel_smoke.py", "docs/VERCEL_DEPLOY.md"],
+        "output_tokens": 10000
+      }
+    },
+    {
+      "id": "MM-SUBMISSION",
+      "title": "Claude Code: SpartHill Devpost submission pack (not gated on GPU validation)",
+      "priority": "critical",
+      "depends_on": ["MM-CPU-INTEGRATION", "MM-VERCEL-DEPLOY"],
+      "capabilities": ["implementation"],
+      "acceptance_criteria": [
+        "DEVPOST_SUBMISSION.md answers: problem, who is affected, what it does, how AI contributes, tools and datasets, expected impact, limitations and next steps; plus AI-use disclosure (Claude Code, OpenAI Codex, Google Antigravity as build agents; IBM Granite / IBM MIA at runtime, with what was actually executed)",
+        "README top: pitch, live Vercel preview link, 5-command local quick start, architecture, results link, honest limitations",
+        "docs/DEMO_VIDEO_SCRIPT.md timed <=3:00 using the Vercel UI; docs/PRESENTATION_NOTES.md maps the pitch to Technical Execution, Innovation, Challenge Fit & Impact, Feasibility",
+        "Every claim traces to evidence produced by other tasks; GPU results stated only if MM-GPU-VALIDATION produced real evidence, otherwise listed as next step",
+        "Secret scan of the repo is clean (no Kaggle/Vercel/API tokens); human submits to Devpost"
+      ],
+      "policy": {
+        "write_paths": ["DEVPOST_SUBMISSION.md", "README.md", "docs/DEMO_VIDEO_SCRIPT.md", "docs/PRESENTATION_NOTES.md"],
+        "require_tests": false,
+        "output_tokens": 14000
+      }
+    }
+  ]
+}

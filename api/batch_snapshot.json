@@ -1,0 +1,25 @@
+{
+  "project_name": "Model Mountain",
+  "project_id": "16f864bfa1303fc9",
+  "live": false,
+  "captured_at": "2026-10-24T02:07:58.994035+00:00",
+  "mode": "KAGGLE_BATCH",
+  "note": "Dated operator-confirmed snapshot; Kaggle kernels do not expose an inbound inference endpoint.",
+  "items": [
+    {
+      "id": "model-mountain-mia",
+      "kernel_ref": "littlesa1gon/model-mountain-mia",
+      "version": 1,
+      "status": "blocked",
+      "model_ids": [
+        "Qwen/Qwen2.5-1.5B-Instruct"
+      ],
+      "evidence_type": "NOT_CAPTURED",
+      "model_executed": false,
+      "mia_hook_executed": false,
+      "source": "https://www.kaggle.com/code/littlesa1gon/model-mountain-mia",
+      "finished_at": "2026-10-24T02:04:50Z",
+      "reason": "MIA import failed: CUDA13 PyTorch conflicts with Kaggle CUDA12.8 TorchAudio. No model phases executed."
+    }
+  ]
+}

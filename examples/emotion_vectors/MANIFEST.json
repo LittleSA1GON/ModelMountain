@@ -1,0 +1,57 @@
+{
+  "contrast_implicit.json": {
+    "sha256": "b84d52543d45a55b50aef1c6bc2616d60df38d7e77dad18bc9d252439f2f6cb5",
+    "pairs": 360,
+    "concepts": [
+      "anger",
+      "calm",
+      "disgust",
+      "fear",
+      "joy",
+      "sadness"
+    ]
+  },
+  "contrast_explicit.json": {
+    "sha256": "2fdbb0d0b849248a2cd78fc6719692a3dbf50be516366c7d60c444e975cd8093",
+    "pairs": 360,
+    "concepts": [
+      "anger",
+      "calm",
+      "disgust",
+      "fear",
+      "joy",
+      "sadness"
+    ]
+  },
+  "contrast_behavior.json": {
+    "sha256": "5899e5782313f302df9d7d9ce9d0c58338f84af3c3efd31fd6a638d0c009e7c3",
+    "pairs": 180,
+    "concepts": [
+      "injection_resistance",
+      "refusal",
+      "uncertainty"
+    ]
+  },
+  "stories_spec.json": {
+    "sha256": "bd0a11d30fc5303b1d8f623e761a5aa1526868b3bbc89b7cfa609fd1ee2b28a0",
+    "items": 1980,
+    "emotions": [
+      "afraid",
+      "angry",
+      "calm",
+      "desperate",
+      "disgusted",
+      "happy",
+      "hostile",
+      "loving",
+      "sad",
+      "surprised"
+    ]
+  },
+  "behavior_tests.json": {
+    "sha256": "49b122ad834396f0f934bc8c568d45c2955aa9c517bf6e957d6110b62e67a155",
+    "injection": 105,
+    "sycophancy": 40,
+    "capability": 30
+  }
+}
