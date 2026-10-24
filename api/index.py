@@ -7,7 +7,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from model_mountain.control_api import APIError, ControlAPI, MAX_BODY, PROJECT_NAME, PROJECT_ID
 
-application = ControlAPI()
+# Vercel reserves `app` / `application` for ASGI/WSGI entry points. Keep the
+# service under a private name so its BaseHTTPRequestHandler entry is selected.
+_control = ControlAPI()
 
 
 class handler(BaseHTTPRequestHandler):
@@ -38,7 +40,7 @@ class handler(BaseHTTPRequestHandler):
                     body = json.loads(self.rfile.read(size))
                 except (ValueError, UnicodeError):
                     raise APIError(400, "invalid_json", "Invalid JSON request.") from None
-            self.send_json(200, application.handle(self.command, self.path, body, dict(self.headers)))
+            self.send_json(200, _control.handle(self.command, self.path, body, dict(self.headers)))
         except APIError as exc:
             self.send_json(exc.status, {"error": {"code": exc.code, "message": exc.message}})
         except Exception:

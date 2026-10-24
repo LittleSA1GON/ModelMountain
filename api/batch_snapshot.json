@@ -2,14 +2,14 @@
   "project_name": "Model Mountain",
   "project_id": "16f864bfa1303fc9",
   "live": false,
-  "captured_at": "2026-10-24T02:07:58.994035+00:00",
+  "captured_at": "2026-10-24T06:37:25Z",
   "mode": "KAGGLE_BATCH",
-  "note": "Dated operator-confirmed snapshot; Kaggle kernels do not expose an inbound inference endpoint.",
+  "note": "Dated operator-reviewed snapshot. Kernel COMPLETE does not imply successful inference.",
   "items": [
     {
-      "id": "model-mountain-mia",
-      "kernel_ref": "littlesa1gon/model-mountain-mia",
-      "version": 1,
+      "id": "model-mountain-capture-check-20261024",
+      "kernel_ref": "littlesa1gon/model-mountain-capture-check-20261024",
+      "version": 2,
       "status": "blocked",
       "model_ids": [
         "Qwen/Qwen2.5-1.5B-Instruct"
@@ -17,9 +17,22 @@
       "evidence_type": "NOT_CAPTURED",
       "model_executed": false,
       "mia_hook_executed": false,
-      "source": "https://www.kaggle.com/code/littlesa1gon/model-mountain-mia",
-      "finished_at": "2026-10-24T02:04:50Z",
-      "reason": "MIA import failed: CUDA13 PyTorch conflicts with Kaggle CUDA12.8 TorchAudio. No model phases executed."
+      "source_sha256": "58c67fccce0a23e11d20f99634ea08580fc95faa76320d68d5ec492bfdb0f912",
+      "reason": "Diagnostic helper missing registry; preflight passed but no model executed."
+    },
+    {
+      "id": "model-mountain-stories",
+      "kernel_ref": "littlesa1gon/model-mountain-stories",
+      "version": 1,
+      "status": "blocked",
+      "model_ids": [
+        "Qwen/Qwen2.5-7B-Instruct"
+      ],
+      "evidence_type": "NOT_CAPTURED",
+      "model_executed": false,
+      "mia_hook_executed": false,
+      "source_sha256": "d615b01a6e2c81095081598d3b3c7e18e93341ffcf4b855b9e291f913ef562e9",
+      "reason": "Story generator failed worker initialization; no generated corpus exported."
     }
   ]
 }

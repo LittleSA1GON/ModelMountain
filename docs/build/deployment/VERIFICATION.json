@@ -1,0 +1,66 @@
+{
+  "project_name": "Model Mountain",
+  "project_id": "16f864bfa1303fc9",
+  "base_url": "https://model-mountain.vercel.app",
+  "checked_at_utc": "2026-10-24T06:34:06Z",
+  "evidence_type": "DEPLOYMENT_CONTRACT_CHECK_ONLY",
+  "passed": true,
+  "requests": [
+    {
+      "route": "/api/v1/health",
+      "status": 200,
+      "latency_ms": 297.97
+    },
+    {
+      "route": "/api/v1/models",
+      "status": 200,
+      "latency_ms": 176.22
+    },
+    {
+      "route": "/api/v1/vectors",
+      "status": 200,
+      "latency_ms": 148.37
+    },
+    {
+      "route": "/api/v1/reports",
+      "status": 200,
+      "latency_ms": 179.7
+    },
+    {
+      "route": "/api/v1/orchestration",
+      "status": 200,
+      "latency_ms": 212.22
+    },
+    {
+      "route": "/api/v1/experiments",
+      "status": 200,
+      "latency_ms": 186.87
+    },
+    {
+      "route": "/api/v1/inference",
+      "status": 200,
+      "latency_ms": 215.79
+    },
+    {
+      "route": "/api/v1/inference",
+      "status": 200,
+      "latency_ms": 143.42
+    },
+    {
+      "route": "/api/v1/inference",
+      "status": 200,
+      "latency_ms": 178.53
+    },
+    {
+      "route": "/api/v1/inference",
+      "status": 401,
+      "latency_ms": 174.05
+    },
+    {
+      "route": "/api/v1/inference",
+      "status": 400,
+      "latency_ms": 181.77
+    }
+  ],
+  "limitations": "CPU fixtures and HTTP boundaries only; no real-model steering effectiveness measured."
+}

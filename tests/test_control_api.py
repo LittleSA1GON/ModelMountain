@@ -45,6 +45,13 @@ class ControlAPITests(unittest.TestCase):
         self.assertEqual(error.exception.status, 401)
         self.assertEqual(self.remote.calls, [])
 
+    def test_released_abstention_preserves_abstain_verdict(self):
+        result = self.api.handle("POST", "/api/v1/inference", {
+            **self.request, "question": "What is the vacation policy?"})
+        self.assertEqual(result["decision"], "abstain")
+        self.assertTrue(result["answer"].startswith("Insufficient verified evidence"))
+        self.assertEqual(result["reasons"], ["insufficient_verified_evidence"])
+
     def test_browser_cannot_grant_privilege_or_redirect_worker(self):
         for field, value in (("identity_verified", True), ("tenant", "admin"), ("endpoint", "http://169.254.169.254"), ("vector_path", "/etc/passwd")):
             with self.assertRaises(APIError):
@@ -197,7 +204,7 @@ class HTTPBoundaryTests(unittest.TestCase):
         from api.index import handler
         with tempfile.TemporaryDirectory() as folder:
             api = ControlAPI(Settings(data_dir=folder, operator_token="operator-secret"))
-            with patch("api.index.application", api):
+            with patch("api.index._control", api):
                 server = ThreadingHTTPServer(("127.0.0.1", 0), handler)
                 thread = threading.Thread(target=server.serve_forever, daemon=True)
                 thread.start()

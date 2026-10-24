@@ -298,7 +298,9 @@ class ControlAPI:
             else:
                 rag = ModelMountainRAG(docs, SourceRegistry.trusted_fixture(docs))
                 result = rag.answer(RAGRequest(question))
-                answer, decision = result.get("answer", ""), "allow" if result.get("released") else "abstain"
+                answer = result.get("answer", "")
+                # Releasing an abstention message is not a supported answer.
+                decision = "abstain" if result.get("status") == "abstained" else "allow" if result.get("released") else "abstain"
                 citations = re.findall(r"\[([A-Za-z0-9_.:-]+)\]", answer)
                 reasons = [] if decision == "allow" else ["insufficient_verified_evidence"]
         return {"project_name": PROJECT_NAME, "project_id": PROJECT_ID, "run_id": str(uuid.uuid4()), "evidence_type": "CPU_SYNTHETIC", "mode": "simulation",
