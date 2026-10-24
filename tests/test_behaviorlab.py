@@ -11,6 +11,11 @@ from model_mountain.behaviorlab import (validate_pairs,validate_captures,fit_cap
 from model_mountain.steering import SteeringProfile
 
 HERE=Path(__file__).resolve().parents[1]
+try:
+    import torch  # noqa: F401  (optional extra: pip install -e .[vector-lab])
+    HAS_TORCH = True
+except ImportError:
+    HAS_TORCH = False
 
 
 def fixture_capture():
@@ -49,6 +54,7 @@ class BehaviorLabTests(unittest.TestCase):
         with self.assertRaises(ValueError):validate_captures(fixture_capture())
         self.assertEqual(validate_captures(fixture_capture(),allow_synthetic=True)['hidden_dim'],4)
 
+    @unittest.skipUnless(HAS_TORCH, "torch not installed (optional vector-lab extra)")
     def test_fit_and_score_mean_and_pca(self):
         for method in ['mean_diff','pca_pairwise']:
             with self.subTest(method=method), tempfile.TemporaryDirectory() as root:
@@ -105,6 +111,7 @@ class BehaviorEvalTests(unittest.TestCase):
             grade_outputs(cases,{})
 
 class ProfileExportTests(unittest.TestCase):
+    @unittest.skipUnless(HAS_TORCH, "torch not installed (optional vector-lab extra)")
     def test_synthetic_profile_rejected(self):
         from model_mountain.behaviorlab import export_mia_profile
         with tempfile.TemporaryDirectory() as root:

@@ -25,7 +25,7 @@ function Models({ r }) {
           {items.map((m) => {
             const caps = Object.entries(m.capabilities || {});
             const avail = caps.filter(([, v]) => capabilityState(v) === 'available').length;
-            const status = m.compatible === false ? 'Does not fit' : m.status === 'verified' ? 'Verified on GPU' : m.compatible ? 'Fits Kaggle T4' : 'Not run yet';
+            const status = m.compatible === false ? 'Estimated not to fit' : m.status === 'verified' ? 'Verified on GPU' : m.compatible ? 'Estimated fit (T4)' : 'Not run yet';
             const tone = m.compatible === false ? 'bad' : m.status === 'verified' ? 'ok' : m.compatible ? 'info' : 'warn';
             return (
               <tr key={m.model_id || m.id}>
@@ -36,7 +36,7 @@ function Models({ r }) {
                     {caps.slice(0, 4).map(([k, v]) => <span key={k} className={`chip ${capabilityState(v) === 'available' ? 'ok' : ''}`}>{CAP_LABEL[k] || k}</span>)}
                     {caps.length > 4 && <span className="muted small">+{caps.length - 4} more</span>}
                   </div>
-                  <span className="sub">{avail} of {caps.length} confirmed</span>
+                  <span className="sub">{avail} of {caps.length} config-supported (not runtime-verified)</span>
                 </td>
               </tr>
             );
@@ -125,12 +125,31 @@ function Runs({ jobs, reports }) {
   );
 }
 
+function CaptureSmoke({ r }) {
+  if (!r) return <div className="card pad"><div className="skeleton" /></div>;
+  if (!r.ok) return <div className="empty"><b>No integration capture published.</b></div>;
+  const d = r.data;
+  const pick = (...keys) => keys.map((k) => d[k]).find((v) => v != null);
+  return (
+    <div className="card pad" style={{ display: 'grid', gap: 8 }}>
+      <div className="row" style={{ justifyContent: 'space-between' }}>
+        <b>Real IBM MIA capture on Kaggle (integration check)</b>
+        <span className="chip ok">{d.evidence_type || 'REAL_IBM_MIA'}</span>
+      </div>
+      <span className="muted small">{pick('model_id', 'model')}{pick('model_revision', 'revision') ? ` @ ${String(pick('model_revision', 'revision')).slice(0, 7)}` : ''}{pick('gpu', 'device') ? ` · ${pick('gpu', 'device')}` : ''}</span>
+      <p className="small">This proves the hook ran and returned real hidden states. It is plumbing evidence only: it says nothing about security or steering effects.</p>
+      <pre className="pre small">{JSON.stringify(d, (k, v) => (k === 'project_name' || k === 'project_id' ? undefined : v), 2).slice(0, 1200)}</pre>
+    </div>
+  );
+}
+
 export default function Lab({ health }) {
   const models = useLoad(api.models);
   const vectors = useLoad(api.vectors);
   const jobs = useLoad(api.jobs);
   const reports = useLoad(api.reports);
   const exp = useLoad(api.experiments);
+  const smoke = useLoad(api.captureSmoke);
   const gpu = health?.ok && health.data.remote_configured;
   return (
     <section className="view">
@@ -151,6 +170,11 @@ export default function Lab({ health }) {
       <div>
         <div className="section-title"><h2>GPU runs</h2><span className="muted small">Private Kaggle notebooks, 2 × Tesla T4</span></div>
         <Runs jobs={jobs} reports={reports} />
+      </div>
+
+      <div>
+        <div className="section-title"><h2>Hook integration</h2><span className="muted small">Capture check, not an effect measurement</span></div>
+        <CaptureSmoke r={smoke} />
       </div>
 
       <div>

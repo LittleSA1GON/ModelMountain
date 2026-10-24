@@ -33,7 +33,8 @@ FILES = [
 ]
 SECRET_RE = re.compile(r"(KGAT_[0-9a-f]{16,}|hf_[A-Za-z0-9]{30,}|sk-[A-Za-z0-9_-]{20,}|BEGIN [A-Z ]*PRIVATE KEY)")
 STORIES_SLUG = "model-mountain-stories"
-DEFAULT_GENERATOR = "Qwen/Qwen2.5-7B-Instruct"
+# v1 used Qwen2.5-7B at TP2, which failed worker initialization on 2xT4; a 1.5B single-GPU generator is used now.
+DEFAULT_GENERATOR = "Qwen/Qwen2.5-1.5B-Instruct"
 # Gemma 4 has no bf16 on T4: try fp16 first, fall back to fp32 (memory permitting) and record both attempts.
 DTYPE_OVERRIDES = {"google/": ["float16"]}   # fp32 does not fit E4B on 2x15 GB; fp16 verified for E2B
 # Settings that passed in littlesa1gon/ibm-mia-gemma4-verification: text-only, eager (graph steering unverified).
@@ -63,7 +64,8 @@ def kernel_config(*, kind: str, model: str | None = None, generator: str = DEFAU
                   preflight_only: bool = False, extra: dict | None = None) -> dict:
     spec_sha = hashlib.sha256((ROOT / "examples/emotion_vectors/stories_spec.json").read_bytes()).hexdigest()
     cfg = {"kind": kind, "max_model_len": 2048, "gpu_memory_utilization": 0.70, "install": not preflight_only,
-           "preflight_only": preflight_only, "spec_sha256": spec_sha, "phase_timeout": 10800}
+           "preflight_only": preflight_only, "spec_sha256": spec_sha, "phase_timeout": 10800,
+           "enforce_eager": True, "generator_tensor_parallel": 1}
     if kind == "stories":
         cfg["generator_model"] = generator
     else:

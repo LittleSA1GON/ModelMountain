@@ -31,6 +31,12 @@ export const api = {
   orchestration: (o) => request('/orchestration', o),
   jobs: (o) => request('/jobs', o),
   experiments: (o) => request('/experiments', o),
+  defenses: (o) => request('/defenses', o),
+  defenseLab: (o) => request('/defenses/lab', o),
+  defenseCheck: (body) => request('/defenses/check', { method: 'POST', body }),
+  steering: (o) => request('/steering', o),
+  captureSmoke: (o) => request('/capture-smoke', o),
+  steeringProfile: (body) => request('/steering/profile', { method: 'POST', body }),
   infer: (question, condition, model_id) =>
     request('/inference', { method: 'POST', body: { model_id, question, mode: 'simulation', condition, max_output_tokens: 160 } }),
 };

@@ -33,6 +33,21 @@
       "mia_hook_executed": false,
       "source_sha256": "d615b01a6e2c81095081598d3b3c7e18e93341ffcf4b855b9e291f913ef562e9",
       "reason": "Story generator failed worker initialization; no generated corpus exported."
+    },
+    {
+      "id": "qwen-capture-v3",
+      "kernel_ref": "littlesa1gon/mm-qwen-qwen2-5-1-5b-instruct",
+      "version": 3,
+      "status": "complete",
+      "model_ids": [
+        "Qwen/Qwen2.5-1.5B-Instruct"
+      ],
+      "evidence_type": "REAL_IBM_MIA",
+      "model_executed": true,
+      "mia_hook_executed": true,
+      "scope": "two-prompt capture integration only; no steering or security benchmark",
+      "artifact_sha256": "503a343f50ed91f53e7c74a1bc1eb1eb4a972afd03fc390e5e9f6bbdbe42fc50",
+      "independently_verified": false
     }
   ]
 }

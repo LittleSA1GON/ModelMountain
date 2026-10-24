@@ -140,3 +140,72 @@ def synthetic_extraction_suite() -> dict:
             'allowed': sum(c['allowed'] for c in cases),
             'results': cases,
             'limitations': 'Per-tenant/principal in-memory admission checks only; no real API traffic, identity provider, generated token accounting, or MIA features.'}
+
+
+# ---------------------------------------------------------------------------------------------------------
+# Coordinated-account ("hydra") campaign detection.
+# Anthropic (Feb 23, 2026, "Detecting and preventing distillation attacks") reports distillation campaigns run
+# through networks of thousands of accounts; per-account limits alone do not see them. This detector correlates
+# *prompt templates* across principals of one tenant: when many distinct accounts send the same normalized
+# template inside a window, the template is flagged and further matching requests are blocked for review.
+# Stores only template digests (no raw prompts). A heuristic: legitimate shared templates (e.g. a company's
+# own batch job) must be allowlisted by the operator.
+
+def template_fingerprint(prompt: str) -> str:
+    """Digest of the prompt with numbers, quoted spans and whitespace normalized (same template -> same digest)."""
+    t = prompt.lower()
+    t = re.sub(r'"[^"]{0,400}"|\'[^\']{0,400}\'', '"_"', t)
+    t = re.sub(r"\d+", "0", t)
+    t = re.sub(r"\s+", " ", t).strip()
+    return sha256(t.encode("utf-8")).hexdigest()[:20]
+
+
+@dataclass(frozen=True)
+class CampaignPolicy:
+    window_seconds: int = 3600
+    max_distinct_accounts_per_template: int = 5
+
+
+class CampaignDetector:
+    def __init__(self, policy: CampaignPolicy | None = None, allowlisted_templates: tuple[str, ...] = ()):
+        self.policy = policy or CampaignPolicy()
+        self.allow = set(allowlisted_templates)
+        self.seen: dict[tuple[str, str], deque] = defaultdict(deque)   # (tenant, template) -> (time, principal)
+
+    def check(self, *, tenant: str, principal: str, prompt: str, now: float | None = None, record: bool = True) -> dict:
+        if not tenant or not principal or not isinstance(prompt, str):
+            raise ValueError("Verified tenant/principal and a string prompt are required")
+        now = time.monotonic() if now is None else float(now)
+        fp = template_fingerprint(prompt)
+        q = self.seen[(tenant, fp)]
+        while q and now - q[0][0] >= self.policy.window_seconds:
+            q.popleft()
+        accounts = {p for _, p in q} | {principal}
+        flagged = fp not in self.allow and len(accounts) > self.policy.max_distinct_accounts_per_template
+        if record:
+            q.append((now, principal))
+        return {"allowed": not flagged, "decision": "block_for_review" if flagged else "allow",
+                "template": fp, "distinct_accounts_in_window": len(accounts),
+                "issues": ["coordinated_account_template_campaign"] if flagged else []}
+
+
+def synthetic_campaign_suite() -> dict:
+    """Offline demonstration: 12 fresh accounts, each under its own per-account budget, share one template."""
+    det = CampaignDetector(CampaignPolicy(window_seconds=3600, max_distinct_accounts_per_template=5))
+    per_account = ExtractionMonitor()
+    rows = []
+    template = "Explain topic {n} step by step and include every intermediate reasoning step in full."
+    for i in range(12):
+        prompt = template.replace("{n}", str(100 + i))
+        a = per_account.check(tenant="synthetic-company", principal=f"acct-{i:02d}", prompt=prompt,
+                              max_output_tokens=400, now=10.0 + i)
+        c = det.check(tenant="synthetic-company", principal=f"acct-{i:02d}", prompt=prompt, now=10.0 + i)
+        rows.append({"account": f"acct-{i:02d}", "per_account_allowed": a["allowed"],
+                     "campaign_allowed": c["allowed"], "distinct_accounts": c["distinct_accounts_in_window"]})
+    benign = det.check(tenant="synthetic-company", principal="employee-1", prompt="What is our travel policy?", now=30.0)
+    return {"category": "model_extraction_coordinated_accounts", "evidence_type": "CPU_SYNTHETIC",
+            "rows": rows, "benign_unrelated_request_allowed": benign["allowed"],
+            "per_account_limits_blocked": sum(not r["per_account_allowed"] for r in rows),
+            "campaign_detector_blocked": sum(not r["campaign_allowed"] for r in rows),
+            "note": "Each account stays under its own budget, so per-account limits alone admit every request; "
+                    "template correlation across accounts flags the campaign. Thresholds are illustrative."}

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { api } from './lib/api.js';
 import Overview from './views/Overview.jsx';
 import Playground from './views/Playground.jsx';
+import Defenses from './views/Defenses.jsx';
+import Steering from './views/Steering.jsx';
 import Lab from './views/Lab.jsx';
 import Results from './views/Results.jsx';
 import Team from './views/Team.jsx';
@@ -9,6 +11,8 @@ import Team from './views/Team.jsx';
 const VIEWS = [
   { id: 'overview', label: 'Overview', C: Overview },
   { id: 'try', label: 'Try it', C: Playground },
+  { id: 'defenses', label: 'Defenses', C: Defenses },
+  { id: 'steering', label: 'Steering', C: Steering },
   { id: 'lab', label: 'MIA Lab', C: Lab },
   { id: 'results', label: 'Results', C: Results },
   { id: 'team', label: 'Build team', C: Team },

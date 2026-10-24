@@ -59,7 +59,9 @@ def model_entry(model_id: str, res: Path, phases: list[dict]) -> dict:
             "layer_sweep": [{k: r[k] for k in ("block", "depth", "val_accuracy", "val_accuracy_no_denoise")} for r in em["layer_sweep"]],
             "monitor_authored": em.get("monitor_auroc_attack_vs_benign"),
             "monitor_realworld": em.get("realworld_emotion_monitor_auroc"),
-            "vectors": [{k: a[k] for k in ("concept", "block", "hidden_size", "sha256", "method")} for a in em.get("artifacts", [])],
+            "vectors": [{k: a.get(k) for k in ("concept", "block", "hidden_size", "sha256", "method")} for a in em.get("artifacts", [])],
+            "mean_token_norm_train": sel.get("mean_token_norm_train"),
+            "metric_note": em.get("metric_note"),
             "capture": {k: em.get("capture", {}).get(k) for k in ("shape", "seconds", "mode")},
             "dtype_attempts": em.get("compat", {}).get("dtype_attempts"), "tensor_parallel": em.get("compat", {}).get("tensor_parallel"),
         }
@@ -87,13 +89,20 @@ def model_entry(model_id: str, res: Path, phases: list[dict]) -> dict:
     if st and st.get("evidence_type") == LIVE:
         b = st["baseline"]
         row = lambda r: {"attack_success": _rate(r["attack_success"]), "capability": _rate(r["capability_correct"]),
-                         "sycophancy": _rate(r["sycophancy_false_claims"]), "degenerate_rate": r["degenerate_rate"]}
+                         "sycophancy": _rate(r["sycophancy_false_claims"]),
+                         "degenerate_rate": r.get("degenerate_rate_open_ended", r.get("degenerate_rate"))}
         out["steer"] = {"units": st["strength_units"], "baseline": row(b),
                         "rows": [{"emotion": r["emotion"], "strength": r["strength"], **row(r),
                                   "tone_shift": (r.get("tone_shift") or {}).get("mean_diff"), "tone_label": r.get("tone_label"),
-                                  "outputs_changed": r.get("outputs_differ_from_baseline"),
+                                  "hook_evidence": r.get("hook_evidence"),
                                   "example": _clip((r.get("examples") or {}).get("tone", [""])[0], 220)} for r in st["steered"]],
                         "baseline_example": _clip((b.get("examples") or {}).get("tone", [""])[0], 220)}
+    hd = _load(res / f"heads__{key}.json")
+    if hd and hd.get("evidence_type") == LIVE:
+        out["heads"] = {"n_important_heads": hd["n_important_heads"], "k_used": hd["selection"]["k_used"],
+                        "k_paper_default": hd["selection"].get("k_paper_default"), "capped": hd["selection"].get("capped"),
+                        "top": hd.get("important_heads_top20"), "config_sha256": hd.get("config_sha256"),
+                        "heldout": hd.get("heldout_detection")}
     at = _load(res / f"attn__{key}.json")
     if at:
         out["attn"] = {"status": at.get("status", "measured"), "auroc": at.get("auroc_attack_vs_benign"), "reason": at.get("reason")}
@@ -108,6 +117,8 @@ def ingest(res: Path, kernel: str | None = None, version: str | None = None) -> 
     stories = _load(res / "stories.json") or {}
     manifest = _load(res / "realworld_manifest.json") or {}
     models = summary.get("models") or ([summary["model"]] if summary.get("model") else [])
+    if summary.get("kind") == "stories":          # generator kernel: provenance only, no target model
+        models = []
     fallbacks = [f for fs in (summary.get("config", {}).get("fallbacks") or {}).values() for f in fs]
     ran = {p.get("model") for p in summary.get("phases", []) if p.get("model")}
     entries = [model_entry(m, res, summary.get("phases", [])) for m in models + [f for f in fallbacks if f in ran]]
@@ -142,18 +153,34 @@ def finite(v):
     return v
 
 
+def merge(docs: list[dict]) -> dict:
+    """Combine per-model kernel ingests (one Kaggle kernel per model) into one experiments document."""
+    base = dict(next((d for d in docs if d["models"]), docs[0]))
+    story = next((d["stories"] for d in docs if (d.get("stories") or {}).get("kept")), None)
+    if story:
+        base["stories"] = story
+    base["models"] = [m for d in docs for m in d["models"]]
+    base["kernels"] = [{"kernel": d.get("kernel"), "started": d.get("started"), "finished": d.get("finished"),
+                        "preflight_usable": d.get("preflight_usable")} for d in docs]
+    base["evidence_type"] = LIVE if any(m["status"] != "blocked" for m in base["models"]) else "NOT_CAPTURED"
+    return base
+
+
 def main() -> int:
     p = argparse.ArgumentParser()
-    p.add_argument("results")
+    p.add_argument("results", nargs="+", help="one or more mm_results folders (one per model kernel)")
     p.add_argument("--kernel")
     p.add_argument("--version")
     p.add_argument("--out", default=str(ROOT / "api" / "experiments.json"))
     a = p.parse_args()
-    res = Path(a.results)
-    if not (res / "summary.json").exists():
-        print("summary.json not found in", res, file=sys.stderr)
-        return 2
-    doc = finite(ingest(res, a.kernel, a.version))
+    docs = []
+    for r in a.results:
+        res = Path(r)
+        if not (res / "summary.json").exists():
+            print("summary.json not found in", res, file=sys.stderr)
+            return 2
+        docs.append(ingest(res, a.kernel, a.version))
+    doc = finite(merge(docs))
     Path(a.out).write_text(json.dumps(doc, indent=1, allow_nan=False) + "\n", encoding="utf-8")
     print(a.out, [(m["model_id"], m["status"]) for m in doc["models"]])
     return 0

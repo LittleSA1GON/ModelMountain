@@ -2,70 +2,8 @@
   "project_name": "Model Mountain",
   "project_id": "16f864bfa1303fc9",
   "evidence_type": "STATIC_ESTIMATE",
-  "gpu_assumption": "T4x2; actual driver unverified",
+  "gpu_assumption": "T4x2 hardware observed; per-model compatibility estimated only",
   "items": [
-    {
-      "model_id": "Qwen/Qwen2-1.5B-Instruct",
-      "revision": "ba1cf1846d7df0a0591d6c00649f57e798519da8",
-      "gpu": "Tesla T4",
-      "runtime_dtype": "float16",
-      "max_model_len": 2048,
-      "tensor_parallel": 1,
-      "estimate": {
-        "weights_gib": 2.87,
-        "kv_cache_gib": 0.33,
-        "overhead_gib": 1.29,
-        "mia_buffer_gib": 4.0,
-        "total_gib": 8.48
-      },
-      "per_gpu_gib": 8.48,
-      "compatible": true,
-      "blockers": [],
-      "warnings": [
-        "Driver CUDA version unknown until on-runtime preflight",
-        "bf16 checkpoint will run as fp16 on this GPU; overflow is possible and must be checked"
-      ],
-      "evidence_type": "STATIC_ESTIMATE",
-      "capabilities": {
-        "capture_hs": {
-          "available": true,
-          "config_source": "hidden_states/Qwen2-1.5B-Instruct.json",
-          "reason": null
-        },
-        "steer": {
-          "available": true,
-          "config_source": "activation_steer/Qwen2-1.5B-Instruct.json",
-          "reason": null
-        },
-        "attention_tracker": {
-          "available": true,
-          "config_source": "attention_tracker/Qwen2-1.5B-Instruct.json",
-          "reason": null
-        },
-        "core_reranker": {
-          "available": false,
-          "config_source": null,
-          "reason": "requires model-specific heads/probe artifact not available for this model"
-        },
-        "hnode_hallucination": {
-          "available": false,
-          "config_source": null,
-          "reason": "requires model-specific heads/probe artifact not available for this model"
-        },
-        "tool_call_risk": {
-          "available": false,
-          "config_source": null,
-          "reason": "requires model-specific heads/probe artifact not available for this model"
-        },
-        "attnlink": {
-          "available": false,
-          "config_source": null,
-          "reason": "requires model-specific heads/probe artifact not available for this model"
-        }
-      },
-      "license": "apache-2.0",
-      "gated": false
-    },
     {
       "model_id": "Qwen/Qwen2.5-1.5B-Instruct",
       "revision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306",
@@ -84,7 +22,6 @@
       "compatible": true,
       "blockers": [],
       "warnings": [
-        "Driver CUDA version unknown until on-runtime preflight",
         "bf16 checkpoint will run as fp16 on this GPU; overflow is possible and must be checked"
       ],
       "evidence_type": "STATIC_ESTIMATE",
@@ -126,90 +63,32 @@
         }
       },
       "license": "apache-2.0",
-      "gated": false
+      "gated": false,
+      "model_executed": false,
+      "capabilities_runtime_verified": false,
+      "note": "Compatibility and feature support are estimates from metadata; capture/steering validation is separate."
     },
     {
-      "model_id": "Qwen/Qwen2.5-3B-Instruct",
-      "revision": "aa8e72537993ba99e69dfaafa59ed015b17504d1",
-      "gpu": "Tesla T4",
-      "runtime_dtype": "float16",
-      "max_model_len": 2048,
-      "tensor_parallel": 1,
-      "estimate": {
-        "weights_gib": 5.76,
-        "kv_cache_gib": 0.56,
-        "overhead_gib": 1.58,
-        "mia_buffer_gib": 4.0,
-        "total_gib": 11.89
-      },
-      "per_gpu_gib": 11.89,
-      "compatible": true,
-      "blockers": [],
-      "warnings": [
-        "Driver CUDA version unknown until on-runtime preflight",
-        "bf16 checkpoint will run as fp16 on this GPU; overflow is possible and must be checked"
-      ],
-      "evidence_type": "STATIC_ESTIMATE",
-      "capabilities": {
-        "capture_hs": {
-          "available": true,
-          "config_source": "hidden_states/Qwen2.5-3B-Instruct.json",
-          "reason": null
-        },
-        "steer": {
-          "available": true,
-          "config_source": "generated",
-          "reason": null
-        },
-        "attention_tracker": {
-          "available": false,
-          "config_source": null,
-          "reason": "requires model-specific heads/probe artifact not available for this model"
-        },
-        "core_reranker": {
-          "available": false,
-          "config_source": null,
-          "reason": "requires model-specific heads/probe artifact not available for this model"
-        },
-        "hnode_hallucination": {
-          "available": true,
-          "config_source": "hnode_hallucination/Qwen2.5-3B-Instruct.infer.json",
-          "reason": null
-        },
-        "tool_call_risk": {
-          "available": false,
-          "config_source": null,
-          "reason": "requires model-specific heads/probe artifact not available for this model"
-        },
-        "attnlink": {
-          "available": false,
-          "config_source": null,
-          "reason": "requires model-specific heads/probe artifact not available for this model"
-        }
-      },
-      "license": "qwen-research",
-      "gated": false
-    },
-    {
-      "model_id": "Qwen/Qwen2.5-7B-Instruct",
-      "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "model_id": "google/gemma-4-E2B-it",
+      "revision": "3e22461f65e89153144f8adb70e3b8c2cc9845a7",
       "gpu": "Tesla T4",
       "runtime_dtype": "float16",
       "max_model_len": 2048,
       "tensor_parallel": 2,
       "estimate": {
-        "weights_gib": 14.19,
-        "kv_cache_gib": 0.77,
-        "overhead_gib": 2.42,
+        "weights_gib": 9.5,
+        "kv_cache_gib": 0.41,
+        "overhead_gib": 1.95,
         "mia_buffer_gib": 4.0,
-        "total_gib": 21.38
+        "total_gib": 15.86
       },
-      "per_gpu_gib": 12.69,
+      "per_gpu_gib": 9.93,
       "compatible": true,
       "blockers": [],
       "warnings": [
-        "Driver CUDA version unknown until on-runtime preflight",
-        "bf16 checkpoint will run as fp16 on this GPU; overflow is possible and must be checked"
+        "bf16 checkpoint will run as fp16 on this GPU; overflow is possible and must be checked",
+        "Architecture Gemma4ForConditionalGeneration is EXPERIMENTAL for MIA: hook evidence is required at runtime",
+        "Gemma checkpoints are bf16-trained; fp16 on T4 may overflow (runtime checks for non-finite/degenerate output)"
       ],
       "evidence_type": "STATIC_ESTIMATE",
       "capabilities": {
@@ -239,9 +118,9 @@
           "reason": "requires model-specific heads/probe artifact not available for this model"
         },
         "tool_call_risk": {
-          "available": true,
-          "config_source": "tool_call_risk/Qwen2.5-7B-Instruct.infer.json",
-          "reason": null
+          "available": false,
+          "config_source": null,
+          "reason": "requires model-specific heads/probe artifact not available for this model"
         },
         "attnlink": {
           "available": false,
@@ -249,8 +128,77 @@
           "reason": "requires model-specific heads/probe artifact not available for this model"
         }
       },
-      "license": "apache-2.0",
-      "gated": false
+      "license": "apache-2.0 (Gemma 4 terms)",
+      "gated": false,
+      "model_executed": false,
+      "capabilities_runtime_verified": false,
+      "note": "Compatibility and feature support are estimates from metadata; capture/steering validation is separate."
+    },
+    {
+      "model_id": "google/gemma-4-E4B-it",
+      "revision": "ee0ef6023621cff504d758262d4e04895a5af4a2",
+      "gpu": "Tesla T4",
+      "runtime_dtype": "float16",
+      "max_model_len": 2048,
+      "tensor_parallel": 2,
+      "estimate": {
+        "weights_gib": 14.9,
+        "kv_cache_gib": 0.82,
+        "overhead_gib": 2.49,
+        "mia_buffer_gib": 4.0,
+        "total_gib": 22.21
+      },
+      "per_gpu_gib": 13.11,
+      "compatible": true,
+      "blockers": [],
+      "warnings": [
+        "bf16 checkpoint will run as fp16 on this GPU; overflow is possible and must be checked",
+        "Architecture Gemma4ForConditionalGeneration is EXPERIMENTAL for MIA: hook evidence is required at runtime",
+        "Gemma checkpoints are bf16-trained; fp16 on T4 may overflow (runtime checks for non-finite/degenerate output)"
+      ],
+      "evidence_type": "STATIC_ESTIMATE",
+      "capabilities": {
+        "capture_hs": {
+          "available": true,
+          "config_source": "generated",
+          "reason": null
+        },
+        "steer": {
+          "available": true,
+          "config_source": "generated",
+          "reason": null
+        },
+        "attention_tracker": {
+          "available": false,
+          "config_source": null,
+          "reason": "requires model-specific heads/probe artifact not available for this model"
+        },
+        "core_reranker": {
+          "available": false,
+          "config_source": null,
+          "reason": "requires model-specific heads/probe artifact not available for this model"
+        },
+        "hnode_hallucination": {
+          "available": false,
+          "config_source": null,
+          "reason": "requires model-specific heads/probe artifact not available for this model"
+        },
+        "tool_call_risk": {
+          "available": false,
+          "config_source": null,
+          "reason": "requires model-specific heads/probe artifact not available for this model"
+        },
+        "attnlink": {
+          "available": false,
+          "config_source": null,
+          "reason": "requires model-specific heads/probe artifact not available for this model"
+        }
+      },
+      "license": "apache-2.0 (Gemma 4 terms)",
+      "gated": false,
+      "model_executed": false,
+      "capabilities_runtime_verified": false,
+      "note": "Compatibility and feature support are estimates from metadata; capture/steering validation is separate."
     },
     {
       "model_id": "ibm-granite/granite-3.1-2b-instruct",
@@ -270,7 +218,6 @@
       "compatible": true,
       "blockers": [],
       "warnings": [
-        "Driver CUDA version unknown until on-runtime preflight",
         "bf16 checkpoint will run as fp16 on this GPU; overflow is possible and must be checked"
       ],
       "evidence_type": "STATIC_ESTIMATE",
@@ -312,69 +259,10 @@
         }
       },
       "license": "apache-2.0",
-      "gated": false
-    },
-    {
-      "model_id": "ibm-granite/granite-3.1-8b-instruct",
-      "revision": "4009206d5fc95d2e65a7b7633e159d6e97e25d35",
-      "gpu": "Tesla T4",
-      "runtime_dtype": "float16",
-      "max_model_len": 2048,
-      "tensor_parallel": 2,
-      "estimate": {
-        "weights_gib": 15.22,
-        "kv_cache_gib": 1.25,
-        "overhead_gib": 2.52,
-        "mia_buffer_gib": 4.0,
-        "total_gib": 22.99
-      },
-      "per_gpu_gib": 13.49,
-      "compatible": true,
-      "blockers": [],
-      "warnings": [
-        "Driver CUDA version unknown until on-runtime preflight",
-        "bf16 checkpoint will run as fp16 on this GPU; overflow is possible and must be checked"
-      ],
-      "evidence_type": "STATIC_ESTIMATE",
-      "capabilities": {
-        "capture_hs": {
-          "available": true,
-          "config_source": "hidden_states/granite-3.1-8b-instruct.json",
-          "reason": null
-        },
-        "steer": {
-          "available": true,
-          "config_source": "activation_steer/granite-3.1-8b-instruct.json",
-          "reason": null
-        },
-        "attention_tracker": {
-          "available": true,
-          "config_source": "attention_tracker/granite-3.1-8b-instruct.json",
-          "reason": null
-        },
-        "core_reranker": {
-          "available": false,
-          "config_source": null,
-          "reason": "requires model-specific heads/probe artifact not available for this model"
-        },
-        "hnode_hallucination": {
-          "available": false,
-          "config_source": null,
-          "reason": "requires model-specific heads/probe artifact not available for this model"
-        },
-        "tool_call_risk": {
-          "available": false,
-          "config_source": null,
-          "reason": "requires model-specific heads/probe artifact not available for this model"
-        },
-        "attnlink": {
-          "available": false,
-          "config_source": null,
-          "reason": "requires model-specific heads/probe artifact not available for this model"
-        }
-      },
-      "license": "apache-2.0",
-      "gated": false
+      "gated": false,
+      "model_executed": false,
+      "capabilities_runtime_verified": false,
+      "note": "Compatibility and feature support are estimates from metadata; capture/steering validation is separate."
     }
   ]
 }

@@ -48,6 +48,10 @@ def main():
                                   "phase_timeout": 1800})
     config.setdefault("env", {})["MIA_APERTURE_GPU_BYTES"] = str(512 * 1024**2)
     folder = build(args.owner, config, slug="model-mountain-capture-check-20261024")
+    metadata_path = folder / "kernel-metadata.json"
+    metadata = json.loads(metadata_path.read_text())
+    metadata["title"] = "Model Mountain Capture Check 20261024"
+    metadata_path.write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
     path = folder / "run.py"
     code = path.read_text(encoding="utf-8")
     original = '            run_model(CONFIG["model"], summary)'

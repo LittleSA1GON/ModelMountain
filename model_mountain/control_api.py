@@ -126,6 +126,8 @@ class ControlAPI:
         self.store = store or RunStore(Path(folder) / "reports.sqlite3")
         self._public_requests = []
         self._limit_lock = threading.Lock()
+        self._defense_lab = None
+        self._defense_lab_lock = threading.Lock()
         from api.kaggle_jobs import KaggleBatch
         self.batch = batch or KaggleBatch.from_environment(ROOT, vercel=self.settings.vercel)
 
@@ -285,7 +287,7 @@ class ControlAPI:
                 Document.approved("expense-policy", "The reimbursement limit is $500 per request."))
         condition = body.get("condition", "D")
         question = body["question"]
-        reasons, citations = [], []
+        reasons, citations, trace = [], [], []
         if condition == "A":
             # Deterministic unprotected fixture, never a real-model observation.
             answer = simulation_backend("", "Question: " + question + "\n" + "\n".join(d.text for d in docs), body.get("max_output_tokens", 128)).get("text", "")
@@ -293,6 +295,7 @@ class ControlAPI:
         else:
             gate = ModelMountainGateway(simulation_backend, require_mia=False)
             result = gate.evaluate(GatewayRequest(question, docs, VerifiedIdentity("acme", "public-demo", trusted_gateway=True)))
+            trace = result.get("trace", [])
             if not result["allowed"]:
                 answer, decision, reasons = "Request withheld by deterministic controls.", "deny", result["reasons"]
             else:
@@ -306,6 +309,7 @@ class ControlAPI:
         return {"project_name": PROJECT_NAME, "project_id": PROJECT_ID, "run_id": str(uuid.uuid4()), "evidence_type": "CPU_SYNTHETIC", "mode": "simulation",
                 "model_id": body["model_id"], "model_revision": None, "model_executed": False,
                 "condition": condition, "decision": decision, "answer": answer, "reasons": reasons,
+                "trace": trace,
                 "citations": citations, "latency_ms": (time.perf_counter() - start) * 1000,
                 "steering_requested": bool(body.get("profile_id")), "steering_verified": False,
                 "profile_sha256": None, "attestation_ref": None, "error": None,
@@ -317,6 +321,61 @@ class ControlAPI:
         if not path.startswith("/api/v1/"):
             raise APIError(404, "not_found", "Unknown API route.")
         route = path[len("/api/v1"):].split("?", 1)[0]
+        if method == "GET" and route == "/capture-smoke":
+            path = ROOT / "api/capture_smoke.json"
+            if not path.is_file():
+                return {"status": "pending", "evidence_type": "NOT_CAPTURED"}
+            data = json.loads(path.read_text(encoding="utf-8"))
+            if data.get("project_id") != PROJECT_ID or data.get("kind") != "capture_integration_smoke":
+                raise APIError(503, "capture_report_invalid", "The capture integration report is invalid.")
+            return data
+        if method == "GET" and route in ("/defenses", "/defenses/lab"):
+            self.public_limit()
+            from . import defenses
+            if route == "/defenses":
+                return defenses.catalog()
+            with self._defense_lab_lock:
+                if self._defense_lab is None:
+                    self._defense_lab = defenses.run_lab()
+                return self._defense_lab
+        if method == "POST" and route == "/defenses/check":
+            self.public_limit()
+            allowed = {"kind", "text", "tool", "args", "private_data_read", "untrusted_content_seen"}
+            if not isinstance(body, dict) or set(body) - allowed:
+                raise APIError(400, "invalid_defense_check", "Use only the documented inert defense-check fields.")
+            if body.get("kind") not in ("prompt_injection", "egress_output", "egress_tool"):
+                raise APIError(400, "invalid_defense_check", "Choose prompt_injection, egress_output or egress_tool.")
+            for name in ("text", "tool"):
+                if name in body and not isinstance(body[name], str):
+                    raise APIError(400, "invalid_defense_check", "Text and tool fields must be strings.")
+            if "args" in body and not isinstance(body["args"], dict):
+                raise APIError(400, "invalid_defense_check", "Tool arguments must be a JSON object.")
+            for name in ("private_data_read", "untrusted_content_seen"):
+                if name in body and type(body[name]) is not bool:
+                    raise APIError(400, "invalid_defense_check", "Demo taint fields must be booleans.")
+            from .defenses import try_input
+            try:
+                return try_input(body["kind"], body)
+            except ValueError:
+                raise APIError(400, "invalid_defense_check", "The inert defense check was refused.") from None
+        if (method, route) in (("GET", "/steering"), ("POST", "/steering/profile")):
+            self.public_limit()
+            from . import steering_lab
+            try:
+                experiments = steering_lab.load_experiments()
+            except (ValueError, OSError):
+                raise APIError(503, "experiments_invalid", "The trusted experiment catalog is unavailable.") from None
+            if method == "GET":
+                return steering_lab.catalog(experiments)
+            if not isinstance(body, dict) or any(key in body and not isinstance(body[key], str)
+                                                 for key in ("model_id", "concept", "method", "phase", "positions")):
+                raise APIError(400, "invalid_steering_profile", "Profile identifiers and options must be strings.")
+            try:
+                result = steering_lab.build_profile(body, experiments)
+            except steering_lab.ProfileError as exc:
+                raise APIError(400, "invalid_steering_profile", str(exc)) from None
+            return {**result, "model_executed": False, "steering_applied": False,
+                    "evidence_type": "CONFIGURATION_ONLY"}
         if method == "GET" and route == "/health":
             configured = bool(self.settings.remote_url and self.settings.remote_token)
             return {"status": "ok", "api_version": "v1", "remote_configured": configured,

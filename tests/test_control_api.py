@@ -52,6 +52,41 @@ class ControlAPITests(unittest.TestCase):
         self.assertTrue(result["answer"].startswith("Insufficient verified evidence"))
         self.assertEqual(result["reasons"], ["insufficient_verified_evidence"])
 
+    def test_public_defense_lab_is_inert_and_cached(self):
+        result = self.api.handle("GET", "/api/v1/defenses")
+        self.assertEqual(len(result["defenses"]), 5)
+        lab = self.api.handle("GET", "/api/v1/defenses/lab")
+        self.assertEqual(lab["evidence_type"], "CPU_SYNTHETIC")
+        self.assertIs(lab, self.api.handle("GET", "/api/v1/defenses/lab"))
+        checked = self.api.handle("POST", "/api/v1/defenses/check", {
+            "kind": "egress_tool", "tool": "send_email", "args": {"to": "sink@collector.invalid"}})
+        self.assertEqual(checked["verdict"], "deny")
+        self.assertEqual(self.remote.calls, [])
+
+    def test_public_lab_rejects_malformed_and_privileged_fields(self):
+        for body in ({"kind": "egress_tool", "args": []}, {"kind": "prompt_injection", "text": {}},
+                     {"kind": "egress_tool", "private_data_read": "false"},
+                     {"kind": "egress_tool", "admin_approved": True}, {"kind": "unknown"}):
+            with self.assertRaises(APIError) as error:
+                self.api.handle("POST", "/api/v1/defenses/check", body)
+            self.assertEqual(error.exception.status, 400)
+        for body in ({"opt_in": True, "model_id": []}, {"opt_in": False}):
+            with self.assertRaises(APIError) as error:
+                self.api.handle("POST", "/api/v1/steering/profile", body)
+            self.assertEqual(error.exception.status, 400)
+        self.assertEqual(self.remote.calls, [])
+
+    def test_steering_editor_never_executes_a_model(self):
+        catalog = self.api.handle("GET", "/api/v1/steering")
+        self.assertEqual(len(catalog["models"]), 3)
+        result = self.api.handle("POST", "/api/v1/steering/profile", {
+            "model_id": "Qwen/Qwen2.5-1.5B-Instruct", "concept": "calm", "strength": 0.1,
+            "block": 14, "opt_in": True})
+        self.assertFalse(result["model_executed"])
+        self.assertFalse(result["steering_applied"])
+        self.assertEqual(result["status"], "vector_not_captured_yet")
+        self.assertEqual(self.remote.calls, [])
+
     def test_browser_cannot_grant_privilege_or_redirect_worker(self):
         for field, value in (("identity_verified", True), ("tenant", "admin"), ("endpoint", "http://169.254.169.254"), ("vector_path", "/etc/passwd")):
             with self.assertRaises(APIError):

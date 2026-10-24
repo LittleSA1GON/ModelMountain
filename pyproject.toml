@@ -8,7 +8,7 @@ version = "0.4.0"
 description = "Research prototype for enterprise AI security, RAG reliability, and model-internal behavioral evaluation"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = ["cryptography>=41"]
+dependencies = ["cryptography>=41", "numpy>=1.24"]
 
 [project.optional-dependencies]
 vector-lab = ["torch>=2.2"]

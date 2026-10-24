@@ -1,4 +1,61 @@
-# Model Mountain — Enterprise AI Security & Reliability
+# Model Mountain
+
+**A security gateway for company AI assistants.** Five implemented checks target prompt injection, poisoned knowledge, data exfiltration through tools and links, malicious tool updates, and model copying. A Kaggle GPU pipeline uses IBM vLLM-Hook (MIA) to measure and steer three open models' internal state; see [docs/RESULTS.md](docs/RESULTS.md) for what has actually run.
+
+SpartHill Hacks 2026 · IBM AI Challenge · **Live demo: https://model-mountain.vercel.app** · Submission text: [DEVPOST_SUBMISSION.md](DEVPOST_SUBMISSION.md)
+
+## Why
+
+Assistants that read email, documents and tickets and can call tools can be redirected by the text they read. Documented cases include EchoLeak (CVE-2025-32711), Invariant Labs' MCP tool-poisoning and GitHub MCP reports, PromptArmor's Slack AI report, the malicious `postmark-mcp` package, CamoLeak, PoisonedRAG, and distillation campaigns reported by Anthropic in Feb 2026. The full cited list is in `model_mountain/defenses.py` (`INCIDENTS`) and on the app's Defenses page.
+
+## The five defenses
+
+| # | Defense | What it stops | Code |
+|---|---|---|---|
+| 1 | Prompt-injection firewall + MIA Attention Tracker | Untrusted text acting as instructions | `core.py`, `gateway.py`, `kaggle/run_mia_kaggle.py:phase_heads` |
+| 2 | RAG integrity and access control | Tampered or poisoned passages, cross-tenant retrieval | `rag.py`, `core.py` |
+| 3 | Exfiltration guard (rendered output + tool calls) | Auto-loaded images, data-carrying links, unapproved recipients, private-to-public flows, the "lethal trifecta" | `egress.py`, `core.py:tool_decision` |
+| 4 | MCP supply-chain guard | Poisoned tool descriptions, rug-pull updates, impersonated servers | `mcp_security.py` |
+| 5 | Model-extraction guard | Output harvesting, including coordinated multi-account campaigns | `extraction.py` |
+
+Every request runs through `ModelMountainGateway.evaluate`, which returns a per-stage `trace` of what each check decided.
+
+## Model internals (IBM MIA, Kaggle 2× T4)
+
+Pipeline for Qwen2.5-1.5B-Instruct, IBM Granite-3.1-2B-Instruct and Gemma-4-E4B-it (E2B fallback), pinned revisions. Only outputs that actually completed on Kaggle are reported:
+
+- **Emotion vectors** (method of Anthropic 2026, arXiv 2604.07729, adapted to small open models): story activations, neutral-PC denoising, layer chosen on validation topics, held-out test accuracy.
+- **Attention heads for injection detection**: every head captured with MIA `capture_qk`, important heads selected with the Attention Tracker criterion (Hung et al., NAACL 2025 Findings), held-out AUROC; exported as IBM `attention_tracker` configs.
+- **Protective steering**: calm / desperate vectors on held-out Tensor Trust hijacking attacks, TruthfulQA and side-effect checks, strength chosen on validation only.
+- **User-adjustable steering**: the Steering page builds an opt-in profile (model, vector, strength, layer, phase, positions) bound to the vector's SHA-256 and shows the measured effect at the nearest strength that ran. Changed outputs versus the unsteered run are reported as corroboration that the steering request took effect, not as an independent hook attestation.
+
+Results: [docs/RESULTS.md](docs/RESULTS.md). Each number there traces to a downloaded Kaggle output. If a run did not complete, the exact blocker is recorded instead.
+
+## Quick start (CPU, no model downloads)
+
+```bash
+python -m pip install -e .
+python -m unittest discover -s tests -v
+cd web && npm ci && npm run build && cd ..
+python scripts/serve_web.py          # http://127.0.0.1:8502 (UI + /api/v1)
+python -c "from model_mountain.defenses import run_lab; import json; print(json.dumps(run_lab()['scenario_suite'], indent=1)[:2000])"
+```
+
+GPU runs (Kaggle): `python kaggle/build_kernel.py --owner <user> --stories`, then `--model <id>` for each model; ingest with `python scripts/ingest_kaggle_results.py <mm_results dirs...>`.
+
+## Honest limits
+
+- The live site runs the rule engine on CPU with inert fixtures. It never runs a language model, never executes a tool and never sends data anywhere. Results are labeled `CPU_SYNTHETIC`, `REAL_IBM_MIA` or `CONFIGURATION_ONLY`.
+- GPU results use small models and small held-out sets; intervals are wide, and null results are reported as such. Emotion vectors are statistical directions, not claims about model feelings.
+- Pattern screening can be evaded; allowlists, source pins and tool pins need an owner.
+
+## AI tools and existing components
+
+Built with Claude (Cowork, Opus 5.5) as lead engineer, OpenAI Codex for API/deployment/Kaggle operations and independent review, and Claude Code CLI for Windows test runs. Google Antigravity did early mechanical checks; its UI and evaluation set were withdrawn. The v4 baseline (gateway, RAG, MCP, extraction checks, Streamlit dashboard) predates the event. See `docs/build/hackathon/DISCLOSURE.md`.
+
+---
+
+# Reference: v4 baseline notes
 
 **SpartHill IBM Hackathon — working CPU research prototype + experimental IBM MIA GPU integration.**
 

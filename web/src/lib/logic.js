@@ -142,3 +142,49 @@ export function bestCondition(rows) {
 }
 
 export const pct = (x, d = 0) => (x == null || !Number.isFinite(x) ? '—' : `${(x * 100).toFixed(d)}%`);
+
+/** Gateway trace (measured per-stage decisions) -> display rows. Falls back to null when the API sent no trace. */
+const TRACE_LABEL = {
+  identity: 'Caller identity', extraction_admission: 'Extraction budget', prompt_injection: 'Injection check',
+  rag_integrity: 'Trusted documents', mcp_supply_chain: 'MCP tool trust', model: 'Model', egress_output: 'Output egress',
+  tool_egress: 'Tool egress', tool_authorization: 'Tool permissions',
+};
+const TRACE_STATE = { pass: 'pass', allow: 'pass', monitor: 'hold', ran: 'pass', no_tool: 'pass', sanitized: 'hold',
+  quarantine: 'hold', deny: 'stop', require_human_approval: 'hold' };
+export function traceRows(trace) {
+  if (!Array.isArray(trace) || !trace.length) return null;
+  return trace.map((t, i) => ({
+    id: `${t.stage}-${i}`, name: TRACE_LABEL[t.stage] || t.stage, state: TRACE_STATE[t.verdict] || 'pass',
+    reason: (t.reasons && t.reasons[0]) || (t.verdict !== 'pass' && t.verdict !== 'ran' ? t.verdict : ''),
+  }));
+}
+
+/** Verdict string from the defenses API -> chip tone. */
+export function toneOf(verdict) {
+  const v = String(verdict || '').toLowerCase();
+  if (['deny', 'block', 'block_for_review', 'withhold', 'blocked'].includes(v)) return 'bad';
+  if (['require_human_approval', 'sanitized', 'monitor', 'quarantine'].includes(v)) return 'warn';
+  if (['allow', 'pass', 'allowed'].includes(v)) return 'ok';
+  return '';
+}
+
+export const VERDICT_TEXT = {
+  deny: 'Blocked', withhold: 'Withheld', sanitized: 'Cleaned', require_human_approval: 'Needs approval',
+  allow: 'Allowed', pass: 'Passed', monitor: 'Monitored', block: 'Blocked', block_for_review: 'Blocked for review',
+};
+
+/** Clamp and round a steering strength to the slider grid. */
+export function snapStrength(x, max = 0.5, step = 0.05) {
+  const n = Number(x);
+  if (!Number.isFinite(n)) return 0;
+  const c = Math.max(-max, Math.min(max, n));
+  return Math.round(c / step) * step === 0 ? 0 : Number((Math.round(c / step) * step).toFixed(2));
+}
+
+/** Format a measured rate object {rate,k,n,ci95} for display. */
+export function fmtRate(r) {
+  if (!r || typeof r.rate !== 'number') return 'not measured';
+  const pct = (v) => `${Math.round(v * 100)}%`;
+  const ci = Array.isArray(r.ci95) ? ` (95% CI ${pct(r.ci95[0])}–${pct(r.ci95[1])})` : '';
+  return `${pct(r.rate)}${r.n != null ? ` of ${r.n}` : ''}${ci}`;
+}

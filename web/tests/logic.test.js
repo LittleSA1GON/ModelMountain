@@ -80,3 +80,24 @@ test('protection rows are ordered and the best condition respects utility', () =
   assert.equal(pct(0.256), '26%');
   assert.equal(pct(null), '—');
 });
+
+test('trace rows map measured gateway stages', async () => {
+  const { traceRows } = await import('../src/lib/logic.js');
+  assert.equal(traceRows(undefined), null);
+  const rows = traceRows([{ stage: 'identity', verdict: 'pass' }, { stage: 'egress_output', verdict: 'sanitized' },
+    { stage: 'tool_egress', verdict: 'deny', reasons: ['non_allowlisted_destination:to'] }]);
+  assert.deepEqual(rows.map((r) => r.state), ['pass', 'hold', 'stop']);
+  assert.equal(rows[2].reason, 'non_allowlisted_destination:to');
+});
+
+test('verdict tones, strength snapping and rate formatting', async () => {
+  const { toneOf, snapStrength, fmtRate } = await import('../src/lib/logic.js');
+  assert.equal(toneOf('deny'), 'bad');
+  assert.equal(toneOf('require_human_approval'), 'warn');
+  assert.equal(toneOf('allow'), 'ok');
+  assert.equal(snapStrength(0.123), 0.1);
+  assert.equal(snapStrength(9), 0.5);
+  assert.equal(snapStrength(-0.07), -0.05);
+  assert.equal(fmtRate(null), 'not measured');
+  assert.equal(fmtRate({ rate: 0.25, n: 40, ci95: [0.14, 0.4] }), '25% of 40 (95% CI 14%–40%)');
+});

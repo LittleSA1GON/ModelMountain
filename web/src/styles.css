@@ -308,3 +308,33 @@ tr.base td { color: var(--muted); }
   .callout { justify-items: start; text-align: left; }
   table.prot td:nth-child(2), table.prot td:nth-child(3) { min-width: 120px; }
 }
+
+/* ---------- defenses + steering ---------- */
+.def-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
+.def { display: grid; gap: 10px; align-content: start; }
+.def h3 { font-size: 17px; }
+.ticks { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: 14px; }
+.ticks li::marker { color: var(--accent); }
+.tag.link { cursor: pointer; border: 1px solid var(--line); background: var(--surface); font: inherit; font-size: 12px; }
+.tag.link.on, .tag.link:hover { border-color: var(--accent); color: var(--ink); }
+.callout-incident { display: grid; gap: 8px; border-left: 3px solid var(--accent); }
+.sub { display: block; color: var(--muted); font-size: 12.5px; margin-top: 2px; }
+.ask input, .ask select, .form-grid input, .form-grid select {
+  width: 100%; font: inherit; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line);
+  background: var(--surface); color: var(--ink); }
+.check { display: flex; gap: 8px; align-items: center; font-size: 14px; }
+.plain { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 14px; }
+.accounts { display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; }
+.acct { height: 22px; border-radius: 4px; background: var(--sunken); }
+.acct.ok { background: color-mix(in srgb, var(--ok) 55%, transparent); }
+.acct.bad { background: color-mix(in srgb, var(--bad) 65%, transparent); }
+.model-row { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); }
+.model-pick { text-align: left; cursor: pointer; display: grid; gap: 8px; font: inherit; color: inherit; }
+.model-pick.on { box-shadow: inset 0 0 0 2px var(--accent); }
+.form-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr)); }
+.form-grid label { display: grid; gap: 6px; font-size: 13px; color: var(--muted); }
+.form-grid input[type="range"] { padding: 0; border: 0; accent-color: var(--accent); }
+.steer-form { display: grid; gap: 14px; }
+@media (max-width: 640px) { .accounts { grid-template-columns: repeat(6, 1fr); } }
+.check input { width: auto; flex: none; margin: 0; accent-color: var(--accent); }
+.model-pick > .row { flex-wrap: wrap; gap: 6px; }

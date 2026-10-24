@@ -281,3 +281,57 @@ class RealWorldGraderTests(unittest.TestCase):
         self.assertGreater(R.auroc(pos @ d, neg @ d), 0.9)
         t = R.threshold_at_fpr(neg @ d, 0.05)
         self.assertLessEqual(float(np.mean(neg @ d > t)), 0.05)
+
+class AttentionHeadDiscoveryTests(unittest.TestCase):
+    def test_char_to_token_span(self):
+        from model_mountain import mia_runtime as R
+        offs = [(0, 0), (0, 3), (3, 4), (4, 9), (9, 12)]   # e.g. <s> "The" " " "quick" "fox"
+        self.assertEqual(R.char_span_to_token_span(offs, 4, 9), (3, 4))
+        self.assertEqual(R.char_span_to_token_span(offs, 0, 3), (1, 2))
+        with self.assertRaises(ValueError):
+            R.char_span_to_token_span(offs, 100, 110)
+
+    def test_instruction_focus_normalizes(self):
+        import numpy as np
+        from model_mountain import mia_runtime as R
+        # two heads, sequence of 4 tokens: inst = [0,2), data = [2,4)
+        attn = np.array([[0.4, 0.4, 0.1, 0.1], [0.1, 0.1, 0.4, 0.4]])
+        f = R.instruction_focus(attn, (0, 2), (2, 4))
+        self.assertAlmostEqual(f[0], 0.8, places=5)
+        self.assertAlmostEqual(f[1], 0.2, places=5)
+
+    def test_head_selection_paper_criterion_and_focus(self):
+        import numpy as np
+        from model_mountain import mia_runtime as R
+        rng = np.random.default_rng(1)
+        L, H = 4, 5
+        N = rng.normal(0.6, 0.02, (25, L, H))
+        A = rng.normal(0.6, 0.02, (25, L, H))
+        # plant two real injection heads: benign focus stays high, attacked focus drops hard
+        for (l, h) in [(2, 1), (3, 4)]:
+            N[:, l, h] = rng.normal(0.75, 0.01, 25)
+            A[:, l, h] = rng.normal(0.25, 0.01, 25)
+        sel = R.select_important_heads(N, A, k=4.0, min_heads=2)
+        self.assertIn([2, 1], sel["heads"])
+        self.assertIn([3, 4], sel["heads"])
+        self.assertEqual(sel["k_used"], 4.0)
+        # held-out separability using the selected heads
+        fs_n = R.focus_score(N, sel["heads"])
+        fs_a = R.focus_score(A, sel["heads"])
+        self.assertGreater(R.auroc(-fs_a, -fs_n), 0.95)
+
+    def test_head_selection_relaxes_k_when_none_pass(self):
+        import numpy as np
+        from model_mountain import mia_runtime as R
+        rng = np.random.default_rng(2)
+        N = rng.normal(0.6, 0.05, (20, 3, 3))
+        A = rng.normal(0.6, 0.05, (20, 3, 3))
+        A[:, 1, 1] = rng.normal(0.45, 0.05, 20)   # a modest gap: fails k=4, should pass a smaller k
+        sel = R.select_important_heads(N, A, k=4.0, min_heads=1)
+        self.assertLessEqual(sel["k_used"], 4.0)
+
+    def test_attention_tracker_config_shape(self):
+        from model_mountain import mia_runtime as R
+        cfg = R.attention_tracker_config([[2, 1], [3, 4]], model_id="org/m", revision="a" * 40, method={"k_used": 4.0})
+        self.assertEqual(cfg["params"]["important_heads"], [[2, 1], [3, 4]])
+        self.assertEqual(cfg["hookq"]["hookq_mode"], "last_token")

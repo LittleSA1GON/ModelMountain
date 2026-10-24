@@ -54,6 +54,22 @@ def verify(base):
     assert missing["decision"] == "abstain"
     call("/api/v1/inference", {**request, "mode": "remote"}, expected=401)
     call("/api/v1/inference", {**request, "identity_verified": True}, expected=400)
+    defenses = call("/api/v1/defenses")
+    assert len(defenses["defenses"]) == 5
+    lab = call("/api/v1/defenses/lab")
+    assert lab["evidence_type"] == "CPU_SYNTHETIC"
+    assert lab["scenario_suite"]["protected_unsafe_actions"] == 0
+    sink = call("/api/v1/defenses/check", {"kind": "egress_tool", "tool": "send_email",
+                                          "args": {"to": "sink@collector.invalid"}})
+    assert sink["verdict"] == "deny"
+    steering = call("/api/v1/steering")
+    qwen = next(m for m in steering["models"] if m["model_id"] == request["model_id"])
+    assert qwen["num_layers"] == 28 and qwen["hidden_size"] == 1536
+    profile = call("/api/v1/steering/profile", {"model_id": request["model_id"], "concept": "calm",
+                                               "strength": 0.1, "block": 14, "opt_in": True})
+    assert profile["model_executed"] is False and profile["steering_applied"] is False
+    call("/api/v1/steering/profile", {"model_id": request["model_id"], "concept": "calm",
+                                     "strength": 0.1, "block": 999, "opt_in": True}, expected=400)
     return {"project_name": "Model Mountain", "project_id": "16f864bfa1303fc9", "base_url": base,
             "checked_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
             "evidence_type": "DEPLOYMENT_CONTRACT_CHECK_ONLY", "passed": True,

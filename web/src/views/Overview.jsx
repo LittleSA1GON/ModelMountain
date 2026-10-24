@@ -24,7 +24,8 @@ export default function Overview({ health, go }) {
           </p>
           <div className="row">
             <button className="btn primary" onClick={() => go('try')}>Try the gateway</button>
-            <button className="btn ghost" onClick={() => go('lab')}>Open the MIA Lab</button>
+            <button className="btn ghost" onClick={() => go('defenses')}>See the five defenses</button>
+            <button className="btn ghost" onClick={() => go('steering')}>Steer a model</button>
           </div>
           <svg className="ridge" viewBox="0 0 600 56" preserveAspectRatio="none" aria-hidden="true">
             <path d="M0 52 L70 30 L110 40 L190 8 L250 34 L300 22 L380 46 L450 16 L520 38 L600 26" fill="none" stroke="currentColor" strokeWidth="1.5" />

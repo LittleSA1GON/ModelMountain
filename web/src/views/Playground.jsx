@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { api } from '../lib/api.js';
-import { EXAMPLES, VERDICT_LABEL, stagesFor, verdictOf } from '../lib/logic.js';
+import { EXAMPLES, VERDICT_LABEL, stagesFor, traceRows, verdictOf } from '../lib/logic.js';
 
 const MODEL = 'Qwen/Qwen2-1.5B-Instruct';
 const MARK = { pass: '✓', stop: '✕', hold: '!', skip: '' };
@@ -25,8 +25,8 @@ function Pane({ title, note, result, protectedPane, busy }) {
       </div>
 
       {protectedPane && d && (
-        <ol className="steps" aria-label="Checks">
-          {stagesFor(d).map((s, i) => (
+        <ol className="steps" aria-label={traceRows(d.trace) ? 'Checks (measured trace)' : 'Checks (inferred from reasons)'}>
+          {(traceRows(d.trace) || stagesFor(d)).map((s, i) => (
             <li key={s.id} className={`reveal ${s.state}`} style={{ animationDelay: `${i * 110}ms` }}>
               <span className="mark">{MARK[s.state]}</span>
               <span>{s.name}</span>
@@ -85,7 +85,7 @@ export default function Playground() {
 
       <div className="versus">
         <Pane title="Without protection" note="Baseline fixture. Shows what an unguarded assistant would pass through." result={a} busy={busy} />
-        <Pane title="With Model Mountain" note="Every request goes through the five checks." result={d} busy={busy} protectedPane />
+        <Pane title="With Model Mountain" note="Every request goes through the five defenses; each stage below is what the gateway actually recorded." result={d} busy={busy} protectedPane />
       </div>
     </section>
   );
