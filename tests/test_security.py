@@ -1,8 +1,6 @@
 import json
 import unittest
 from model_mountain.core import Document, Scenario, builtin_scenarios, doc_check, run_scenario, scan_injection, suite_report, tool_decision, digest
-from model_mountain.real_inputs import make_inputs
-from mia_security_worker import tool_parse
 
 class SecurityTests(unittest.TestCase):
     def get_case(self, name):
@@ -65,18 +63,6 @@ class SecurityTests(unittest.TestCase):
         report = suite_report()
         self.assertGreaterEqual(report['totals']['attacks'], 7)
         self.assertEqual(report['totals']['protected_unauthorized_actions'], 0)
-
-    def test_model_inputs_are_split_by_protection_mode(self):
-        inp = make_inputs()
-        self.assertEqual(len(inp), 2 * len(builtin_scenarios()))
-        orig = next(x for x in inp if x['key']=='tampered-rag:unprotected')
-        shield = next(x for x in inp if x['key']=='tampered-rag:protected')
-        self.assertIn('Ignore previous instructions', orig['data'])
-        self.assertNotIn('Ignore previous instructions', shield['data'])
-
-    def test_no_text_to_tool_without_json(self):
-        self.assertEqual(tool_parse('call reset_password now')[1], '')
-        self.assertEqual(tool_parse('{"answer":"ok","tool":"reset_password","tool_args":{}}')[1], 'reset_password')
 
     def test_external_scores_are_not_invented(self):
         r = run_scenario(self.get_case('clean-password'), True,

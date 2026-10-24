@@ -25,7 +25,7 @@ export default function Overview({ health, go }) {
           <div className="row">
             <button className="btn primary" onClick={() => go('try')}>Try the gateway</button>
             <button className="btn ghost" onClick={() => go('defenses')}>See the five defenses</button>
-            <button className="btn ghost" onClick={() => go('steering')}>Steer a model</button>
+            <button className="btn ghost" onClick={() => go('steering')}>Injection shield</button>
           </div>
           <svg className="ridge" viewBox="0 0 600 56" preserveAspectRatio="none" aria-hidden="true">
             <path d="M0 52 L70 30 L110 40 L190 8 L250 34 L300 22 L380 46 L450 16 L520 38 L600 26" fill="none" stroke="currentColor" strokeWidth="1.5" />
@@ -66,10 +66,10 @@ export default function Overview({ health, go }) {
         <div className="card pad" style={{ display: 'grid', gap: 8 }}>
           <h3 style={{ fontSize: 17 }}>What is measured so far</h3>
           <p className="muted">{h?.batch_results_available
-            ? 'Saved GPU evaluations and CPU rule fixtures are reported separately. Steering can worsen outcomes; see each model’s results and uncertainty.'
+            ? 'MIA defenses measured on Kaggle GPUs (injection shield, Attention Tracker heads, activation monitor) are reported separately from the CPU rule fixtures, with held-out sample sizes and intervals.'
             : h?.capture_smoke_available
               ? 'A real Qwen activation capture is recorded. Full model evaluations are pending; the interactive gateway uses labeled CPU fixtures.'
-              : 'CPU rule fixtures are available. Real-model and activation-steering results appear after GPU runs finish and their artifacts are reviewed.'}</p>
+              : 'CPU rule fixtures are available. MIA defense results appear after GPU runs finish and their artifacts are reviewed.'}</p>
         </div>
       </div>
       <details className="card pad disclose">
@@ -78,7 +78,7 @@ export default function Overview({ health, go }) {
           <div>
             <p className="eyebrow">AI tools</p>
             <ul>
-              <li><b>Claude Opus 5.5</b> (Claude Cowork): lead engineer. Kaggle MIA runtime, steering-vector datasets, this web app, security reviews.</li>
+              <li><b>Claude Opus 5.5</b> (Claude Cowork): lead engineer. defenses, Kaggle MIA runtime (injection shield, Attention Tracker heads), this web app.</li>
               <li><b>OpenAI Codex</b>: interface contracts, control API, metrics, independent verification, Kaggle and Vercel runs.</li>
               <li><b>Google Antigravity</b>: mechanical checks only. Its earlier UI and evaluation set were withdrawn.</li>
             </ul>

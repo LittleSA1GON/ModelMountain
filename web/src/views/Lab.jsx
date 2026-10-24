@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../lib/api.js';
-import { VECTOR_GROUPS, capabilityState, evidenceClass } from '../lib/logic.js';
+import { capabilityState, evidenceClass } from '../lib/logic.js';
 
 const CAP_LABEL = { inference: 'Inference', hidden_states: 'Hidden states', capture_hs: 'Hidden states', steering: 'Steering', steer: 'Steering',
   attention_tracker: 'Attention tracker', core_reranker: 'CoRe reranker', hnode: 'H-Node', hnode_hallucination: 'H-Node',
@@ -47,51 +47,6 @@ function Models({ r }) {
   );
 }
 
-function Vectors({ r, exp }) {
-  const measured = exp?.ok && exp.data.status === 'ingested' ? (exp.data.models || []).filter((m) => m.emotions) : [];
-  const onGpu = {};
-  for (const m of measured) for (const v of m.emotions.vectors || []) (onGpu[v.concept] ||= []).push({ model: m.model_id.split('/').pop(), block: v.block, sha: v.sha256 });
-  if (!r) return <div className="vectors">{Array.from({ length: 6 }, (_, i) => <div key={i} className="vec"><div className="skeleton" /></div>)}</div>;
-  if (!r.ok) return <p className="err">{r.error?.message}</p>;
-  const byId = Object.fromEntries((r.data.items || []).map((v) => [String(v.id || v.name).toLowerCase(), v]));
-  const render = (name) => {
-    const v = byId[name];
-    const cap = onGpu[name];
-    if (cap) {
-      return (
-        <div className="vec" key={name}>
-          <b>{name.replace('_', ' ')}</b>
-          <span className="chip ok">Captured on GPU</span>
-          {cap.map((c) => <span key={c.model} className="small mono">{c.model} · block {c.block} · {String(c.sha).slice(0, 8)}</span>)}
-        </div>
-      );
-    }
-    const auroc = typeof v?.test_auroc === 'number' ? v.test_auroc : null;
-    const captured = v && v.evidence_type && !/NOT_CAPTURED|CANDIDATE/i.test(v.evidence_type) && auroc != null;
-    return (
-      <div className="vec" key={name}>
-        <b>{name.replace('_', ' ')}</b>
-        {(v?.pairs || v?.dataset) && <span className="muted small mono">{v.pairs ? `${v.pairs} pairs` : ''}{v.sha256 ? ` · ${String(v.sha256).slice(0, 8)}` : ''}</span>}
-        {captured ? (
-          <>
-            <div className="bar"><span style={{ width: `${Math.round(auroc * 100)}%` }} /></div>
-            <span className="small tnum">Separation {auroc.toFixed(2)} · layer {v.block}</span>
-          </>
-        ) : (
-          <span className="chip">Not captured yet</span>
-        )}
-      </div>
-    );
-  };
-  return (
-    <div className="vectors">
-      <p className="group-label">Emotion directions</p>
-      {VECTOR_GROUPS.emotion.map(render)}
-      <p className="group-label">Security behaviors</p>
-      {VECTOR_GROUPS.behavior.map(render)}
-    </div>
-  );
-}
 
 function Runs({ jobs, reports }) {
   if (!jobs || !reports) return <div className="card pad"><div className="skeleton" /></div>;
@@ -145,10 +100,8 @@ function CaptureSmoke({ r }) {
 
 export default function Lab({ health }) {
   const models = useLoad(api.models);
-  const vectors = useLoad(api.vectors);
   const jobs = useLoad(api.jobs);
   const reports = useLoad(api.reports);
-  const exp = useLoad(api.experiments);
   const smoke = useLoad(api.captureSmoke);
   const gpu = health?.ok && health.data.remote_configured;
   return (
@@ -156,13 +109,24 @@ export default function Lab({ health }) {
       <div className="head">
         <p className="eyebrow">MIA Lab</p>
         <h2>Look inside the model, not just at its text.</h2>
-        <p className="lede">IBM vLLM-Hook reads a model's hidden states while it runs. We use it to find directions for emotions and safety behaviors, then test whether steering along them changes answers on prompts the model has not seen.</p>
+        <p className="lede">IBM vLLM-Hook (MIA) reads a model's internal state while it runs. Model Mountain uses it only for defenses against attacks: detecting prompt injection from attention, monitoring hidden states, and steering the model away from complying with injected instructions.</p>
+      </div>
+
+      <div className="card table-wrap">
+        <table>
+          <thead><tr><th>MIA defense</th><th>IBM MIA worker</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr><td><b>Injection shield</b></td><td className="mono small">capture_hs → steer (add_vector)</td><td className="small">Finds the direction separating attacks that hijacked the model from attacks it resisted, then steers against it. Strength chosen on validation; tested on held-out Tensor Trust attacks.</td></tr>
+            <tr><td><b>Attention Tracker detector</b></td><td className="mono small">capture_qk + attention analyzer</td><td className="small">Heads whose attention to the system instruction drops under injection; their focus score flags injected inputs (Hung et al., NAACL 2025 Findings).</td></tr>
+            <tr><td><b>Activation monitor</b></td><td className="mono small">capture_hs (last token)</td><td className="small">Linear probe on hidden states trained on deepset prompt injections; reported with its false-positive rate under distribution shift.</td></tr>
+          </tbody>
+        </table>
       </div>
 
       <div className="card pad row" style={{ justifyContent: 'space-between' }}>
         <div style={{ display: 'grid', gap: 2 }}>
           <b>GPU runs happen on Kaggle</b>
-          <span className="muted small">A private notebook captures activations, fits each direction, and reports held-out results back here.</span>
+          <span className="muted small">Private Kaggle kernels run IBM MIA on the three models and report held-out results back here.</span>
         </div>
         <span className={`chip ${gpu ? 'ok' : ''}`}>{gpu ? 'Live worker connected' : 'Batch workflow · no live worker'}</span>
       </div>
@@ -182,10 +146,6 @@ export default function Lab({ health }) {
         <Models r={models} />
       </div>
 
-      <div>
-        <div className="section-title"><h2>Steering directions</h2><span className="muted small">10 emotions · {exp?.data?.stories?.kept ? `${exp.data.stories.kept.toLocaleString()} model-written stories` : 'model-written stories'} · held-out topics</span></div>
-        <Vectors r={vectors} exp={exp} />
-      </div>
     </section>
   );
 }

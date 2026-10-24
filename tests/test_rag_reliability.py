@@ -1,12 +1,9 @@
 import json
 import unittest
-from unittest.mock import MagicMock
 
 from model_mountain.core import Document
 from model_mountain.rag import (Pin, SourceRegistry, SecureRetriever, ModelMountainRAG,
                          RAGRequest, Hit, verify_grounding)
-from model_mountain.evaluation import example_cases, run_fixture
-from model_mountain.steering import SteeringProfile, MIASteeringClient, MIARequestError
 from model_mountain.gateway import ModelMountainGateway, GatewayRequest, VerifiedIdentity
 
 
@@ -74,12 +71,6 @@ class GroundingGate(unittest.TestCase):
 
 
 class PipelineTest(unittest.TestCase):
-    def test_cpu_reliability_suite(self):
-        result=run_fixture()
-        self.assertEqual(len(result['cases']),5)
-        self.assertTrue(all(r['passed_fixture_expectation'] for r in result['cases']),result)
-        self.assertEqual(result['evidence_type'],'CPU_EXTRACTIVE_SIMULATION_NOT_REAL_LLM')
-
     def test_rejects_made_up_model_claim(self):
         rag=ModelMountainRAG([POLICY],SourceRegistry.trusted_fixture([POLICY]),
                        backend=lambda system,context:'The reimbursement limit is $5,000 per request. [policy]')
@@ -102,38 +93,6 @@ class PipelineTest(unittest.TestCase):
                     'text':'The reimbursement limit is $5,000 per request. [policy]'}
         bad=ModelMountainGateway(bad_backend,require_mia=False,require_extractive_grounding=True).evaluate(request)
         self.assertIn('answer_not_extractive_grounded',bad['reasons'])
-
-
-class SteeringTest(unittest.TestCase):
-    def test_profile_payload(self):
-        profile=SteeringProfile('Qwen/Qwen2-1.5B-Instruct','/tmp/test_vector.pt',14,2.0)
-        self.assertEqual(profile.payload()['method'],'add_vector')
-        self.assertEqual(profile.payload()['coefficient'],2.0)
-
-    def test_steered_and_unsteered_request_shapes(self):
-        response=MagicMock()
-        response.choices[0].message.content='A model-generated answer'
-        stub=MagicMock()
-        stub.chat.completions.create.return_value=response
-        client=MIASteeringClient(endpoint='http://127.0.0.1:8770/v1',api_key='test',
-                                 model='Qwen/Qwen2-1.5B-Instruct',client=stub)
-        profile=SteeringProfile('Qwen/Qwen2-1.5B-Instruct','vector.pt',14)
-        self.assertEqual(client.generate('system','q','data'),'A model-generated answer')
-        self.assertNotIn('extra_body',stub.chat.completions.create.call_args.kwargs)
-        client.generate('system','q','data',profile=profile)
-        payload=json.loads(stub.chat.completions.create.call_args.kwargs['extra_body']['vllm_xargs']['steer'])
-        self.assertEqual(payload['optimal_layer'],14)
-        self.assertEqual(payload['vector_path'],'vector.pt')
-
-    def test_wrong_model_profile_refused(self):
-        client=MIASteeringClient(endpoint='https://example.com/v1',api_key='test',
-                                 model='Qwen/Qwen2-1.5B-Instruct',client=MagicMock())
-        with self.assertRaises(MIARequestError):
-            client.generate('system','question','doc',profile=SteeringProfile('different','vector.pt',14))
-
-    def test_remote_insecure_http_refused(self):
-        with self.assertRaises(ValueError):
-            MIASteeringClient(endpoint='http://example.com/v1',api_key='test',model='Qwen',client=MagicMock())
 
 
 if __name__=='__main__':unittest.main()

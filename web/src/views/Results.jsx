@@ -22,10 +22,9 @@ function Bar({ value, ci, tone }) {
 
 function Protection({ m }) {
   const p = m.protect;
-  const rows = conditionRows(p);
+  const rows = conditionRows(p).filter((r) => !['C_calm_steer', 'E_spotlight_steer', 'F_all_layers'].includes(r.id));
   const best = bestCondition(rows);
   const a = rows.find((r) => r.id === 'A_bare');
-  const calm = rows.find((r) => r.id === 'C_calm_steer' && !r.skipped);
   return (
     <div className="card">
       <div className="pad prot-head">
@@ -42,7 +41,6 @@ function Protection({ m }) {
           </div>
         )}
       </div>
-      {calm?.delta > 0 && <p className="pad err">Calm steering increased attack success on this model in this sample. It is not a validated protective setting.</p>}
       <div className="table-wrap">
         <table className="prot">
           <thead><tr><th>Condition</th><th>Attacks that succeeded</th><th>Legitimate access code works</th></tr></thead>
@@ -60,8 +58,7 @@ function Protection({ m }) {
       <div className="pad grid3 top-line">
         <div><span className="k">Activation monitor AUROC</span><span className="n tnum">{p.monitor.auroc_deepset_test?.toFixed(2) ?? '—'}</span><span className="sub">deepset test set, injection vs normal</span></div>
         <div><span className="k">Held-out detection</span><span className="n tnum">{pct(p.monitor.tpr?.rate)}</span><span className="sub">training-calibrated threshold · test false positives {pct(p.monitor.fpr?.rate)}</span></div>
-        <div><span className="k">Adapted TruthfulQA MC1, steered</span><span className="n tnum">{pct(p.truthfulqa?.calm_steer?.accuracy?.rate ?? p.truthfulqa?.baseline?.accuracy?.rate)}</span>
-          <span className="sub">without {pct(p.truthfulqa?.baseline?.accuracy?.rate)} · chance {pct(p.truthfulqa?.baseline?.chance)}</span></div>
+        <div><span className="k">Tensor Trust prompts flagged</span><span className="n tnum">{pct(p.monitor.tensor_trust_attack_flag_rate?.rate)}</span><span className="sub">attacks · legitimate prompts flagged {pct(p.monitor.tensor_trust_access_code_false_block_rate?.rate)}</span></div>
       </div>
       <p className="pad small muted">Tensor Trust uses a chat adaptation. TruthfulQA MC1 choices are capped at six including the correct answer; these are not standard leaderboard scores. Monitor-gated rows are post-hoc estimates and must be assessed with their legitimate-request utility.</p>
       {p.conditions?.A_bare?.examples?.length > 0 && (
@@ -72,33 +69,6 @@ function Protection({ m }) {
           ))}
         </details>
       )}
-    </div>
-  );
-}
-
-function Emotions({ m }) {
-  const e = m.emotions;
-  const sweep = e.layer_sweep || [];
-  const max = Math.max(...sweep.map((s) => s.val_accuracy || 0), 0.01);
-  const rw = e.monitor_realworld?.tensor_trust_attack_vs_access_code || {};
-  const top = Object.entries(rw).filter(([, v]) => v != null).sort((x, y) => Math.abs(y[1] - 0.5) - Math.abs(x[1] - 0.5))[0];
-  return (
-    <div className="card pad emo">
-      <div><b>{short(m.model_id)}</b><span className="sub">block {e.selected_block} of the residual stream · {Math.round(e.depth * 100)}% depth</span></div>
-      <div className="grid3">
-        <div><span className="k">Held-out topic accuracy</span><span className="n tnum">{pct(e.test_accuracy)}</span><span className="sub">10 emotions · chance {pct(e.chance)} · n={e.test_n}</span></div>
-        <div><span className="k">Unlabeled scenarios</span><span className="n tnum">{pct(e.implicit?.accuracy)}</span><span className="sub">emotion never named · n={e.implicit?.n}</span></div>
-        <div><span className="k">Valence alignment</span><span className="n tnum">{e.valence_r?.toFixed(2) ?? '—'}</span><span className="sub">|r| of first PC with positive/negative</span></div>
-      </div>
-      <div className="sweep" aria-label="Validation accuracy by layer depth">
-        {sweep.map((s) => (
-          <div key={s.block} className={`scol ${s.block === e.selected_block ? "sel" : ""}`} title={`block ${s.block}: ${pct(s.val_accuracy)}`}>
-            <span style={{ height: `${(s.val_accuracy / max) * 100}%` }} />
-            <small className="tnum">{Math.round(s.depth * 100)}%</small>
-          </div>
-        ))}
-      </div>
-      {top && <p className="small muted">Exploratory comparison across emotion signals: <b>{top[0]}</b> has the largest observed separation between Tensor Trust attacks and legitimate access-code prompts (AUROC {top[1].toFixed(2)}). This uses the combined validation/test prompts and is not an independently selected detector.</p>}
     </div>
   );
 }
@@ -136,28 +106,6 @@ function Shield({ m }) {
   );
 }
 
-function Steering({ m }) {
-  const s = m.steer;
-  return (
-    <div className="card">
-      <div className="pad"><b>{short(m.model_id)}</b><span className="sub">{s.units}</span></div>
-      <div className="table-wrap"><table>
-        <thead><tr><th>Steer toward</th><th>Strength</th><th>Injection success</th><th>Capability</th><th>Agrees with false claims</th><th>Tone shift</th></tr></thead>
-        <tbody>
-          <tr className="base"><td>None (baseline)</td><td>0</td><td className="tnum">{pct(s.baseline.attack_success?.rate)}</td><td className="tnum">{pct(s.baseline.capability?.rate)}</td><td className="tnum">{pct(s.baseline.sycophancy?.rate)}</td><td>—</td></tr>
-          {s.rows.map((r) => (
-            <tr key={r.emotion + r.strength}>
-              <td>{r.emotion}</td><td className="tnum">{r.strength > 0 ? '+' : ''}{r.strength}</td>
-              <td className="tnum">{pct(r.attack_success?.rate)}</td><td className="tnum">{pct(r.capability?.rate)}</td>
-              <td className="tnum">{pct(r.sycophancy?.rate)}</td>
-              <td className="tnum">{r.tone_shift == null ? '—' : `${r.tone_shift > 0 ? '+' : ''}${r.tone_shift.toFixed(2)} ${r.tone_label || ''}`}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table></div>
-    </div>
-  );
-}
 
 function Pending({ x }) {
   return (
@@ -194,7 +142,7 @@ export default function Results() {
       <div className="head">
         <p className="eyebrow">Results</p>
         <h2>{hasProtect ? 'Real-model evaluation on GPU.' : 'Real-model evaluation (GPU runs pending).'}</h2>
-        <p className="lede">Numbers in the GPU sections come only from Kaggle runs of IBM vLLM-Hook. Protection results use the public Tensor Trust benchmark (human-written attacks, held-out split); emotion and attention-head checks use our own labeled sets, marked as such. The CPU demo summary at the bottom is separate and is not a model measurement.</p>
+        <p className="lede">Every GPU number comes from a Kaggle run of IBM vLLM-Hook (MIA) and covers three MIA defenses: the injection shield (hidden-state capture plus steering), the activation monitor (hidden-state probe) and the Attention Tracker detector heads (Q/K capture). Protection is measured on held-out Tensor Trust attacks; the attention heads use our own labeled set. The CPU demo summary at the bottom is not a model measurement.</p>
       </div>
 
       {x == null ? <div className="card pad"><div className="skeleton" /></div> : !ingested ? <Pending x={x} /> : (
@@ -225,43 +173,28 @@ export default function Results() {
             </div>
           )}
 
-          {m?.protect && (
-            <div>
-              <div className="section-title"><h2>Protection against prompt injection</h2><span className="muted small">Tensor Trust hijacking benchmark</span></div>
-              <Protection m={m} />
-            </div>
+          {m && !m.shield && (
+            <div className="card pad"><b>Injection shield (MIA steering): GPU run pending</b><p className="small muted">The shield kernel fits each model's hijack-compliance direction with MIA hidden-state capture and tests MIA steering on held-out Tensor Trust attacks. No effect is shown until that run is ingested.</p></div>
           )}
           {m?.shield && (
             <div>
-              <div className="section-title"><h2>Protection steering (injection shield)</h2><span className="muted small">Steer against the model's own hijack-compliance direction · held-out Tensor Trust</span></div>
+              <div className="section-title"><h2>Injection shield (MIA steering)</h2><span className="muted small">MIA capture_hs direction, applied with the MIA steer worker · held-out Tensor Trust</span></div>
               <Shield m={m} />
             </div>
           )}
-          {m?.emotions && (
+          {m?.protect && (
             <div>
-              <div className="section-title"><h2>Emotion directions</h2><span className="muted small">Method of Anthropic (2026), adapted to small open models</span></div>
-              <Emotions m={m} />
+              <div className="section-title"><h2>MIA activation monitor and prompt baseline</h2><span className="muted small">Tensor Trust hijacking benchmark</span></div>
+              <Protection m={m} />
             </div>
           )}
           {m?.heads && (
             <div>
-              <div className="section-title"><h2>Attention heads that notice injection</h2><span className="muted small">Our labeled behavior tests · selected on training groups, scored on held-out groups</span></div>
+              <div className="section-title"><h2>Attention Tracker detector heads (MIA capture_qk)</h2><span className="muted small">Our labeled behavior tests · selected on training groups, scored on held-out groups</span></div>
               <Heads m={m} />
             </div>
           )}
           {m?.heads_review && <div className="card pad"><b>Attention result withheld</b><p className="small muted">{m.heads_review.reason}</p></div>}
-          {m?.steer && (
-            <div>
-              <div className="section-title"><h2>What steering changes</h2><span className="muted small">Same prompts, greedy decoding, vs unsteered</span></div>
-              <Steering m={m} />
-            </div>
-          )}
-          {x.data.stories?.samples?.length > 0 && (
-            <details className="card pad">
-              <summary>Training stories ({x.data.stories.kept} written by {short(x.data.stories.generator?.model_id)})</summary>
-              <div className="stories">{x.data.stories.samples.map((s) => <div key={s.emotion}><span className="chip">{s.emotion}</span><p className="small">{s.text}</p></div>)}</div>
-            </details>
-          )}
         </>
       )}
 

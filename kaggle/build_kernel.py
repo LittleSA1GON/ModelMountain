@@ -158,7 +158,7 @@ def build(owner: str, config: dict, *, slug: str, out_root: Path | None = None, 
     out = (out_root or ROOT / "model_mountain_results" / "kaggle_bundle") / f"{slug}-{stamp}"
     out.mkdir(parents=True, exist_ok=False)
     (out / "run.py").write_text(run, encoding="utf-8", newline="\n")
-    title = {"stories": "Model Mountain stories", "demo": "Model Mountain demo", "shield": "Model Mountain injection shield"}.get(config["kind"], f"MM {config.get('model', 'preflight')}")[:50]
+    title = {"stories": "Model Mountain stories", "demo": "Model Mountain demo", "shield": "Model Mountain shield"}.get(config["kind"], f"MM {config.get('model', 'preflight')}")[:50]
     meta = {"id": f"{owner}/{slug}", "title": title, "code_file": "run.py", "language": "python", "kernel_type": "script",
             "is_private": True, "enable_gpu": True, "enable_internet": True, "dataset_sources": [],
             "competition_sources": [], "kernel_sources": kernel_sources or [], "model_sources": []}

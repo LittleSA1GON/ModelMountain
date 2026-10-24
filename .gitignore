@@ -31,3 +31,12 @@ scratch/
 web/node_modules/
 web/dist/
 *.zip
+
+# multi-agent tooling (kept locally, not part of the product)
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+HUB_INSTRUCTIONS.md
+communication_hub.py
+agent_workflow/
+orchestration/

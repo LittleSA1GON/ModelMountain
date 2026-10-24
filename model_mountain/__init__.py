@@ -1,2 +1,2 @@
-"""Model Mountain: reproducible security assessment for RAG and tool-using agents."""
-__version__ = "0.1.0"
+"""Model Mountain: security gateway for AI assistants with IBM vLLM-Hook (MIA) injection defenses."""
+__version__ = "0.5.0"

@@ -1,3 +1,0 @@
-# Evaluation agent
-
-Scope: `model_mountain/behavior_eval.py`, `tests/`, `examples/` (coordinate on `evaluation.py`). Design held-out vulnerable and benign tasks for RAG grounding and malicious source instructions, with independently labeled expected outcomes and group-based leakage barriers. Evaluate four conditions: base, secure RAG, RAG+MIA steering, combined external controls. Report sample sizes, ASR, precision/recall, unsupported-claim rate, abstention, benign utility, p95 latency, and uncertainty intervals where meaningful. Never infer causal effects from activation-classifier accuracy alone.

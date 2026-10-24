@@ -55,7 +55,8 @@ Write-Host "  pushed $(git rev-parse --short HEAD) to origin/main" -ForegroundCo
 
 if (-not $SkipDeploy) {
     Step "6/7" "Deploy to Vercel (production)"
-    vercel --prod --yes; Check "vercel deploy"
+    if (Get-Command vercel -ErrorAction SilentlyContinue) { vercel --prod --yes } else { npx --yes vercel --prod --yes }
+    Check "vercel deploy (if it says you are not logged in: npx --yes vercel login, then rerun with -SkipTests)"
     Step "7/7" "Verify the live site"
     Start-Sleep -Seconds 10
     & $Py scripts\verify_deployment.py $Site; Check "deployment verification"

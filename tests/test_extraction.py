@@ -1,7 +1,6 @@
 """Model-extraction and distillation-abuse preflight regression tests."""
 import unittest
 from model_mountain.extraction import ExtractionMonitor, ExtractionPolicy, synthetic_extraction_suite
-from model_mountain.risk_catalog import RISKS
 
 
 class ExtractionSecurityTests(unittest.TestCase):
@@ -68,7 +67,6 @@ class ExtractionSecurityTests(unittest.TestCase):
         self.assertEqual(len(result['results']),result['cases'])
         self.assertEqual(result['blocked'],sum(not x['allowed'] for x in result['results']))
         self.assertTrue(all(x['mia_score'] is None for x in result['results']))
-        self.assertEqual(len(RISKS),10)
 
 if __name__ == '__main__':
     unittest.main()

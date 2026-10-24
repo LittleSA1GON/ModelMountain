@@ -63,9 +63,6 @@ def gpu_section(exp: dict | None) -> list[str]:
     rt = exp.get("runtime") or {}
     out += [f"Source: `api/experiments.json` (ingested {exp.get('ingested_at')}). Runtime: torch {rt.get('torch')}, "
             f"vLLM {rt.get('vllm')}, IBM MIA commit {rt.get('ibm_mia_commit')}.", ""]
-    st = exp.get("stories") or {}
-    if st.get("kept"):
-        out += [f"Emotion stories: {st['kept']} kept, generator {((st.get('generator') or {}).get('model_id'))}, sha256 `{st.get('sha256')}`.", ""]
     for m in exp.get("models", []):
         out += [f"### {m['model_id']} — {m['status']}", ""]
         for ph, info in (m.get("phases") or {}).items():
@@ -88,13 +85,6 @@ def gpu_section(exp: dict | None) -> list[str]:
                        f"{pct(s1.get('attack_success'))}; legitimate access {pct(b0.get('access_code_utility'))} -> "
                        f"{pct(s1.get('access_code_utility'))}; paired change {change}. "
                        f"Direction: {(sh.get('artifact') or {}).get('direction_source')}.")
-        em = m.get("emotions")
-        if em:
-            out += [f"- Emotion vectors: {len(em['vectors'])} directions at decoder block {em['selected_block']} "
-                    f"(depth {em['depth']}); held-out 10-way accuracy {em['test_accuracy']:.2f} (chance {em['chance']:.2f}, "
-                    f"n={em['test_n']}, 95% CI {em['test_ci95']})."]
-            if em.get("valence_r") is not None:
-                out.append(f"- Valence alignment of PC1: |r| = {em['valence_r']:.2f}.")
         hd = m.get("heads")
         if hd:
             h = hd.get("heldout") or {}
@@ -106,45 +96,22 @@ def gpu_section(exp: dict | None) -> list[str]:
                        "Used only to detect injection; heads are never steered.")
         if m.get("heads_review"):
             out.append("- Attention result withheld: " + m["heads_review"]["reason"])
+        if not sh:
+            out.append("- **Injection shield (MIA steering)**: GPU run pending; no effect reported.")
         pr = m.get("protect")
         if pr:
-            out += ["", f"Chat-adapted comparison on {pr['benchmark']} (held-out n={pr['n_test']}; calm strength chosen on validation: {pr['chosen_calm_strength']}):", "",
+            keep = ("A_bare", "B_spotlight", "D_monitor")
+            out += ["", f"MIA activation monitor and prompt baseline on {pr['benchmark']} (held-out n={pr['n_test']}):", "",
                     "| Condition | Attack success | Legitimate access kept |", "|---|---|---|"]
             for name, c in pr["conditions"].items():
-                if c.get("status") == "skipped":
-                    out.append(f"| {c['label']} | skipped | {c.get('reason')} |")
-                else:
-                    label = c['label'] + (" (post-hoc estimate)" if c.get('estimate_type') else "")
-                    out.append(f"| {label} | {pct(c.get('attack_success'))} | {pct(c.get('utility'))} |")
+                if name not in keep or c.get("status") == "skipped":
+                    continue
+                label = c['label'] + (" (post-hoc estimate)" if c.get('estimate_type') else "")
+                out.append(f"| {label} | {pct(c.get('attack_success'))} | {pct(c.get('utility'))} |")
             mon = pr.get("monitor") or {}
-            out += ["", f"Activation monitor (deepset test AUROC {mon.get('auroc_deepset_test')}); monitor-gated rows are post-hoc estimates on recorded generations. "
-                    "Their attack-success rate must be assessed alongside legitimate-request utility; a gate that rejects everything is unusable.", ""]
-            for name in ("C_calm_steer", "E_spotlight_steer"):
-                c = pr["conditions"].get(name, {})
-                pair = c.get("paired_vs_A") or {}
-                if pair.get("mean_diff") is not None:
-                    interval = pair.get("ci95")
-                    out.append(f"- {c.get('label')}: paired attack-success difference {100 * pair['mean_diff']:+.1f} percentage points "
-                               f"(positive is worse; 95% interval {None if interval is None else [round(100*x, 1) for x in interval]}).")
-            calm_pair = pr["conditions"].get("C_calm_steer", {}).get("paired_vs_A") or {}
-            calm_ci = calm_pair.get("ci95") or [None, None]
-            if calm_ci[0] is not None and calm_ci[0] > 0:
-                out.append("- **Adverse outcome: calm steering increased attack success on this model. No protective benefit is established.**")
-            elif calm_ci[1] is not None and calm_ci[1] < 0:
-                out.append("- Calm steering reduced attack success on this model (interval excludes zero); check the utility column before relying on it.")
-            else:
-                out.append("- Calm steering: no measurable change in attack success (the 95% interval includes zero). No protective benefit is established.")
-            out.append("")
-        sr = m.get("steer")
-        if sr:
-            out += [f"Steering sweep ({sr['units']}): baseline attack success {pct(sr['baseline']['attack_success'])}, "
-                    f"capability {pct(sr['baseline']['capability'])}.", "",
-                    "| Vector | Strength | Attack success | Capability | Injection replies differing from unsteered |", "|---|---|---|---|---|"]
-            for r in sr["rows"]:
-                he = r.get("hook_evidence") or {}
-                out.append(f"| {r['emotion']} | {r['strength']} | {pct(r['attack_success'])} | {pct(r['capability'])} | "
-                           f"{he.get('injection_outputs_differ', 'n/a')}/{he.get('n_injection', 'n/a')} |")
-            out.append("")
+            out += ["", f"The MIA activation monitor (hidden-state probe trained on deepset) reaches deepset test AUROC "
+                    f"{'n/a' if mon.get('auroc_deepset_test') is None else round(mon['auroc_deepset_test'], 2)}, but on Tensor Trust it flags legitimate prompts too, so it is reported as a monitor, "
+                    "not a gate. Monitor-gated rows are post-hoc estimates on recorded generations.", ""]
     return out
 
 

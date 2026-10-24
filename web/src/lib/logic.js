@@ -89,11 +89,6 @@ export function capabilityState(value) {
   return 'unverified';
 }
 
-export const VECTOR_GROUPS = {
-  emotion: ['happy', 'sad', 'angry', 'afraid', 'calm', 'desperate', 'loving', 'hostile', 'disgusted', 'surprised'],
-  behavior: ['refusal', 'uncertainty', 'injection_resistance'],
-};
-
 /** Evidence types that count as a real model run. Everything else is a diagnostic or a fixture. */
 export const REAL_EVIDENCE = ['REAL_MODEL', 'REAL_IBM_MIA', 'LIVE_REAL_MODEL'];
 export function evidenceClass(type) {

@@ -18,9 +18,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 EXPERIMENTS = ROOT / "api" / "experiments.json"
 MAX_ABS_STRENGTH = 0.5          # beyond this the paper reports incoherent text; refuse rather than clamp silently
-# Starting points motivated by arXiv 2604.07729 (calm reduced, desperation increased misaligned behavior in the paper's
-# model). They are UNVALIDATED for these small models until the Kaggle protect/steer phases measure them.
-EXPERIMENTAL_PRESETS = {"calm": 0.1, "desperate": -0.1}
 # Protection steering: the "injection shield" is each model's own hijack-compliance direction, negated
 # (kaggle/run_mia_kaggle.py:phase_shield). Blocks match where each model's vectors were captured on Kaggle.
 SHIELD_CONCEPT = "injection_shield"
@@ -86,7 +83,7 @@ def catalog(experiments: dict | None) -> dict:
                            "block": shield_block, "phase": "both", "positions": "all_tokens",
                            "label": "Injection shield (protection)"},
         })
-    return {"models": rows, "experimental_presets": EXPERIMENTAL_PRESETS,
+    return {"models": rows,
             "presets_note": "MVP preset: the injection shield (each model's own hijack-compliance direction, negated) at the "
                             "strength chosen on Tensor Trust validation; effect measured on held-out attacks.",
             "max_abs_strength": MAX_ABS_STRENGTH,
